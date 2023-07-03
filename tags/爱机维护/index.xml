@@ -13,7 +13,7 @@
       <pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate>
       
       <guid>http://elenacliu.github.io/post/2021-01-22-windows%E9%87%8D%E8%A3%85%E5%92%8C%E5%8F%8C%E7%B3%BB%E7%BB%9F%E5%AE%89%E8%A3%85%E8%AE%B0%E5%BD%95/</guid>
-      <description>TL; DR 总的来讲这两天就做了下面几件事情
+      <description>TL; DR # 总的来讲这两天就做了下面几件事情
 重装 windows 系统
 制作 windows 启动盘（ &amp;gt; 8G ）
 修改系统盘的Partition table格式：MBR to GPT
@@ -21,9 +21,9 @@
 修改 windows 系统所在分区的文件系统： NTFS to FAT32
 正式开始重装
 安装 Ubuntu 双系统
-制作 Ubuntu 启动盘 开始重装 设置分区 安装显卡驱动 安装输入法 修改 grub 以修改默认启动顺序 各种其他环境的配置（ to be continued ） 前言 其实去年暑假就打算重装一下电脑了，但当时把其他事情的优先级放置得比较靠前就没开搞。再加上大三上的各种大作业的环境配置，让我感觉没有一个原生的Linux环境真是太麻烦了（尽管有 wsl2 但还是没有在用 Linux 的感觉）……所以趁此寒假赶紧开始。
+制作 Ubuntu 启动盘 开始重装 设置分区 安装显卡驱动 安装输入法 修改 grub 以修改默认启动顺序 各种其他环境的配置（ to be continued ） 前言 # 其实去年暑假就打算重装一下电脑了，但当时把其他事情的优先级放置得比较靠前就没开搞。再加上大三上的各种大作业的环境配置，让我感觉没有一个原生的Linux环境真是太麻烦了（尽管有 wsl2 但还是没有在用 Linux 的感觉）……所以趁此寒假赶紧开始。
 谨以此文纪念寒假中花在这件事上的三天，并感谢某可爱在此过程中给予的关心和帮助~笔芯~:kissing_heart:
-第一部分：重装windows 参考链接
+第一部分：重装windows # 参考链接
 先讲讲我这台电脑在此之前的基本信息吧
 SSD: MBR, NTFS, 128G HDD: GPT, NTFS, 1T BIOS: Legacy BIOS Memory: 8G GPU: NVIDIA GEFORCE GTX 1050 由于我之后需要安装 Ubuntu 双系统，参考这篇博客后发现 UEFI 引导比较稳妥，因此决定摒弃 Legacy BIOS 。但 UEFI 要求系统盘对应的分区表是 GPT ，因此肯定需要做从 MBR 到 GPT 的修改；但电脑在运行操作系统的时候肯定不能对 C 盘进行该修改，一番搜索后发现安装过程中按 Shift+F10 （有的电脑需要加Fn）可以调出 windows 命令行（不过此时操作系统尚未装好，一些命令是无法使用的）此时可以通过 diskpart 命令对磁盘进行格式化、分区、分区表转换等操作。</description>
     </item>

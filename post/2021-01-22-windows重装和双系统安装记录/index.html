@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="TL; DR # 总的来讲这两天就做了下面几件事情
+重装 windows 系统
+制作 windows 启动盘（ &gt; 8G ）
+修改系统盘的Partition table格式：MBR to GPT
+对系统盘进行格式化并重新分区
+修改 windows 系统所在分区的文件系统： NTFS to FAT32
+正式开始重装
+安装 Ubuntu 双系统
+制作 Ubuntu 启动盘 开始重装 设置分区 安装显卡驱动 安装输入法 修改 grub 以修改默认启动顺序 各种其他环境的配置（ to be continued ） 前言 # 其实去年暑假就打算重装一下电脑了，但当时把其他事情的优先级放置得比较靠前就没开搞。再加上大三上的各种大作业的环境配置，让我感觉没有一个原生的Linux环境真是太麻烦了（尽管有 wsl2 但还是没有在用 Linux 的感觉）……所以趁此寒假赶紧开始。
+谨以此文纪念寒假中花在这件事上的三天，并感谢某可爱在此过程中给予的关心和帮助~笔芯~:kissing_heart:
+第一部分：重装windows # 参考链接
+先讲讲我这台电脑在此之前的基本信息吧
+SSD: MBR, NTFS, 128G HDD: GPT, NTFS, 1T BIOS: Legacy BIOS Memory: 8G GPU: NVIDIA GEFORCE GTX 1050 由于我之后需要安装 Ubuntu 双系统，参考这篇博客后发现 UEFI 引导比较稳妥，因此决定摒弃 Legacy BIOS 。但 UEFI 要求系统盘对应的分区表是 GPT ，因此肯定需要做从 MBR 到 GPT 的修改；但电脑在运行操作系统的时候肯定不能对 C 盘进行该修改，一番搜索后发现安装过程中按 Shift&#43;F10 （有的电脑需要加Fn）可以调出 windows 命令行（不过此时操作系统尚未装好，一些命令是无法使用的）此时可以通过 diskpart 命令对磁盘进行格式化、分区、分区表转换等操作。">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="win10 or Linux? 我都要" />
+<meta property="og:description" content="TL; DR # 总的来讲这两天就做了下面几件事情
+重装 windows 系统
+制作 windows 启动盘（ &gt; 8G ）
+修改系统盘的Partition table格式：MBR to GPT
+对系统盘进行格式化并重新分区
+修改 windows 系统所在分区的文件系统： NTFS to FAT32
+正式开始重装
+安装 Ubuntu 双系统
+制作 Ubuntu 启动盘 开始重装 设置分区 安装显卡驱动 安装输入法 修改 grub 以修改默认启动顺序 各种其他环境的配置（ to be continued ） 前言 # 其实去年暑假就打算重装一下电脑了，但当时把其他事情的优先级放置得比较靠前就没开搞。再加上大三上的各种大作业的环境配置，让我感觉没有一个原生的Linux环境真是太麻烦了（尽管有 wsl2 但还是没有在用 Linux 的感觉）……所以趁此寒假赶紧开始。
+谨以此文纪念寒假中花在这件事上的三天，并感谢某可爱在此过程中给予的关心和帮助~笔芯~:kissing_heart:
+第一部分：重装windows # 参考链接
+先讲讲我这台电脑在此之前的基本信息吧
+SSD: MBR, NTFS, 128G HDD: GPT, NTFS, 1T BIOS: Legacy BIOS Memory: 8G GPU: NVIDIA GEFORCE GTX 1050 由于我之后需要安装 Ubuntu 双系统，参考这篇博客后发现 UEFI 引导比较稳妥，因此决定摒弃 Legacy BIOS 。但 UEFI 要求系统盘对应的分区表是 GPT ，因此肯定需要做从 MBR 到 GPT 的修改；但电脑在运行操作系统的时候肯定不能对 C 盘进行该修改，一番搜索后发现安装过程中按 Shift&#43;F10 （有的电脑需要加Fn）可以调出 windows 命令行（不过此时操作系统尚未装好，一些命令是无法使用的）此时可以通过 diskpart 命令对磁盘进行格式化、分区、分区表转换等操作。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://elenacliu.github.io/post/2021-01-22-windows%E9%87%8D%E8%A3%85%E5%92%8C%E5%8F%8C%E7%B3%BB%E7%BB%9F%E5%AE%89%E8%A3%85%E8%AE%B0%E5%BD%95/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2021-01-22T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-01-22T00:00:00+00:00" />
+<title>win10 or Linux? 我都要 | cliu&#39;s Blog</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
+  <script defer src="/flexsearch.min.js"></script>
+  <script defer src="/en.search.min.b40b5b07da88e813791f2e7ba1e0c6adf9255e68628ef8ae5a15446cb4e5697f.js" integrity="sha256-tAtbB9qI6BN5Hy57oeDGrfklXmhijviuWhVEbLTlaX8=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>cliu&#39;s Blog</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>win10 or Linux? 我都要</strong>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#制作启动盘">制作启动盘</a></li>
+    <li><a href="#开始重装">开始重装</a>
+      <ul>
+        <li><a href="#mbr-to-gpt">MBR to GPT</a></li>
+        <li><a href="#ntfs-to-fat32">NTFS to FAT32</a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <ul>
+    <li><a href="#制作启动盘-1">制作启动盘</a></li>
+    <li><a href="#开始重装-1">开始重装</a></li>
+    <li><a href="#安装显卡驱动">安装显卡驱动</a></li>
+    <li><a href="#安装输入法">安装输入法</a></li>
+    <li><a href="#设置启动顺序">设置启动顺序</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="tl-dr">
+  TL; DR
+  <a class="anchor" href="#tl-dr">#</a>
+</h1>
+<p>总的来讲这两天就做了下面几件事情</p>
+<ol>
+<li>
+<p>重装 windows 系统</p>
+<ul>
+<li>
+<p>制作 windows 启动盘（ &gt; 8G ）</p>
+</li>
+<li>
+<p>修改系统盘的Partition table格式：MBR to GPT</p>
+</li>
+<li>
+<p>对系统盘进行格式化并重新分区</p>
+</li>
+<li>
+<p>修改 windows 系统所在分区的文件系统： NTFS to FAT32</p>
+</li>
+<li>
+<p>正式开始重装</p>
+</li>
+</ul>
+</li>
+<li>
+<p>安装 Ubuntu 双系统</p>
+<ul>
+<li>制作 Ubuntu 启动盘</li>
+<li>开始重装
+<ul>
+<li>设置分区</li>
+</ul>
+</li>
+<li>安装显卡驱动</li>
+<li>安装输入法</li>
+<li>修改 grub 以修改默认启动顺序</li>
+<li>各种其他环境的配置（ to be continued ）</li>
+</ul>
+</li>
+</ol>
+<h1 id="前言">
+  前言
+  <a class="anchor" href="#%e5%89%8d%e8%a8%80">#</a>
+</h1>
+<p>其实去年暑假就打算重装一下电脑了，但当时把其他事情的优先级放置得比较靠前就没开搞。再加上大三上的各种大作业的环境配置，让我感觉没有一个原生的Linux环境真是太麻烦了（尽管有 wsl2 但还是没有在用 Linux 的感觉）……所以趁此寒假赶紧开始。</p>
+<p>谨以此文纪念寒假中花在这件事上的三天，并感谢某可爱在此过程中给予的关心和帮助~笔芯~:kissing_heart:</p>
+<h1 id="第一部分重装windows">
+  第一部分：重装windows
+  <a class="anchor" href="#%e7%ac%ac%e4%b8%80%e9%83%a8%e5%88%86%e9%87%8d%e8%a3%85windows">#</a>
+</h1>
+<p><a href="https://www.zhihu.com/question/54059979">参考链接</a></p>
+<p>先讲讲我这台电脑在此之前的基本信息吧</p>
+<ul>
+<li>SSD: MBR, NTFS, 128G</li>
+<li>HDD: GPT, NTFS, 1T</li>
+<li>BIOS: Legacy BIOS</li>
+<li>Memory: 8G</li>
+<li>GPU: NVIDIA GEFORCE GTX 1050</li>
+</ul>
+<p>由于我之后需要安装 Ubuntu 双系统，参考<a href="https://www.cnblogs.com/masbay/p/10745170.html">这篇博客</a>后发现 UEFI 引导比较稳妥，因此决定摒弃 Legacy BIOS 。但 UEFI 要求系统盘对应的分区表是 GPT ，因此肯定需要做从 MBR 到 GPT 的修改；但电脑在运行操作系统的时候肯定不能对 C 盘进行该修改，一番搜索后发现安装过程中按 Shift+F10 （有的电脑需要加Fn）可以调出 windows 命令行（不过此时操作系统尚未装好，一些命令是无法使用的）此时可以通过 diskpart 命令对磁盘进行格式化、分区、分区表转换等操作。</p>
+<p>可是做到这些还不够。点击相应的分区准备开始安装 windows 的时候，又报错了，提示对应分区的文件系统应该是 FAT32 而非 NTFS 。于是还需要针对安装 windows 的分区进行转换。</p>
+<p>详细的步骤见后面各个部分。</p>
+<h2 id="制作启动盘">
+  制作启动盘
+  <a class="anchor" href="#%e5%88%b6%e4%bd%9c%e5%90%af%e5%8a%a8%e7%9b%98">#</a>
+</h2>
+<p>使用的就是微软提供的小工具 MediaCreationTool</p>
+<p>下载地址：https://www.microsoft.com/zh-cn/software-download/windows10</p>
+<p>把 U 盘插入电脑后，等待工具进行完下载和创建介质两步就可以啦！</p>
+<p>似乎有个通用的工具叫做Rufus。</p>
+<p>提示：网络情况不佳时，这一步会耗费几个小时。</p>
+<h2 id="开始重装">
+  开始重装
+  <a class="anchor" href="#%e5%bc%80%e5%a7%8b%e9%87%8d%e8%a3%85">#</a>
+</h2>
+<p>除了以下几点，几乎就是一路 next 了。</p>
+<h3 id="mbr-to-gpt">
+  MBR to GPT
+  <a class="anchor" href="#mbr-to-gpt">#</a>
+</h3>
+<p>除了点击 Shift+F10 调出命令行以外，参考 Microsoft Docs 的<a href="https://docs.microsoft.com/en-us/windows-server/storage/disk-management/change-an-mbr-disk-into-a-gpt-disk">这篇文档</a></p>
+<p>先解释以下各个名词的意思</p>
+<p>BIOS: Basic Input/Output System</p>
+<p>UEFI: Unified Extensible Firmware Interface</p>
+<p>MBR: Master Boot Record，又叫做主引导扇区是计算机开机后访问硬盘时所必须读取的首个扇区，在硬盘上的三维地址为 (柱面，磁头，扇面) = (0, 0, 1)</p>
+<p>MBR的组成：启动代码，硬盘分区表，结束标志字</p>
+<p>GPT: GUID Partition Table，全局唯一标识磁盘分区表。</p>
+<blockquote>
+<p>UEFI可识别MBR和GPT，因此在UEFI中这两个磁盘都可以用来存储数据，但鉴于微软的显示，若你的操作系统是使用windows程序安装的，在UEFI下只能将操作系统安装至GPT磁盘中</p>
+</blockquote>
+<blockquote>
+<p>In addition to the standard PC disk partition scheme that uses a master boot record (MBR), UEFI also works with the GUID Partition Table (GPT) partitioning scheme, which is free from many of the limitations of MBR.</p>
+</blockquote>
+<p>因此其实 UEFI 也是支持 MBR 的，只是微软没有提供这样的选项。（不过这个选择也可以理解，瞄了一眼 UEFI Specification 2.6, 发现 GPT 竟然是在这个规范里定义的，打扰了）</p>
+<p>另外，MBR 最多支持 2T ，但 GPT 理论上没有容量限制。</p>
+<h3 id="ntfs-to-fat32">
+  NTFS to FAT32
+  <a class="anchor" href="#ntfs-to-fat32">#</a>
+</h3>
+<p>具体操作其实就是通过 Shift+F10 调出命令行以后执行以下命令：</p>
+<p>（注意需要针对具体某个分区进行格式化）</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>&gt; diskpart
+</span></span><span style="display:flex;"><span>&gt; list disk
+</span></span><span style="display:flex;"><span>&gt; <span style="color:#66d9ef">select</span> disk <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>&gt; <span style="color:#66d9ef">select</span> partition <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>&gt; format fs<span style="color:#f92672">=</span>fat32 <span style="color:#f92672">(</span>quick<span style="color:#f92672">)</span>
+</span></span></code></pre></div><p>NTFS: New Technology File System</p>
+<p>FAT32: File Allocation Table</p>
+<p>What is ESP?</p>
+<p>摘自<a href="https://wiki.archlinux.org/index.php/EFI_system_partition_%28%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87%29">ArchWiki</a></p>
+<blockquote>
+<p><a href="https://en.wikipedia.org/wiki/EFI_System_partition">EFI 系统分区</a>(也称为 ESP 或者 EFISYS)是一个 FAT32 格式的物理分区 (在硬盘主分区表上，而不是 LVM 或软件 RAID 等等) ，从这里 <a href="https://wiki.archlinux.org/index.php/UEFI">UEFI</a> 固件启动 UEFI 引导器和应用程序。</p>
+<p>它与操作系统无关而是作为 EFI 固件要启动的引导器和应用程序的存储空间，是 UEFI 启动所必须。</p>
+<p>推荐使用 GPT 和 UEFI 搭配因为有的 UEFI 固件不支持 UEFI-MBR 启动。</p>
+<p><strong>Warning:</strong> 如果在 UEFI/GPT 系统上配置 <a href="https://wiki.archlinux.org/index.php/Dual_boot_with_Windows">双启动</a>，请不要重新格式化 UEFI 分区，因为已有的分区上包含 Windows 启动需要的 <em>.efi</em> 文件。不需要重新创建分区，只需要 <a href="https://wiki.archlinux.org/index.php/EFI_system_partition_%28%e7%ae%80%e4%bd%93%e4%b8%ad%e6%96%87%29#%e6%8c%82%e8%bd%bd%e5%88%86%e5%8c%ba">#挂载分区</a>.</p>
+</blockquote>
+<p>摘自<a href="https://en.wikipedia.org/wiki/EFI_system_partition">wikipedia</a></p>
+<blockquote>
+<p>The <strong>EFI</strong> (<strong>Extensible Firmware Interface</strong>) <strong>system partition</strong>  or <strong>ESP</strong> is a <a href="https://en.wikipedia.org/wiki/Partition_%28computing%29">partition</a> on a <a href="https://en.wikipedia.org/wiki/Data_storage_device">data storage device</a> (usually a <a href="https://en.wikipedia.org/wiki/Hard_disk_drive">hard disk drive</a> or <a href="https://en.wikipedia.org/wiki/Solid-state_drive">solid-state drive</a>) that is used by computers adhering to the <a href="https://en.wikipedia.org/wiki/Unified_Extensible_Firmware_Interface">Unified Extensible Firmware Interface</a> (UEFI).  When a computer is <a href="https://en.wikipedia.org/wiki/Booting">booted</a>, UEFI firmware loads files stored on the ESP to start installed <a href="https://en.wikipedia.org/wiki/Operating_system">operating systems</a> and various utilities.</p>
+<p>An ESP contains the <a href="https://en.wikipedia.org/wiki/Boot_loader">boot loaders</a> or <a href="https://en.wikipedia.org/wiki/Kernel_image">kernel images</a> for all installed operating systems (which are contained in other partitions), <a href="https://en.wikipedia.org/wiki/Device_driver">device driver</a> files for hardware devices present in a computer and used by the <a href="https://en.wikipedia.org/wiki/Firmware">firmware</a> at boot time, system utility programs that are intended to be run  before an operating system is booted, and data files such as error logs.</p>
+</blockquote>
+<h1 id="第二部分安装-ubuntu">
+  第二部分：安装 Ubuntu
+  <a class="anchor" href="#%e7%ac%ac%e4%ba%8c%e9%83%a8%e5%88%86%e5%ae%89%e8%a3%85-ubuntu">#</a>
+</h1>
+<h2 id="制作启动盘-1">
+  制作启动盘
+  <a class="anchor" href="#%e5%88%b6%e4%bd%9c%e5%90%af%e5%8a%a8%e7%9b%98-1">#</a>
+</h2>
+<p>使用的 ISO 镜像文件：https://mirrors.bfsu.edu.cn/ubuntu-releases/focal/ubuntu-20.04.1-desktop-amd64.iso</p>
+<p>使用的烧录软件：balenaEtcher</p>
+<h2 id="开始重装-1">
+  开始重装
+  <a class="anchor" href="#%e5%bc%80%e5%a7%8b%e9%87%8d%e8%a3%85-1">#</a>
+</h2>
+<p>参考的教程：</p>
+<p><a href="https://www.cnblogs.com/masbay/p/10745170.html">https://www.cnblogs.com/masbay/p/10745170.html</a></p>
+<p>其中最重要的是分区的那一步。在此前我已经通过 windows 将 G 盘通过 shrink volume 的方式获得了 80G 的未使用空间分别挂载到 swap, /, /home，另外，efi 也需要大约 200MB 的系统盘空间。</p>
+<h2 id="安装显卡驱动">
+  安装显卡驱动
+  <a class="anchor" href="#%e5%ae%89%e8%a3%85%e6%98%be%e5%8d%a1%e9%a9%b1%e5%8a%a8">#</a>
+</h2>
+<p>有两种方式</p>
+<ol>
+<li>
+<p>去 NVIDIA 官网下载对应的驱动程序并安装（可能有坑）</p>
+</li>
+<li>
+<p>通过 Software &amp; Updates 的 Additional Drivers 找到对应的驱动版本，需要改动的就改动。</p>
+<!-- raw HTML omitted -->
+</li>
+</ol>
+<h2 id="安装输入法">
+  安装输入法
+  <a class="anchor" href="#%e5%ae%89%e8%a3%85%e8%be%93%e5%85%a5%e6%b3%95">#</a>
+</h2>
+<p>默认使用的语言输入系统是 IBus，能用的只有 Intelligent Pinyin 了，而且也不怎么智能。</p>
+<p>遂安装搜狗输入法。具体步骤参考<a href="https://pinyin.sogou.com/linux/help.php">官网</a></p>
+<p>安装 fcitx 后，还需要进行如下配置。</p>
+<p>点击进入输入法配置。</p>
+<!-- raw HTML omitted -->
+<p>点击+号，添加sougoupinyin</p>
+<!-- raw HTML omitted -->
+<p>进入全局配置</p>
+<!-- raw HTML omitted -->
+<p>默认切换输入法的快捷键是 Ctrl+Space，但和 windows 下的不同。为了保持一致性并防止热键冲突，将系统的 Super+Space 热键屏蔽掉，并改成 Super+Space</p>
+<!-- raw HTML omitted -->
+<h2 id="设置启动顺序">
+  设置启动顺序
+  <a class="anchor" href="#%e8%ae%be%e7%bd%ae%e5%90%af%e5%8a%a8%e9%a1%ba%e5%ba%8f">#</a>
+</h2>
+<p>先安装 windows 后安装 Ubuntu 后，是 Ubuntu 引导 windows。而默认的选项在 Ubuntu 上，如何改成 Windows Boot Manager 呢？</p>
+<p><a href="https://blog.csdn.net/wangtingyao1990/article/details/52012691">参考</a></p>
+<p>在我的电脑中，Windows Boot Manager 位于第三位，因此 set default=&ldquo;2&rdquo;</p>
+<h1 id="后记">
+  后记
+  <a class="anchor" href="#%e5%90%8e%e8%ae%b0">#</a>
+</h1>
+<p>其实整个过程并不算很顺利。系统安装中有一些限制是在进行到后面的步骤后报错了才知道的。</p>
+<p>另外，刚刚安装 Ubuntu 后整个人处于比较懵的状态，尤其是发现 vim 的操作已经忘了很多了，一开始换源的时候费了很大力。第二天开机发现了一个很大的问题是，可能因为显卡驱动的原因，无法调节屏幕亮度，甚至都没有调节屏幕亮度的那个小条。神奇的是重启之后就好了。</p>
+<p>总而言之就是多试错吧。毕竟最坏的结果就是再来一次重装。windows 重装中的几乎每个问题，都是新的重装过程中冒出来的，由此可见这两天我的电脑反复开关机了很多次。</p>
+<p>另外有两个问题之后再填坑：</p>
+<ul>
+<li>Ubuntu 关机后启动 windows，发现 windows 系统时间错误，需要手动同步。</li>
+<li>Ubuntu 在明明有网但信号较弱时，已经成功连接却显示&quot;?&quot;，而且也无法访问网络。
+<ul>
+<li>Upd: 发现信号较强时也可能显示&quot;?&quot;</li>
+</ul>
+</li>
+</ul>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#制作启动盘">制作启动盘</a></li>
+    <li><a href="#开始重装">开始重装</a>
+      <ul>
+        <li><a href="#mbr-to-gpt">MBR to GPT</a></li>
+        <li><a href="#ntfs-to-fat32">NTFS to FAT32</a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <ul>
+    <li><a href="#制作启动盘-1">制作启动盘</a></li>
+    <li><a href="#开始重装-1">开始重装</a></li>
+    <li><a href="#安装显卡驱动">安装显卡驱动</a></li>
+    <li><a href="#安装输入法">安装输入法</a></li>
+    <li><a href="#设置启动顺序">设置启动顺序</a></li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

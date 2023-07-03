@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="注意：本文仅作技术概念解释，并不输出任何主观投资意见。
+本文主要按照以下逻辑组织：
+区块链 blockchain、比特币 bitcoin、以太坊 ethereum、智能合约 smart contract、去中心化应用 DApp、代币 token、共识机制 consensus mechanism（内容较多，预计开一篇新的 post 来总结） ERC20 BRC20 区块链 # 从抽象的角度来讲，区块链是一个分布式“账本”。分布式是指区块链是由许多对等的节点（node）共同构成；账本的比喻是指区块链就像一个大账本，存储了每一项交易的信息；至于为什么叫做“区块”“链”，是因为多个交易（transaction）的执行会形成一个新的区块（block）来保存交易信息，而这些区块以链（chain）的形式连接起来（类似计算机数据结构中的链表），实际上，每个区块都记录了它前一个区块的唯一哈希标识（hash），而当前区块的标识则由时间戳、前面区块的标识和当前区块的内容共同计算得到。如果区块的内容被矿工（miner）核验（verify，其实就是挖矿，具体操作将在后面的“共识机制”部分解释）通过，那么新区块就会诞生并连接到区块链上（这个过程也成为“上链”）。
+因此，一旦有人改动了链上区块的内容，该区块及其所有后继区块的标识会“失效”（如何定义“失效”将在后面的“共识机制”部分进行解释），可能导致分布式环境中该节点被认为是出错或恶意节点，被排除出去。
+一个形象的在线 demo，可以帮助理解区块链：
+https://andersbrownworth.com/blockchain/blockchain
+区块链分叉 # 因为区块链是去中心化的数据结构，所以不同副本之间不能总是保持一致。区块有可能在不同时间到达不同节点，导致节点有不同的区块链视角。解决的办法是，每一个节点总是选择并尝试延长代表累计了最大工作量证明的区块链，也就是最长的或最大累计难度的链。节点通过将记录在每个区块中的难度加总起来，得到建立这个链所要付出的工作量证明的总量。只要所有的节点选择最长累计难度的区块链，整个比特币网络最终会收敛到一致的状态。分叉即在不同区块链间发生的临时差异，当更多的区块添加到了某个分叉中，这个问题便会迎刃而解。
+从理论上来说，两个区块的分叉是有可能的，这种情况发生在因先前分叉而相互对立起来的矿工，又几乎同时发现了两个不同区块的解。然而，这种情况发生的几率是很低的。单区块分叉每周都会发生，而双块分叉则非常罕见。所以这里提到的区块链分叉是区块链的一种临时状态，最终分叉很大概率会消失。
+比特币将区块间隔设计为10分钟，是在更快速的交易确认和更低的分叉概率间作出的妥协。更短的区块产生间隔会让交易清算更快地完成，也会导致更加频繁地区块链分叉。与之相对地，更长的间隔会减少分叉数量，却会导致更长的清算时间。
+本节参考资料：
+Understanding Double-Spending and How to Prevent Attacks (investopedia.com)
+https://ethereum.org/en/developers/docs/intro-to-ethereum/
+https://www.8btc.com/books/261/master_bitcoin/_book/8/8.html
+比特币 # 挖矿奖励 # 矿工们通过为比特币网络提供算力来换取获得比特币奖励的机会。矿工们在挖矿过程中会得到两种类型的奖励：创建新区块的新币奖励，以及区块中所含交易的交易费。
+上面所述区块链需要有矿工核验区块内容并将区块上链，这个过程需要消耗算力。为了激励各计算节点进行计算，如果某计算节点成功核验区块内容并计算得到了该区块的 hash（挖矿），那么这个节点就会得到创建新区块的比特币奖励。
+矿工们同时也会获取交易费。每笔交易都可能包含一笔交易费，交易费是每笔交易记录的输入和输出的差额。在挖矿过程中成功“挖出”新区块的矿工可以得到该区块中包含的所有交易“小费”。目前，这笔费用占矿工收入的0.5%或更少，大部分收益仍来自挖矿所得的比特币奖励。然而随着挖矿奖励的递减，以及每个区块中包含的交易数量增加，交易费在矿工收益中所占的比重将会逐渐增加。在2140年之后，所有的矿工收益都将由交易费构成。
+注意，一个区块往往包含多个交易。区块链中的每个区块都包含了产生于该区块的所有交易，且以 Merkle 树表示（关于 Merkle 树的内容，可以参考 mastering bitcoin 书籍的 7.7 节）。而矿工从自己的内存中收集所有交易、准备打包区块时，如果发现某交易提供更多的交易费，那么就会将它作为本次打包优先考虑的交易记录。
+挖矿同时还保护着比特币系统的安全，防止欺诈交易，避免“双重支付”，“双重支付”是指多次花费同一笔比特币。该部分将在“共识机制”部分阐述。
+交易确认 # 一个区块产生后，并不会被立即信任。网络上的节点总是信任最长的区块链，当一条交易记录被打包进一个区块后，就有了一个“确认”，而在这个区块所在的链后面再加入一个区块，就是第二个确认，如此下去，如果一个交易有了 6 个确认，就认为这个交易已经确定了，会被永远记录在区块链中。6 个确认的理由是：每个确认就是一次挖矿过程，需要提供严格的计算，因此，这 6 个区块被同一个矿工创建的概率很低，所以一个矿工伪造交易不太可能。由于比特币区块的平均产生时间是 10 分钟，所以一个交易最快需要 1 小时左右才能保证成功。">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="区块链相关概念解释" />
+<meta property="og:description" content="注意：本文仅作技术概念解释，并不输出任何主观投资意见。
+本文主要按照以下逻辑组织：
+区块链 blockchain、比特币 bitcoin、以太坊 ethereum、智能合约 smart contract、去中心化应用 DApp、代币 token、共识机制 consensus mechanism（内容较多，预计开一篇新的 post 来总结） ERC20 BRC20 区块链 # 从抽象的角度来讲，区块链是一个分布式“账本”。分布式是指区块链是由许多对等的节点（node）共同构成；账本的比喻是指区块链就像一个大账本，存储了每一项交易的信息；至于为什么叫做“区块”“链”，是因为多个交易（transaction）的执行会形成一个新的区块（block）来保存交易信息，而这些区块以链（chain）的形式连接起来（类似计算机数据结构中的链表），实际上，每个区块都记录了它前一个区块的唯一哈希标识（hash），而当前区块的标识则由时间戳、前面区块的标识和当前区块的内容共同计算得到。如果区块的内容被矿工（miner）核验（verify，其实就是挖矿，具体操作将在后面的“共识机制”部分解释）通过，那么新区块就会诞生并连接到区块链上（这个过程也成为“上链”）。
+因此，一旦有人改动了链上区块的内容，该区块及其所有后继区块的标识会“失效”（如何定义“失效”将在后面的“共识机制”部分进行解释），可能导致分布式环境中该节点被认为是出错或恶意节点，被排除出去。
+一个形象的在线 demo，可以帮助理解区块链：
+https://andersbrownworth.com/blockchain/blockchain
+区块链分叉 # 因为区块链是去中心化的数据结构，所以不同副本之间不能总是保持一致。区块有可能在不同时间到达不同节点，导致节点有不同的区块链视角。解决的办法是，每一个节点总是选择并尝试延长代表累计了最大工作量证明的区块链，也就是最长的或最大累计难度的链。节点通过将记录在每个区块中的难度加总起来，得到建立这个链所要付出的工作量证明的总量。只要所有的节点选择最长累计难度的区块链，整个比特币网络最终会收敛到一致的状态。分叉即在不同区块链间发生的临时差异，当更多的区块添加到了某个分叉中，这个问题便会迎刃而解。
+从理论上来说，两个区块的分叉是有可能的，这种情况发生在因先前分叉而相互对立起来的矿工，又几乎同时发现了两个不同区块的解。然而，这种情况发生的几率是很低的。单区块分叉每周都会发生，而双块分叉则非常罕见。所以这里提到的区块链分叉是区块链的一种临时状态，最终分叉很大概率会消失。
+比特币将区块间隔设计为10分钟，是在更快速的交易确认和更低的分叉概率间作出的妥协。更短的区块产生间隔会让交易清算更快地完成，也会导致更加频繁地区块链分叉。与之相对地，更长的间隔会减少分叉数量，却会导致更长的清算时间。
+本节参考资料：
+Understanding Double-Spending and How to Prevent Attacks (investopedia.com)
+https://ethereum.org/en/developers/docs/intro-to-ethereum/
+https://www.8btc.com/books/261/master_bitcoin/_book/8/8.html
+比特币 # 挖矿奖励 # 矿工们通过为比特币网络提供算力来换取获得比特币奖励的机会。矿工们在挖矿过程中会得到两种类型的奖励：创建新区块的新币奖励，以及区块中所含交易的交易费。
+上面所述区块链需要有矿工核验区块内容并将区块上链，这个过程需要消耗算力。为了激励各计算节点进行计算，如果某计算节点成功核验区块内容并计算得到了该区块的 hash（挖矿），那么这个节点就会得到创建新区块的比特币奖励。
+矿工们同时也会获取交易费。每笔交易都可能包含一笔交易费，交易费是每笔交易记录的输入和输出的差额。在挖矿过程中成功“挖出”新区块的矿工可以得到该区块中包含的所有交易“小费”。目前，这笔费用占矿工收入的0.5%或更少，大部分收益仍来自挖矿所得的比特币奖励。然而随着挖矿奖励的递减，以及每个区块中包含的交易数量增加，交易费在矿工收益中所占的比重将会逐渐增加。在2140年之后，所有的矿工收益都将由交易费构成。
+注意，一个区块往往包含多个交易。区块链中的每个区块都包含了产生于该区块的所有交易，且以 Merkle 树表示（关于 Merkle 树的内容，可以参考 mastering bitcoin 书籍的 7.7 节）。而矿工从自己的内存中收集所有交易、准备打包区块时，如果发现某交易提供更多的交易费，那么就会将它作为本次打包优先考虑的交易记录。
+挖矿同时还保护着比特币系统的安全，防止欺诈交易，避免“双重支付”，“双重支付”是指多次花费同一笔比特币。该部分将在“共识机制”部分阐述。
+交易确认 # 一个区块产生后，并不会被立即信任。网络上的节点总是信任最长的区块链，当一条交易记录被打包进一个区块后，就有了一个“确认”，而在这个区块所在的链后面再加入一个区块，就是第二个确认，如此下去，如果一个交易有了 6 个确认，就认为这个交易已经确定了，会被永远记录在区块链中。6 个确认的理由是：每个确认就是一次挖矿过程，需要提供严格的计算，因此，这 6 个区块被同一个矿工创建的概率很低，所以一个矿工伪造交易不太可能。由于比特币区块的平均产生时间是 10 分钟，所以一个交易最快需要 1 小时左右才能保证成功。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://elenacliu.github.io/post/2023-05-26-%E5%8C%BA%E5%9D%97%E9%93%BE%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2023-05-26T00:00:00+00:00" />
+<meta property="article:modified_time" content="2023-05-26T00:00:00+00:00" />
+<title>区块链相关概念解释 | cliu&#39;s Blog</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
+  <script defer src="/flexsearch.min.js"></script>
+  <script defer src="/en.search.min.b40b5b07da88e813791f2e7ba1e0c6adf9255e68628ef8ae5a15446cb4e5697f.js" integrity="sha256-tAtbB9qI6BN5Hy57oeDGrfklXmhijviuWhVEbLTlaX8=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>cliu&#39;s Blog</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>区块链相关概念解释</strong>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#区块链">区块链</a>
+      <ul>
+        <li><a href="#区块链分叉">区块链分叉</a></li>
+      </ul>
+    </li>
+    <li><a href="#比特币">比特币</a>
+      <ul>
+        <li><a href="#挖矿奖励">挖矿奖励</a></li>
+        <li><a href="#交易确认">交易确认</a></li>
+        <li><a href="#交易广播">交易广播</a></li>
+        <li><a href="#比特币链的硬分叉和软分叉">比特币链的硬分叉和软分叉</a></li>
+      </ul>
+    </li>
+    <li><a href="#以太坊">以太坊</a></li>
+    <li><a href="#智能合约">智能合约</a></li>
+    <li><a href="#去中心化应用">去中心化应用</a></li>
+    <li><a href="#代币">代币</a>
+      <ul>
+        <li><a href="#token">Token</a></li>
+        <li><a href="#fungibility">Fungibility</a></li>
+      </ul>
+    </li>
+    <li><a href="#erc20">ERC20</a></li>
+    <li><a href="#brc20">BRC20</a>
+      <ul>
+        <li><a href="#ordinal-协议">Ordinal 协议</a></li>
+        <li><a href="#ordinal-编号规则">Ordinal 编号规则</a></li>
+        <li><a href="#ordinal-怎么将铭文铭刻在比特币上">Ordinal 怎么将铭文铭刻在比特币上？</a></li>
+        <li><a href="#brc20-1">BRC20</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><blockquote>
+<p>注意：本文仅作技术概念解释，并不输出任何主观投资意见。</p>
+</blockquote>
+<p>本文主要按照以下逻辑组织：</p>
+<ol>
+<li>区块链 blockchain、比特币 bitcoin、以太坊 ethereum、智能合约 smart contract、去中心化应用 DApp、代币 token、共识机制 consensus mechanism（内容较多，预计开一篇新的 post 来总结）</li>
+<li>ERC20</li>
+<li>BRC20</li>
+</ol>
+<h2 id="区块链">
+  区块链
+  <a class="anchor" href="#%e5%8c%ba%e5%9d%97%e9%93%be">#</a>
+</h2>
+<p>从抽象的角度来讲，区块链是一个分布式“账本”。分布式是指区块链是由许多对等的节点（node）共同构成；账本的比喻是指区块链就像一个大账本，存储了每一项交易的信息；至于为什么叫做“区块”“链”，是因为多个交易（transaction）的执行会形成一个新的区块（block）来保存交易信息，而这些区块以链（chain）的形式连接起来（类似计算机数据结构中的链表），实际上，每个区块都记录了它前一个区块的唯一哈希标识（hash），而当前区块的标识则由时间戳、前面区块的标识和当前区块的内容共同计算得到。如果区块的内容被矿工（miner）核验（verify，其实就是挖矿，具体操作将在后面的“共识机制”部分解释）通过，那么新区块就会诞生并连接到区块链上（这个过程也成为“上链”）。</p>
+<p>因此，一旦有人改动了链上区块的内容，该区块及其所有后继区块的标识会“失效”（如何定义“失效”将在后面的“共识机制”部分进行解释），可能导致分布式环境中该节点被认为是出错或恶意节点，被排除出去。</p>
+<p>一个形象的在线 demo，可以帮助理解区块链：</p>
+<p><a href="https://andersbrownworth.com/blockchain/blockchain">https://andersbrownworth.com/blockchain/blockchain</a></p>
+<h3 id="区块链分叉">
+  区块链分叉
+  <a class="anchor" href="#%e5%8c%ba%e5%9d%97%e9%93%be%e5%88%86%e5%8f%89">#</a>
+</h3>
+<p>因为区块链是去中心化的数据结构，所以不同副本之间不能总是保持一致。区块有可能在不同时间到达不同节点，导致节点有不同的区块链视角。解决的办法是，每一个节点总是选择并尝试延长代表累计了最大工作量证明的区块链，也就是最长的或最大累计难度的链。节点通过将记录在每个区块中的难度加总起来，得到建立这个链所要付出的工作量证明的总量。只要所有的节点选择最长累计难度的区块链，整个比特币网络最终会收敛到一致的状态。分叉即在不同区块链间发生的临时差异，当更多的区块添加到了某个分叉中，这个问题便会迎刃而解。</p>
+<p>从理论上来说，两个区块的分叉是有可能的，这种情况发生在因先前分叉而相互对立起来的矿工，又几乎同时发现了两个不同区块的解。然而，这种情况发生的几率是很低的。单区块分叉每周都会发生，而双块分叉则非常罕见。所以这里提到的区块链分叉是区块链的一种临时状态，最终分叉很大概率会消失。</p>
+<p>比特币将区块间隔设计为10分钟，是在更快速的交易确认和更低的分叉概率间作出的妥协。更短的区块产生间隔会让交易清算更快地完成，也会导致更加频繁地区块链分叉。与之相对地，更长的间隔会减少分叉数量，却会导致更长的清算时间。</p>
+<p>本节参考资料：</p>
+<p><a href="https://www.investopedia.com/terms/d/doublespending.asp">Understanding Double-Spending and How to Prevent Attacks (investopedia.com)</a></p>
+<p><a href="https://ethereum.org/en/developers/docs/intro-to-ethereum/">https://ethereum.org/en/developers/docs/intro-to-ethereum/</a></p>
+<p><a href="https://www.8btc.com/books/261/master_bitcoin/_book/8/8.html">https://www.8btc.com/books/261/master_bitcoin/_book/8/8.html</a></p>
+<h2 id="比特币">
+  比特币
+  <a class="anchor" href="#%e6%af%94%e7%89%b9%e5%b8%81">#</a>
+</h2>
+<h3 id="挖矿奖励">
+  挖矿奖励
+  <a class="anchor" href="#%e6%8c%96%e7%9f%bf%e5%a5%96%e5%8a%b1">#</a>
+</h3>
+<p>矿工们通过为比特币网络提供算力来换取获得比特币奖励的机会。矿工们在挖矿过程中会得到两种类型的奖励：创建新区块的新币奖励，以及区块中所含交易的交易费。</p>
+<p>上面所述区块链需要有矿工核验区块内容并将区块上链，这个过程需要消耗算力。为了激励各计算节点进行计算，如果某计算节点成功核验区块内容并计算得到了该区块的 hash（挖矿），那么这个节点就会得到创建新区块的比特币奖励。</p>
+<p>矿工们同时也会获取交易费。每笔交易都可能包含一笔交易费，交易费是每笔交易记录的输入和输出的差额。在挖矿过程中成功“挖出”新区块的矿工可以得到该区块中包含的所有交易“小费”。目前，这笔费用占矿工收入的0.5%或更少，大部分收益仍来自挖矿所得的比特币奖励。然而随着挖矿奖励的递减，以及每个区块中包含的交易数量增加，交易费在矿工收益中所占的比重将会逐渐增加。在2140年之后，所有的矿工收益都将由交易费构成。</p>
+<p>注意，一个区块往往包含多个交易。区块链中的每个区块都包含了产生于该区块的所有交易，且以 Merkle 树表示（关于 Merkle 树的内容，可以参考 mastering bitcoin 书籍的 7.7 节）。而矿工从自己的内存中收集所有交易、准备打包区块时，如果发现某交易提供更多的交易费，那么就会将它作为本次打包优先考虑的交易记录。</p>
+<p>挖矿同时还保护着比特币系统的安全，防止欺诈交易，避免“双重支付”，“双重支付”是指多次花费同一笔比特币。该部分将在“共识机制”部分阐述。</p>
+<h3 id="交易确认">
+  交易确认
+  <a class="anchor" href="#%e4%ba%a4%e6%98%93%e7%a1%ae%e8%ae%a4">#</a>
+</h3>
+<p>一个区块产生后，并不会被立即信任。网络上的节点总是信任最长的区块链，当一条交易记录被打包进一个区块后，就有了一个“确认”，而在这个区块所在的链后面再加入一个区块，就是第二个确认，如此下去，如果一个交易有了 6 个确认，就认为这个交易已经确定了，会被永远记录在区块链中。6 个确认的理由是：每个确认就是一次挖矿过程，需要提供严格的计算，因此，这 6 个区块被同一个矿工创建的概率很低，所以一个矿工伪造交易不太可能。由于比特币区块的平均产生时间是 10 分钟，所以一个交易最快需要 1 小时左右才能保证成功。</p>
+<h3 id="交易广播">
+  交易广播
+  <a class="anchor" href="#%e4%ba%a4%e6%98%93%e5%b9%bf%e6%92%ad">#</a>
+</h3>
+<p>比特币交易中没有过期、超时的概念，一笔交易现在有效，那么它就永远有效。然而，如果一笔交易只在全网广播了一次，那么它只会保存在一个挖矿节点的内存中。因为内存池是以未持久化的方式保存在挖矿节点存储器中的，所以一旦这个节点重新启动，内存池中的数据就会被完全擦除。而且，即便一笔有效交易被传播到了全网，如果它长时间未处理，它将从挖矿节点的内存池中消失。如果交易本应该在一段时间内被处理而实际没有，那么钱包软件应该重新发送交易或重新支付更高的矿工费。</p>
+<h3 id="比特币链的硬分叉和软分叉">
+  比特币链的硬分叉和软分叉
+  <a class="anchor" href="#%e6%af%94%e7%89%b9%e5%b8%81%e9%93%be%e7%9a%84%e7%a1%ac%e5%88%86%e5%8f%89%e5%92%8c%e8%bd%af%e5%88%86%e5%8f%89">#</a>
+</h3>
+<p>硬分叉：硬分叉是一种不支持向后兼容的软件升级方式。通常，这些情况发生在节点以与旧节点的规则冲突的方式添加新规则时。新节点只能与运行新版本的软件节点进行交互。结果，区块链发生了分裂，生产出两个单独的网络：一个按照旧规则运行，一个则按照新规则运行。</p>
+<p>软分叉：软分叉是支持<em>向后兼容</em>的软件升级方式，升级后的节点仍可以与未升级的节点进行交互。软分叉的升级方式通常是向程序中新添加了一条规则，该规则也不会与之前的旧规则发生冲突。</p>
+<p>本节参考资料：</p>
+<p><a href="https://www.8btc.com/books/261/master_bitcoin/_book/7/7.html">https://www.8btc.com/books/261/master_bitcoin/_book/7/7.html</a></p>
+<p><a href="https://www.8btc.com/books/261/master_bitcoin/_book/8/8.html">https://www.8btc.com/books/261/master_bitcoin/_book/8/8.html</a></p>
+<p><a href="https://www.tangshuang.net/4097.html">https://www.tangshuang.net/4097.html</a></p>
+<p><a href="https://academy.binance.com/zh/articles/hard-forks-and-soft-forks">https://academy.binance.com/zh/articles/hard-forks-and-soft-forks</a></p>
+<h2 id="以太坊">
+  以太坊
+  <a class="anchor" href="#%e4%bb%a5%e5%a4%aa%e5%9d%8a">#</a>
+</h2>
+<p>以太坊也是一种分布式“账本”技术。它是一个开源的去中心化计算架构，能执行称为智能合约的程序。它使用区块链来同步和存储系统状态，用名为以太（ether，ETH）的加密货币来计量和约束执行资源成本。</p>
+<p>以太坊的目的并不是数字货币支付网络。与具有有限脚本的比特币不同，以太坊被设计成一个通用可编程的区块链，它运行一个虚拟机（EVM），能够执行脚本代码，并且该脚本语言是图灵完备的。</p>
+<p>本节参考资料：</p>
+<p><a href="https://github.com/ethereumbook/ethereumbook/blob/develop/01what-is.asciidoc">https://github.com/ethereumbook/ethereumbook/blob/develop/01what-is.asciidoc</a></p>
+<h2 id="智能合约">
+  智能合约
+  <a class="anchor" href="#%e6%99%ba%e8%83%bd%e5%90%88%e7%ba%a6">#</a>
+</h2>
+<p>一个<em>以太坊</em> 帐户是一个具有以太币 (ETH) 余额的实体，可以在<em>以太坊</em>上发送交易。 帐户可以由用户控制（EOA，externally owned account），也可以作为智能合约部署（contract account）。</p>
+<p>EOA 拥有私钥，拥有私钥意味着有对账户资金或合约的控制权；合约账户拥有智能合约代码，但并没有私钥。合约账户像 EOA 一样有地址，还能像 EOA 一样发送和接收以太（ETH）。当一个交易的目的地址是合约的地址时，合约代码就会在 EVM 上运行，合约程序的输入是这个交易及其交易数据。</p>
+<p>本节参考资料：</p>
+<p><a href="https://ethereum.org/zh/developers/docs/accounts/">https://ethereum.org/zh/developers/docs/accounts/</a></p>
+<p><a href="https://github.com/ethereumbook/ethereumbook/blob/develop/02intro.asciidoc">https://github.com/ethereumbook/ethereumbook/blob/develop/02intro.asciidoc</a></p>
+<h2 id="去中心化应用">
+  去中心化应用
+  <a class="anchor" href="#%e5%8e%bb%e4%b8%ad%e5%bf%83%e5%8c%96%e5%ba%94%e7%94%a8">#</a>
+</h2>
+<p>去中心化应用是智能合约概念的扩展。更宽泛地讲，一个 DApp 是构建在开放、分布式、点对点架构上的网络应用。</p>
+<p>一个 DApp 至少囊括：运行在区块链上的智能合约（作为后端）和 web 用户界面（作为前端）。</p>
+<p>许多 DApp 还拥有别的分布式组件，比如：</p>
+<ul>
+<li>分布式（或点对点）存储协议（和平台）</li>
+<li>分布式（或点对点）消息传递协议（和平台）</li>
+</ul>
+<p>本节参考资料：</p>
+<p><a href="https://github.com/ethereumbook/ethereumbook/blob/develop/01what-is.asciidoc">https://github.com/ethereumbook/ethereumbook/blob/develop/01what-is.asciidoc</a></p>
+<h2 id="代币">
+  代币
+  <a class="anchor" href="#%e4%bb%a3%e5%b8%81">#</a>
+</h2>
+<h3 id="token">
+  Token
+  <a class="anchor" href="#token">#</a>
+</h3>
+<p>代币的英文是 token，来源于古代英语中的 tācen 一词，代表的是标志或符号。token 通常被用来指代私下发行的、有特殊用途的类币物品，这类物品本身并不具备什么内在价值，比如游戏币、折扣券等。在区块链的语境下，token 被认为是区块链上所有权的一种抽象，它能代表诸如资产、货币、访问权限一类的概念。</p>
+<h3 id="fungibility">
+  Fungibility
+  <a class="anchor" href="#fungibility">#</a>
+</h3>
+<p>维基百科对可替代性（fungibility）的解释是</p>
+<blockquote>
+<p>In economics, fungibility is the property of a good or a commodity whose individual units are essentially interchangeable.</p>
+</blockquote>
+<p>当我们可以把某代币的基本单位替换成与之在价值或功能上没有任何区别的物品的时候，这种代币就称为可替代代币（fungible token）。</p>
+<p>严格来说，如果一个代币可以被溯源，那么它就不是完全可替代的。不可替代代币（non-fungible token, NFT）代表了一个独特的有形或无形物品，因此是不可替代的。每个 NFT 都与一个唯一标识关联。</p>
+<p>比特币就是一种可替代代币。注意以太和以太坊上的代币在不同的层次被支持。处理以太的逻辑在以太坊协议的层次就被定义了，而代币的逻辑则是被智能合约所定义，以太坊协议对代币一无所知。因此，为了在以太坊上发行代币，你需要创建新的智能合约，其包含所有权限、转移机制、访问权限等。一旦部署了这个智能合约，那么该合约按照你给出的定义，负责与此代币有关的所有操作。为了标准化这个过程，Fabian Vogelsteller 在 2015 年提出了第一个标准，命名为 Ethereum Request for Comments 20（ERC-20）。具体内容将在 ERC-20 部分进行说明。</p>
+<p>本节参考资料：</p>
+<p><a href="https://github.com/ethereumbook/ethereumbook/blob/c5ddebd3dbec804463c86d0ae2de9f28fbafb83a/10tokens.asciidoc">https://github.com/ethereumbook/ethereumbook/blob/c5ddebd3dbec804463c86d0ae2de9f28fbafb83a/10tokens.asciidoc</a></p>
+<h2 id="erc20">
+  ERC20
+  <a class="anchor" href="#erc20">#</a>
+</h2>
+<p>ERC20 是为可替代代币的实现提出的标准，因此 ERC20 token 没有特殊属性。</p>
+<p>ERC20 标准为实现代币的合约定义了一组通用接口，因此所有的 ERC20 token 可以用同样的方式使用。这组接口由一系列必须和可选的函数组成。</p>
+<p>如果用 Solidity 来编写，那么 ERC20 规范应该是这样：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-solidity" data-lang="solidity"><span style="display:flex;"><span><span style="color:#66d9ef">contract</span> <span style="color:#a6e22e">ERC20</span> {
+</span></span><span style="display:flex;"><span>   <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">totalSupply</span>() <span style="color:#66d9ef">constant</span> <span style="color:#66d9ef">returns</span> (<span style="color:#66d9ef">uint</span> theTotalSupply);
+</span></span><span style="display:flex;"><span>   <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">balanceOf</span>(<span style="color:#66d9ef">address</span> _owner) <span style="color:#66d9ef">constant</span> <span style="color:#66d9ef">returns</span> (<span style="color:#66d9ef">uint</span> balance);
+</span></span><span style="display:flex;"><span>   <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">transfer</span>(<span style="color:#66d9ef">address</span> _to, <span style="color:#66d9ef">uint</span> _value) <span style="color:#66d9ef">returns</span> (<span style="color:#66d9ef">bool</span> success);
+</span></span><span style="display:flex;"><span>   <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">transferFrom</span>(<span style="color:#66d9ef">address</span> _from, <span style="color:#66d9ef">address</span> _to, <span style="color:#66d9ef">uint</span> _value) <span style="color:#66d9ef">returns</span>
+</span></span><span style="display:flex;"><span>      (<span style="color:#66d9ef">bool</span> success);
+</span></span><span style="display:flex;"><span>   <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">approve</span>(<span style="color:#66d9ef">address</span> _spender, <span style="color:#66d9ef">uint</span> _value) <span style="color:#66d9ef">returns</span> (<span style="color:#66d9ef">bool</span> success);
+</span></span><span style="display:flex;"><span>   <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">allowance</span>(<span style="color:#66d9ef">address</span> _owner, <span style="color:#66d9ef">address</span> _spender) <span style="color:#66d9ef">constant</span> <span style="color:#66d9ef">returns</span>
+</span></span><span style="display:flex;"><span>      (<span style="color:#66d9ef">uint</span> remaining);
+</span></span><span style="display:flex;"><span>   <span style="color:#66d9ef">event</span> <span style="color:#a6e22e">Transfer</span>(<span style="color:#66d9ef">address</span> <span style="color:#66d9ef">indexed</span> _from, <span style="color:#66d9ef">address</span> <span style="color:#66d9ef">indexed</span> _to, <span style="color:#66d9ef">uint</span> _value);
+</span></span><span style="display:flex;"><span>   <span style="color:#66d9ef">event</span> <span style="color:#a6e22e">Approval</span>(<span style="color:#66d9ef">address</span> <span style="color:#66d9ef">indexed</span> _owner, <span style="color:#66d9ef">address</span> <span style="color:#66d9ef">indexed</span> _spender, <span style="color:#66d9ef">uint</span> _value);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>ERC20 有两个数据结构，并在 Solidity 中用 data mapping 来实现。</p>
+<ol>
+<li>保存 token 的余额，key 是所有者的 address。每次 token 的转移都会导致一个账户余额减少，而另一个账户的余额增加。</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-solidity" data-lang="solidity"><span style="display:flex;"><span><span style="color:#66d9ef">mapping</span>(<span style="color:#66d9ef">address</span> <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">uint256</span>) balances;
+</span></span></code></pre></div><ol start="2">
+<li>保存配额。什么是配额？考虑以下场景：token 的所有者 Alice 允许 Bob 或者某合约账号从她的账户中转移一定数目的 token，这个数目就是配额。同样 mapping 来表示，主键是 owner，映射得到另一个 mapping，该 mapping 的 key 是 spender 的地址。</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-solidity" data-lang="solidity"><span style="display:flex;"><span><span style="color:#66d9ef">mapping</span> (<span style="color:#66d9ef">address</span> <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">mapping</span> (<span style="color:#66d9ef">address</span> <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">uint256</span>)) <span style="color:#66d9ef">public</span> allowed;
+</span></span></code></pre></div><p>ERC20 的两个数据结构正好对应了两个不同的使用场景。</p>
+<ol>
+<li>
+<p>单步交易。仅调用 <code>transfer</code> 函数，常用于钱包程序。如果 Alice 想要最多给 Bob 10 个 token，那么她的钱包就向这个 token 对应的 smart contract 的地址发送一笔交易，调用 <code>transfer</code> 函数，参数为 Bob 的地址和 10。</p>
+</li>
+<li>
+<p>两步交易。第一步，token 的所有者通过调用 <code>approve</code> 函数将对 token 的控制权委托给另外一个账号。第二步，这个账号调用 <code>transferFrom</code> 函数获得 token。两步交易在初始代币发行（Initial Coin Offering，ICO）时很常用，假如 Alice 想 ICO 发行 AliceCoin，那么她可以这么做：</p>
+<p><img src="https://s1.ax1x.com/2023/05/25/p9HE4gJ.png" alt="p9HE4gJ.png" /></p>
+<p>首先，Alice 需要创建一个 AliceCoin ERC20 代币的合约账户，这个账户负责发行 AliceCoin 到 Alice 的账户中。然后，Alice 创建一个 AliceICO 的合约账户，这个账户负责出售 AliceCoin 给其他账户。有了这两个合约账户后，Alice 首先调用 AliceCoin 合约中的<code> approve</code> 函数，说明她允许 AliceICO 在配额内执行 AliceCoin 合约中的 <code>transferFrom</code> 函数。然后，Bob 给 AliceICO 支付了一些 ETH，AliceICO 定义了 ETH 到 AliceCoin 的汇率，随后 AliceICO 调用 AliceCoin 合约的 <code>transferFrom</code> 函数，指定将一定数目的 AliceCoin 从 Alice 的账户转移到 Bob 的账户。</p>
+<p>本节参考资料：</p>
+<p><a href="https://eips.ethereum.org/EIPS/eip-20">https://eips.ethereum.org/EIPS/eip-20</a></p>
+<p><a href="https://github.com/ethereumbook/ethereumbook/blob/develop/10tokens.asciidoc">https://github.com/ethereumbook/ethereumbook/blob/develop/10tokens.asciidoc</a></p>
+<h2 id="brc20">
+  BRC20
+  <a class="anchor" href="#brc20">#</a>
+</h2>
+<p>BRC20 是一位名为 @domo 的推特用户在 2023 年 3 月提出的协议，这个协议的思想来源于 ERC20，希望能在比特币链上创建可替代代币。但由于比特币并不支持智能合约，需要借助 ordinal 铭刻。</p>
+<h3 id="ordinal-协议">
+  Ordinal 协议
+  <a class="anchor" href="#ordinal-%e5%8d%8f%e8%ae%ae">#</a>
+</h3>
+<p>2023 年 1 月 21 日，Casey Rodarmo 推出了 Ordinal 协议，在比特币链上铸造 NFT 成为可能。此前比特币一直被认为除了“数字黄金”外没有太多其他作用。</p>
+<p>比特币总共 21,000,000 个，而比特币的最小单位是聪（Satoshi），1BTC = 100,000,000 Satoshi，所以全部的比特币的数量是2,100,000,000,000,000 Satoshi。Ordinal 通过为这些Satoshi进行顺序编号，将这些 Satoshi 区别开来，这也是“Ordinals：序数”这个项目名字的由来。编号的方式有多种，比如直接按照纯数字的顺序号比如<code>[2099994106992659](https://ordinals.com/sat/2099994106992659)</code>，或者按照每个Satoshi出现位置的区块号+偏移量比如<code>[3891094.16797](https://ordinals.com/sat/3891094.16797)</code> 等。</p>
+<p>这样编号之后，任意资产，如NFT、安全代币、账户或稳定币，可以使用序号作为稳定标识符附加到 satoshis 上，Ordinals 把这个“附加（attach）”动作成为铭刻（inscribe），类比以太坊NFT的铸造（mint）行为。</p>
+<p>为什么编号之后一个 Satoshi 就和其他的 Satoshi 不一样了呢？我们可以举一个生活中的例子。很多魔术师在表演的时候会用到硬币、纸牌等作为魔术道具，为了像观众证明魔术师自己没有偷换过硬币，没有在硬币上做手脚，魔术师会让观众当场在硬币上做个记号，并向观众暗示这个做完记号的硬币就是世界上独一无二的硬币，是和其他硬币不一样的，魔术师不可能用其他的硬币来偷换。所以 ordinal 序数理论的方式，就是通过在硬币上作记号来达到每一个 Satoshi 都和其他的不一样的效果。</p>
+<p>Ordinals 铭文（inscription）相比于以太坊等智能合约构建的NFT体系的另一个不同点是，Ordinals 铭文的所有数据都是存在链上的，不依赖于 IPFS 或是 AWS S3 等外部存储，是真正意义上去中心化的，和其他所有的比特币交易一样，在区块链中保存。</p>
+<h3 id="ordinal-编号规则">
+  Ordinal 编号规则
+  <a class="anchor" href="#ordinal-%e7%bc%96%e5%8f%b7%e8%a7%84%e5%88%99">#</a>
+</h3>
+<p>Ordinal 协议给每个聪都分配了独一无二的编号，这个编号有若干种表示方法：</p>
+<ul>
+<li>Integer: <a href="https://ordinals.com/sat/2099994106992659"><code>2099994106992659</code></a> ，根据每个聪被挖出的顺序依次编号。</li>
+<li>Decimal:  <a href="https://ordinals.com/sat/3891094.16797"><code>3891094.16797</code></a>，小数点前的数字是聪被挖出时的区块高度，小数点后的数字是聪在区块内的偏移。</li>
+<li>Degree: <a href="https://ordinals.com/sat/3%c2%b0111094%e2%80%b2214%e2%80%b316797%e2%80%b4"><code>3°111094′214″16797‴</code></a>，</li>
+<li>Percentile:  <a href="https://ordinals.com/sat/99.99971949060254%25"><code>99.99971949060254%</code></a> ，这是该聪在比特币供应量中的位置，用百分比表示。</li>
+<li>Name: <a href="https://ordinals.com/sat/satoshi"><code>satoshi</code></a>，是用字母 a 到 z 编码的序数号。</li>
+</ul>
+<p>Ordinal 的<a href="https://docs.ordinals.com/overview.html">官方文档</a>对 Degree 表示法有详细的解释，它本质上是根据比特币自身的一些定期事件，人为赋予差别。比如比特币世界里，一些事件经常发生，一些较为罕见，这些事件自然而然地形成了一种稀有度系统。这些定期事件包括：</p>
+<ul>
+<li>区块（block）：大约每10分钟会挖出一个新区块，永远是这个数值。</li>
+<li>难度调整（difficulty adjustments）：每 2016 个区块，即每两周，比特币网络会根据哈希率的变化调整难度目标。</li>
+<li>减半（halvings）：每 210,000 个区块，即，每四年，每个区块挖到的奖励减半。</li>
+<li>周期（cycles）：每隔 6 次减半，会发生一些神奇的事情：减半和难度调整同时发生。这被称为「重叠」，在两次重叠之间的时间段被称为一个「周期」。「重叠」大约每24年发生一次。第一次重叠应该在 2032 年左右发生。</li>
+</ul>
+<p>这给我们带来了以下的稀有度级别：</p>
+<ul>
+<li>普通：不是其块的第一个聪</li>
+<li>少见：每个块的第一个聪</li>
+<li>稀有：每个难度调整周期的第一个聪</li>
+<li>史诗：每个减半时期的第一个聪</li>
+<li>传奇：每个周期的第一个聪</li>
+<li>神话：创世区块的第一个聪</li>
+</ul>
+<pre tabindex="0"><code>A°B′C″D‴
+│ │ │ ╰─ Index of sat in the block
+│ │ ╰─── Index of block in difficulty adjustment period
+│ ╰───── Index of block in halving epoch
+╰─────── Cycle, numbered starting from 0
+</code></pre><p>本节参考资料：</p>
+<p><a href="https://blog.chain.link/brc-20-token/#what_is_the_brc-20_token_standard">https://blog.chain.link/brc-20-token/#what_is_the_brc-20_token_standard</a>_</p>
+<p><a href="https://www.jinse.com/blockchain/3094348.html">https://www.jinse.com/blockchain/3094348.html</a></p>
+<p><a href="https://yishi.zhubai.love/posts/2249248982721544192">https://yishi.zhubai.love/posts/2249248982721544192</a></p>
+<p><a href="https://docs.ordinals.com/overview.html">https://docs.ordinals.com/overview.html</a></p>
+<h3 id="ordinal-怎么将铭文铭刻在比特币上">
+  Ordinal 怎么将铭文铭刻在比特币上？
+  <a class="anchor" href="#ordinal-%e6%80%8e%e4%b9%88%e5%b0%86%e9%93%ad%e6%96%87%e9%93%ad%e5%88%bb%e5%9c%a8%e6%af%94%e7%89%b9%e5%b8%81%e4%b8%8a">#</a>
+</h3>
+<p>在讨论铭刻之前，需要先了解下比特币扩容的两次重大升级：SegWit 和 Taproot。</p>
+<p><strong>SegWit</strong>（隔离见证）</p>
+<p>他是比特币的一个重大升级于 2017 年 8 月激活，主要目的是优化比特币的交易处理能力、降低交易费用，并在更安全的条件下实现比特币的扩容。SegWit 是一个软分叉（Soft Fork）升级，涵盖多个 BIP（141、142、143、144 和 145），所谓软分叉也就是可以兼容老版本的比特币客户端，没有破坏比特币网络的兼容性。</p>
+<p>它的核心改变是把交易中的签名（Witness Data）从交易数据中分离出来，使交易数据更小，从而减少交易费用，并提高比特币网络的容量。</p>
+<p>SegWit 的实现方式是将所有的交易数据分为两部分，一部分是交易的基本信息（Transaction Data），另一部分是交易的签名信息（Witness Data），并把签名信息保存在一个新的数据结构中，是被称为“隔离见证（witness）”的新区块中，并与原始交易分开传输。这样，比特币交易的交易数据大小提高了上限，同时降低了签名数据的交易费用。在 SegWit 升级之前，比特币的容量上限是1MB，而 SegWit 之后，比特币交易的容量上限达到了4MB。</p>
+<p>所以 Oridnals Inscription 的<strong>本质就是把铭刻数据藏在见证数据中。</strong></p>
+<p><strong>TapRoot</strong></p>
+<p>与 SegWit 升级类似，Taproot 升级同样是一种软分叉升级，是 Bitcoin Core 贡献者 Gregory Maxwell 在 2018 年提出的比特币升级提案，它并不会改变比特币协议本身，而是对现有的比特币交易机制进行改进。该升级主要包含 3 个技术概念 —— P2SH、MAST 和 Schnorr 。其结果是让复杂的交易如多签名交易、时间锁交易看起来如同普通的比特币交易，增强了比特币的隐私性，目的是推动了比特币实现智能合约部署、拓展用例等各种场景升级。在 SegWit 升级中，比特币协议增加了一个新的版本号，用于表示新的交易格式。在 Taproot 升级中，比特币协议最重要的更改是将脚本验证程序从 ScriptVerify flag 更新为 ScriptVerifyv2 flag，以支持 Tapscript。一个 Tapscript 的上链需要分为两个步骤：commit 和 reveal。而 Inscription（铭刻）的内容则包含在 reveal 交易的第一个输入中，从而铭刻在此交易的第一个输出的第一个 sat 上。比如：</p>
+<pre tabindex="0"><code class="language-assembly" data-lang="assembly">OP_FALSE
+OP_IF
+	OP_PUSH &#34;ord&#34;
+	OP_1
+	OP_PUSH &#34;text/plain;charset=utf-8&#34;
+	OP_0
+	OP_PUSH &#34;Hello, world!&#34;
+OP_ENDIF
+</code></pre><p>这里有多个操作指令，但是开头必然是 OP_FALSE，此指令被推入执行栈后脚本就会停止运行，但仍然被存在了链上。</p>
+<p>所以 Ordinal Inscription 的本质是：在比特币网络上借助一个永远不会被执行的脚本 tapscript，搭建了一个简易的记账层 ，进行资产和数据的统计和记录。</p>
+<p>由于只有记账，这就意味着不会有类似智能合约的脚本执行以及验证的过程，必然高度依赖链下的中心化管理和上报结果。</p>
+<p>本节摘录自：https://news.marsbit.co/20230522142055973596.html</p>
+<h3 id="brc20-1">
+  BRC20
+  <a class="anchor" href="#brc20-1">#</a>
+</h3>
+<p>学习了 Ordinal 协议相关内容后，是时候了解一下 BRC20 的思想了。实际实现中，BRC20 是通过 Ordinal 铭文实现的。我一直很困惑，如果想要在比特币上实现 fungible token，似乎没必要借助 ordinal 协议吧？但 domo 本人写的文档里提到这个实验性标准本来就是为了看看序数理论能不能促进比特币 fungibility 的发展，所以就不用纠结到底是不是一定需要 ordinal 协议的事情了。</p>
+<p>BRC20 是通过将一定格式的 JSON 文本铭刻到 bitcoin 上，来实现发行、铸造和交易代币的逻辑。</p>
+<h4 id="三种操作">
+  三种操作
+  <a class="anchor" href="#%e4%b8%89%e7%a7%8d%e6%93%8d%e4%bd%9c">#</a>
+</h4>
+<p><strong>部署 BRC20 代币</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{ 
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;p&#34;</span>: <span style="color:#e6db74">&#34;brc-20&#34;</span>,<span style="color:#75715e">//Protocol: 帮助线下的记账系统识别和处理brc-20事件
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#f92672">&#34;op&#34;</span>: <span style="color:#e6db74">&#34;deploy&#34;</span>,<span style="color:#75715e">//op 操作: 事件类型 (Deploy, Mint, Transfer)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#f92672">&#34;tick&#34;</span>: <span style="color:#e6db74">&#34;ordi&#34;</span>, <span style="color:#75715e">//Ticker: brc-20代币的标识符，长度为4个字母（可以是emoji）
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#f92672">&#34;max&#34;</span>: <span style="color:#e6db74">&#34;21000000&#34;</span>,<span style="color:#75715e">//Max supply: brc-20代币的最大供应量
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#f92672">&#34;lim&#34;</span>: <span style="color:#e6db74">&#34;1000&#34;</span><span style="color:#75715e">//Mint limit: 每次brc-20代币铸造量的限制
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span></code></pre></div><p>这里给出各个参数的要求和描述。</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Required?</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>p</td>
+<td>Yes</td>
+<td>Protocol: Helps other systems identify and process brc-20 events</td>
+</tr>
+<tr>
+<td>op</td>
+<td>Yes</td>
+<td>Operation: Type of event (Deploy, Mint, Transfer)</td>
+</tr>
+<tr>
+<td>tick</td>
+<td>Yes</td>
+<td>Ticker: 4 letter identifier of the brc-20（BRC20 代币的名称，不区分大小写，不可和已有的重复）</td>
+</tr>
+<tr>
+<td>max</td>
+<td>Yes</td>
+<td>Max supply: set max supply of the brc-20（该代币的最大发行量）</td>
+</tr>
+<tr>
+<td>lim</td>
+<td>No</td>
+<td>Mint limit: If letting users mint to themsleves, limit per ordinal</td>
+</tr>
+<tr>
+<td>dec</td>
+<td>No</td>
+<td>Decimals: set decimal precision, default to 18</td>
+</tr>
+</tbody>
+</table>
+<p><strong>铸造 BRC20 代币</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;p&#34;</span>: <span style="color:#e6db74">&#34;brc-20&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;op&#34;</span>: <span style="color:#e6db74">&#34;mint&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;tick&#34;</span>: <span style="color:#e6db74">&#34;ordi&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;amt&#34;</span>: <span style="color:#e6db74">&#34;1000&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Required?</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>p</td>
+<td>Yes</td>
+<td>Protocol: Helps other systems identify and process brc-20 events</td>
+</tr>
+<tr>
+<td>op</td>
+<td>Yes</td>
+<td>Operation: Type of event (Deploy, Mint, Transfer)</td>
+</tr>
+<tr>
+<td>tick</td>
+<td>Yes</td>
+<td>Ticker: 4 letter identifier of the brc-20</td>
+</tr>
+<tr>
+<td>amt</td>
+<td>Yes</td>
+<td>Amount to mint: States the amount of the brc-20 to mint. Has to be less than &ldquo;lim&rdquo; above if stated</td>
+</tr>
+</tbody>
+</table>
+<p><strong>转移 BRC20 代币</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{ 
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;p&#34;</span>: <span style="color:#e6db74">&#34;brc-20&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;op&#34;</span>: <span style="color:#e6db74">&#34;transfer&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;tick&#34;</span>: <span style="color:#e6db74">&#34;ordi&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;amt&#34;</span>: <span style="color:#e6db74">&#34;100&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Required?</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>p</td>
+<td>Yes</td>
+<td>Protocol: Helps other systems identify and process brc-20 events</td>
+</tr>
+<tr>
+<td>op</td>
+<td>Yes</td>
+<td>Operation: Type of event (Deploy, Mint, Transfer)</td>
+</tr>
+<tr>
+<td>tick</td>
+<td>Yes</td>
+<td>Ticker: 4 letter identifier of the brc-20</td>
+</tr>
+<tr>
+<td>amt</td>
+<td>Yes</td>
+<td>Amount to transfer: States the amount of the brc-20 to transfer.</td>
+</tr>
+<tr>
+<td>to</td>
+<td>No</td>
+<td>Address to send to: States the receiving address. If left blank logic will presume that the receiver of the transfer is correct.</td>
+</tr>
+<tr>
+<td>fee</td>
+<td>No</td>
+<td>Transfer fee: For tracking without taproot data purposes only</td>
+</tr>
+</tbody>
+</table>
+<p>但要注意，这些 JSON 代表的逻辑并不由比特币的全节点执行，用户必须完全信任链下负责解释铭文的索引器。</p>
+<p>本节参考资料：</p>
+<p><a href="https://domo-2.gitbook.io/brc-20-experiment/">https://domo-2.gitbook.io/brc-20-experiment/</a></p>
+</li>
+</ol>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#区块链">区块链</a>
+      <ul>
+        <li><a href="#区块链分叉">区块链分叉</a></li>
+      </ul>
+    </li>
+    <li><a href="#比特币">比特币</a>
+      <ul>
+        <li><a href="#挖矿奖励">挖矿奖励</a></li>
+        <li><a href="#交易确认">交易确认</a></li>
+        <li><a href="#交易广播">交易广播</a></li>
+        <li><a href="#比特币链的硬分叉和软分叉">比特币链的硬分叉和软分叉</a></li>
+      </ul>
+    </li>
+    <li><a href="#以太坊">以太坊</a></li>
+    <li><a href="#智能合约">智能合约</a></li>
+    <li><a href="#去中心化应用">去中心化应用</a></li>
+    <li><a href="#代币">代币</a>
+      <ul>
+        <li><a href="#token">Token</a></li>
+        <li><a href="#fungibility">Fungibility</a></li>
+      </ul>
+    </li>
+    <li><a href="#erc20">ERC20</a></li>
+    <li><a href="#brc20">BRC20</a>
+      <ul>
+        <li><a href="#ordinal-协议">Ordinal 协议</a></li>
+        <li><a href="#ordinal-编号规则">Ordinal 编号规则</a></li>
+        <li><a href="#ordinal-怎么将铭文铭刻在比特币上">Ordinal 怎么将铭文铭刻在比特币上？</a></li>
+        <li><a href="#brc20-1">BRC20</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

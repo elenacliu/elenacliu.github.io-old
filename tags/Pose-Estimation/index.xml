@@ -13,7 +13,7 @@
       <pubDate>Mon, 03 Jul 2023 00:00:00 +0000</pubDate>
       
       <guid>http://elenacliu.github.io/post/2023-07-03-6D-Pose-Estimation/</guid>
-      <description>6D Pose Estimation 6D Pose 6D pose means the 6 degrees of freedom of an object in camera-centered coordinates: 3D position $\mathrm{x}=(x,y,z)$ and 3D orientation $\theta=(r,p,y)$, where $r$ means roll (翻滚角), $p$ means pitch (俯仰角), and $y$ means yaw (偏航角).
+      <description>6D Pose Estimation # 6D Pose # 6D pose means the 6 degrees of freedom of an object in camera-centered coordinates: 3D position $\mathrm{x}=(x,y,z)$ and 3D orientation $\theta=(r,p,y)$, where $r$ means roll (翻滚角), $p$ means pitch (俯仰角), and $y$ means yaw (偏航角).
 The three nouns come from aviation. The gifs below from this site illustrate them clearly:
 roll:
 pitch:

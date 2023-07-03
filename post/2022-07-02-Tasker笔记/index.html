@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Tasker # 简介 # Tasker 是一款在安卓手机上实现定时任务的付费应用，官方提供 7 天的免费试用期。其功能非常强大，能够在无 root 权限下完成对手机的各种模拟操作。当然，和 Tasker 搭配的插件很多是需要 root 权限才可以完成工作的。
+笔者使用的是 HarmonyOS，但没找到 root 的方法，所以网友提出的很多操作方法没法实践。
+安装和使用 # 安装链接：点击这里
+该应用的 UI 十分简陋，这里记录一些基本使用步骤。
+任务 点击右下角加号可以进入创建任务的界面
+进入创建任务的界面，可以选择定义任务的方式
+比较常用的有代码、任务和插件。
+其中代码可以选择 adb wifi, Java function, Java object, Javascript, Javascriptlet, shell 脚本等等。
+任务有等待、执行任务（一般是你定义好的其他任务）。
+插件则可以调用其他 Tasker 支持的应用，比如 SecureSettings，AutoInput…… 这些插件可以加强 Tasker 执行任务的功能。插件的具体功能在对应部分讲解。
+配置文件 点击右下角加号可以添加配置文件
+配置一般是触发任务的条件。因此在添加配置的时候，需要指定事件、位置、或者时间等条件。
+ADB # 简介 # 相信曾经使用过 Android Studio 开发安卓应用的人都听说过这个玩意，全称 Android Debug Bridge。虽然官方网页上对 ADB 的原理介绍非常简略，但这个通信过程好像并不简单。打算未来再开篇文章研究下。
+从功能来说，感觉 ADB 其实就是提供了用其他设备（可能是 PC）调试安卓设备的方法。无论是 emulator 还是 shell，都是很方便的。">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="Tasker 笔记" />
+<meta property="og:description" content="Tasker # 简介 # Tasker 是一款在安卓手机上实现定时任务的付费应用，官方提供 7 天的免费试用期。其功能非常强大，能够在无 root 权限下完成对手机的各种模拟操作。当然，和 Tasker 搭配的插件很多是需要 root 权限才可以完成工作的。
+笔者使用的是 HarmonyOS，但没找到 root 的方法，所以网友提出的很多操作方法没法实践。
+安装和使用 # 安装链接：点击这里
+该应用的 UI 十分简陋，这里记录一些基本使用步骤。
+任务 点击右下角加号可以进入创建任务的界面
+进入创建任务的界面，可以选择定义任务的方式
+比较常用的有代码、任务和插件。
+其中代码可以选择 adb wifi, Java function, Java object, Javascript, Javascriptlet, shell 脚本等等。
+任务有等待、执行任务（一般是你定义好的其他任务）。
+插件则可以调用其他 Tasker 支持的应用，比如 SecureSettings，AutoInput…… 这些插件可以加强 Tasker 执行任务的功能。插件的具体功能在对应部分讲解。
+配置文件 点击右下角加号可以添加配置文件
+配置一般是触发任务的条件。因此在添加配置的时候，需要指定事件、位置、或者时间等条件。
+ADB # 简介 # 相信曾经使用过 Android Studio 开发安卓应用的人都听说过这个玩意，全称 Android Debug Bridge。虽然官方网页上对 ADB 的原理介绍非常简略，但这个通信过程好像并不简单。打算未来再开篇文章研究下。
+从功能来说，感觉 ADB 其实就是提供了用其他设备（可能是 PC）调试安卓设备的方法。无论是 emulator 还是 shell，都是很方便的。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://elenacliu.github.io/post/2022-07-02-Tasker%E7%AC%94%E8%AE%B0/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2022-07-02T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-07-02T00:00:00+00:00" />
+<title>Tasker 笔记 | cliu&#39;s Blog</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
+  <script defer src="/flexsearch.min.js"></script>
+  <script defer src="/en.search.min.b40b5b07da88e813791f2e7ba1e0c6adf9255e68628ef8ae5a15446cb4e5697f.js" integrity="sha256-tAtbB9qI6BN5Hy57oeDGrfklXmhijviuWhVEbLTlaX8=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>cliu&#39;s Blog</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>Tasker 笔记</strong>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#简介">简介</a></li>
+    <li><a href="#安装和使用">安装和使用</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#简介-1">简介</a></li>
+    <li><a href="#使用">使用</a>
+      <ul>
+        <li><a href="#input">input</a></li>
+      </ul>
+    </li>
+    <li><a href="#遇到的问题">遇到的问题</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#securesettings">SecureSettings</a></li>
+    <li><a href="#相关链接">相关链接</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#adb-shell-command">adb shell command</a></li>
+    <li><a href="#java-代码">Java 代码</a></li>
+    <li><a href="#javascript-代码">Javascript 代码</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#插件录制">插件录制</a></li>
+    <li><a href="#adb-shell">adb shell</a></li>
+    <li><a href="#java-代码-1">Java 代码</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="tasker">
+  Tasker
+  <a class="anchor" href="#tasker">#</a>
+</h1>
+<h2 id="简介">
+  简介
+  <a class="anchor" href="#%e7%ae%80%e4%bb%8b">#</a>
+</h2>
+<p>Tasker 是一款在安卓手机上实现定时任务的付费应用，官方提供 7 天的免费试用期。其功能非常强大，能够在无 root 权限下完成对手机的各种模拟操作。当然，和 Tasker 搭配的插件很多是需要 root 权限才可以完成工作的。</p>
+<p>笔者使用的是 HarmonyOS，但没找到 root 的方法，所以网友提出的很多操作方法没法实践。</p>
+<h2 id="安装和使用">
+  安装和使用
+  <a class="anchor" href="#%e5%ae%89%e8%a3%85%e5%92%8c%e4%bd%bf%e7%94%a8">#</a>
+</h2>
+<p>安装链接：<a href="https://tasker.joaoapps.com/download.html">点击这里</a></p>
+<p>该应用的 UI 十分简陋，这里记录一些基本使用步骤。</p>
+<ol>
+<li>任务</li>
+</ol>
+<ul>
+<li>
+<p>点击右下角加号可以进入创建任务的界面</p>
+<p><img src="/img/tasker_task_frag.png" alt="tasker_task_frag" /></p>
+</li>
+<li>
+<p>进入创建任务的界面，可以选择定义任务的方式</p>
+<p><img src="/img/tasker_task_detail.png" alt="tasker_task_detail" /></p>
+<p>比较常用的有代码、任务和插件。</p>
+<p>其中代码可以选择 adb wifi, Java function, Java object, Javascript, Javascriptlet, shell 脚本等等。</p>
+<p>任务有等待、执行任务（一般是你定义好的其他任务）。</p>
+<p>插件则可以调用其他 Tasker 支持的应用，比如 SecureSettings，AutoInput…… 这些插件可以加强 Tasker 执行任务的功能。插件的具体功能在对应部分讲解。</p>
+</li>
+</ul>
+<ol>
+<li>配置文件</li>
+</ol>
+<ul>
+<li>
+<p>点击右下角加号可以添加配置文件</p>
+<p><img src="/img/tasker_task_config.png" alt="tasker_task_config" /></p>
+<p>配置一般是触发任务的条件。因此在添加配置的时候，需要指定事件、位置、或者时间等条件。</p>
+</li>
+</ul>
+<h1 id="adb">
+  ADB
+  <a class="anchor" href="#adb">#</a>
+</h1>
+<h2 id="简介-1">
+  简介
+  <a class="anchor" href="#%e7%ae%80%e4%bb%8b-1">#</a>
+</h2>
+<p>相信曾经使用过 Android Studio 开发安卓应用的人都听说过这个玩意，全称 <a href="https://developer.android.com/studio/command-line/adb">Android Debug Bridge</a>。虽然官方网页上对 ADB 的原理介绍非常简略，但这个通信过程好像并不简单。打算未来再开篇文章研究下。</p>
+<p>从功能来说，感觉 ADB 其实就是提供了用其他设备（可能是 PC）调试安卓设备的方法。无论是 emulator 还是 shell，都是很方便的。</p>
+<h2 id="使用">
+  使用
+  <a class="anchor" href="#%e4%bd%bf%e7%94%a8">#</a>
+</h2>
+<p>目前只使用了 adb shell 的方法，用命令行进行调试。另，笔者 PC 端的操作系统是 Windows10。</p>
+<h3 id="input">
+  input
+  <a class="anchor" href="#input">#</a>
+</h3>
+<p>adb shell input [keyevent/keyboard/swipe/tap] 命令可以模拟输入。</p>
+<p>keyevent 主要用来模拟特殊按键的点击。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>adb shell input keyevent <span style="color:#ae81ff">3</span>  <span style="color:#75715e"># 按 home 键</span>
+</span></span><span style="display:flex;"><span>adb shell input keyevent <span style="color:#ae81ff">26</span> <span style="color:#75715e"># 按电源键</span>
+</span></span></code></pre></div><p>其他的 KEYCODE 列表：</p>
+<pre tabindex="0"><code>KEYCODE_UNKNOWN=0;
+KEYCODE_SOFT_LEFT=1;
+KEYCODE_SOFT_RIGHT=2;
+KEYCODE_HOME=3;     //home键
+KEYCODE_BACK=4;     //back键
+KEYCODE_CALL=5;
+KEYCODE_ENDCALL=6;
+KEYCODE_0=7;
+KEYCODE_1=8;
+KEYCODE_2=9;
+KEYCODE_3=10;
+KEYCODE_4=11;
+KEYCODE_5=12;
+KEYCODE_6=13;
+KEYCODE_7=14;
+KEYCODE_8=15;
+KEYCODE_9=16;
+KEYCODE_STAR=17;
+KEYCODE_POUND=18;
+KEYCODE_DPAD_UP=19;
+KEYCODE_DPAD_DOWN=20;
+KEYCODE_DPAD_LEFT=21;
+KEYCODE_DPAD_RIGHT=22;
+KEYCODE_DPAD_CENTER=23;
+KEYCODE_VOLUME_UP=24;
+KEYCODE_VOLUME_DOWN=25;
+KEYCODE_POWER=26;
+KEYCODE_CAMERA=27;
+KEYCODE_CLEAR=28;
+KEYCODE_A=29;
+KEYCODE_B=30;
+KEYCODE_C=31;
+KEYCODE_D=32;
+KEYCODE_E=33;
+KEYCODE_F=34;
+KEYCODE_G=35;
+KEYCODE_H=36;
+KEYCODE_I=37;
+KEYCODE_J=38;
+KEYCODE_K=39;
+KEYCODE_L=40;
+KEYCODE_M=41;
+KEYCODE_N=42;
+KEYCODE_O=43;
+KEYCODE_P=44;
+KEYCODE_Q=45;
+KEYCODE_R=46;
+KEYCODE_S=47;
+KEYCODE_T=48;
+KEYCODE_U=49;
+KEYCODE_V=50;
+KEYCODE_W=51;
+KEYCODE_X=52;
+KEYCODE_Y=53;
+KEYCODE_Z=54;
+KEYCODE_COMMA=55;
+KEYCODE_PERIOD=56;
+KEYCODE_ALT_LEFT=57;
+KEYCODE_ALT_RIGHT=58;
+KEYCODE_SHIFT_LEFT=59;
+KEYCODE_SHIFT_RIGHT=60;
+KEYCODE_TAB=61;
+KEYCODE_SPACE=62;
+KEYCODE_SYM=63;
+KEYCODE_EXPLORER=64;
+KEYCODE_ENVELOPE=65;
+KEYCODE_ENTER=66;
+KEYCODE_DEL=67;
+KEYCODE_GRAVE=68;
+KEYCODE_MINUS=69;
+KEYCODE_EQUALS=70;
+KEYCODE_LEFT_BRACKET=71;
+KEYCODE_RIGHT_BRACKET=72;
+KEYCODE_BACKSLASH=73;
+KEYCODE_SEMICOLON=74;
+KEYCODE_APOSTROPHE=75;
+KEYCODE_SLASH=76;
+KEYCODE_AT=77;
+KEYCODE_NUM=78;
+KEYCODE_HEADSETHOOK=79;
+KEYCODE_FOCUS=80;//*Camera*focus
+KEYCODE_PLUS=81;
+KEYCODE_MENU=82;
+KEYCODE_NOTIFICATION=83;
+KEYCODE_SEARCH=84;
+KEYCODE_MEDIA_PLAY_PAUSE=85;
+KEYCODE_MEDIA_STOP=86;
+KEYCODE_MEDIA_NEXT=87;
+KEYCODE_MEDIA_PREVIOUS=88;
+KEYCODE_MEDIA_REWIND=89;
+KEYCODE_MEDIA_FAST_FORWARD=90;
+KEYCODE_MUTE=91;
+</code></pre><p>keyboard text 用于模拟键盘输入。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>adb shell input keyboard text <span style="color:#e6db74">&#34;the first msg via adb&#34;</span>
+</span></span></code></pre></div><p>tap 用于模拟点击。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>adb shell input tap x y   <span style="color:#75715e"># x, y 坐标可以通过开启开发人员选项后显示指针位置和坐标来获取</span>
+</span></span></code></pre></div><p>swipe 用于模拟触摸滑动。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>adb shell input swipe x1 y1 x2 y2   <span style="color:#75715e"># x1, y1 是起始点，x2, y2 是终点。轨迹是直线，不能实现多点连续滑动（具体实现方法见后文对应部分）</span>
+</span></span></code></pre></div><h2 id="遇到的问题">
+  遇到的问题
+  <a class="anchor" href="#%e9%81%87%e5%88%b0%e7%9a%84%e9%97%ae%e9%a2%98">#</a>
+</h2>
+<ol>
+<li>
+<p>adb 是未识别的命令，本质上是环境变量的问题，但后来发现我压根不记得电脑上的 adb.exe 在哪里了。</p>
+<p>下载链接指路：</p>
+<blockquote>
+<p>adb 包含在 Android SDK 平台工具软件包中。您可以使用 SDK 管理器下载此软件包，该管理器会将其安装在 android_sdk/platform-tools/ 下。或者，如果您需要独立的 Android SDK 平台工具软件包，也可以点击此处进行下载。</p>
+</blockquote>
+</li>
+<li>
+<p>使用 USB 线连接上手机后，使用 adb devices 发现输出一直是 unauthorized。这种情况重新插拔、允许 USB 调试、选择传输文件后、运行了 <code>adb kill-server</code> 就能够识别了。怀疑是线插好得太早，彼时 adb 命令什么的还没弄好导致的。</p>
+</li>
+</ol>
+<h1 id="tasker-常用插件">
+  Tasker 常用插件
+  <a class="anchor" href="#tasker-%e5%b8%b8%e7%94%a8%e6%8f%92%e4%bb%b6">#</a>
+</h1>
+<h2 id="securesettings">
+  SecureSettings
+  <a class="anchor" href="#securesettings">#</a>
+</h2>
+<p>SecureSettings 能够在没有 root 权限的情况下做到 Wake Device，这对于需要在手机熄屏后依然能够定时执行的任务很重要。但这款应用也有很多功能需要 root 权限。</p>
+<h2 id="相关链接">
+  相关链接
+  <a class="anchor" href="#%e7%9b%b8%e5%85%b3%e9%93%be%e6%8e%a5">#</a>
+</h2>
+<p><a href="https://taskerm.com/tasker-download">这里</a> 列出了 Tasker 玩家经常入手的一些小插件。作者列出了功能和是否免费的相关信息。</p>
+<p>为了防止 <a href="https://taskerm.com/tasker-download">原文</a> 哪天 404 了，我将这部分内容<strong>摘抄</strong>如下（如有侵权，请及时联系笔者删除）：</p>
+<p><strong>AutoTools:</strong></p>
+<p>☑安全设置 切换位置，夜间模式，省电模式和其他以前无法访问的设置</p>
+<p>☑对话框对话框可以读取指纹，询问您的问题，显示图像，让您选择文件和日期以及更多内容，从而使您的任务变得互动且美观。</p>
+<p>☑Web屏幕 重新想象创建UI Tasker的工作方式：从许多预设之一导入，对其进行配置，您就完成了！在此处查看所有可用的Web屏幕：https://joaoapps.com/autotools/web-screen-presets/</p>
+<p>☑轻松进行数据处理 轻松读取和写入JSON数据，读取网站（HTML）数据，读取XML数据，操作同时使用多个Tasker数组，使用强大的Regex工具轻松地从任何文本获取信息，并以前所未有的方式处理文本！</p>
+<p>☑完全可定制的Toast提示 展示前所未有的Toast提示。设置自定义字体，颜色和布局！</p>
+<p>☑Android7应用程序快捷方式 有动态创建的时长，点击自动工具主屏幕上的快捷方式图标</p>
+<p>☑徽章 阅读和支持的发射器设置的其他应用程序的数字的徽章</p>
+<p>☑OCR 从图像识别文本和塔斯克但使用它你喜欢</p>
+<p>☑手势屏 屏幕，支持多类型的手势和支持压力感应的命令！（如3D触摸）</p>
+<p>☑时间计算可以轻松以任何方式计算时间差或格式化时间！</p>
+<p>☑Chrome自定义标签页 使用所需的颜色，按钮和操作创建自己的Chrome标签页！</p>
+<p>☑壁纸直接通过URL设置您的主屏幕和锁屏壁纸</p>
+<p>☑闪光灯轻松使闪光灯呈图案闪烁</p>
+<p><strong>AutoNotification:</strong></p>
+<ol>
+<li>
+<p>独立功能：</p>
+<p>☑阻止任何应用程序通知的出现对于持续性通知，需要Android 8+。对于常规通知，需要Android 4.4+。视频教程在这里。</p>
+<p>☑管理通知类别对于不是为Android Oreo或更高版本构建的应用程序，您可以更改比常规系统选项更多的设置，例如重要性，声音，振动等。对于为Oreo或更高版本构建的应用程序，您可以设置振动模式，通常是无法做到的！此处的视频教程：https://youtu.be/AcTVnop3M3s☑自定义Gmail通知按钮设置所需的Gmail通知按钮！从14个不同的按钮中进行选择（包括标记为已读，删除等）以及最多5个！此处的视频演示：https://youtu.be/dovLa8mMvpI 注意：当您在其他设备上阅读电子邮件时，自动通知无法检测到，因此它不会像本机Gmail应用程序那样自动删除其Gmail通知。</p>
+</li>
+<li>
+<p>Tasker插件功能：</p>
+<p>☑使用高级格式创建很棒的交互式通知：在此处查看教程。</p>
+<p>☑快速设置图块最多可添加40个Android 7+快速设置图块，以自定义您的内心需求！</p>
+<p>☑表格通知在通知阴影中创建一个包含图像的表。此处的教程</p>
+<p>☑按钮通知可以根据需要发送任意数量的按钮通知！是的，如果您愿意，可以有50个按钮！:)</p>
+<p>☑拦截和查询通知在Tasker中对其他应用程序的通知做出反应，并用它们做任何您想做的事，包括将其替换为您自己的更好版本：)</p>
+<p>☑自动回复创建聊天机器人并自动回复聊天应用程序通知，如Whatsapp，环聊等</p>
+<p>☑Android 8+功能！管理第三方应用程序的通知类别并暂停通知</p>
+</li>
+</ol>
+<p><strong>AutoInput:</strong></p>
+<ol>
+<li>
+<p>独立功能:</p>
+<p>☑人脸解锁在任何Android设备7+ 你可以只用你的脸自动解锁你的锁屏！Tasker不是必需的！此处的完整教程：https://goo.gl/CipdM7</p>
+</li>
+<li>
+<p>Tasker功能：</p>
+<p>☑适用于Android 4.3+的无root UI自动化 您可以在任何应用程序中模拟触摸和其他UI交互，例如输入文本，而无需root！在此处查看演示视频：https://www.youtube.com/watch?v=U6ajlDn3cwY例如： →从Tasker中随意更改任何应用程序的设置！ →无需触摸手机即可回复视频群聊！ →无需root就可以在手机上切换GPS！</p>
+<p>☑获取在任何屏幕上的文本 您可以在“任务”中使用读取屏幕上的信息！例如，使用Google Now识别一首歌曲，并在任务获取它的名字，在本教程：https://goo.gl/cWtiqq</p>
+<p>☑反馈屏幕活动 可以在Tasker设置配置文件当屏幕上的内容改变时触发，例如单击按钮或更改其内容的应用程序</p>
+<p>☑自动化任何应用程序 从现在开始，当您问自己“我可以使用Tasker自动操作该应用程序吗？”，答案是“您也许可以使用AutoInput进行操作”！:)</p>
+</li>
+</ol>
+<p><strong>AutoShare:</strong></p>
+<p>Tasker添加支持Tasker与任何应用程序！ HTTP://goo.gl/r1ibqy 在日益扩大的应用数量与可在这里AutoShare意图做任何事情。您也可以从常规的Android菜单分享AutoShare和获得信息。 使用Android的分享菜单，即从分享的文本或文件中的列表和选项中选择AutoShare！与AutoShare相关的几个变量： – ％assender（包含发送应用程序的包名;分享给AutoShare的应用程序） – ％assubject（包含分享的主题） – ％astext（包含分享文本） – ％asfile1，％asfile2，％asfile3等（包含分享文件的路径;可在Tasker被作为一个数组访问名为％asfile）有了AutoShare功能命令，你可以很容易地了解Tasker分享的内容能做什么。例如，在一个配置文件，并在相应的任务使用“复制”命令，％astext复制到剪贴板。然后用命令AutoShare分享，然后从下拉列表中选择“复制”，不管你分享将可以在您的设备的剪贴板您也可以从内部Tasker创建Android分享菜单中的AutoShare与您所选择的主题，文本和图像。- 拦截分享到其他应用，你可以调整它们或使用Tasker变量来使处理的intent参数..观看此视频复制他们完全理解：http://youtu.be/4QPi56Brqsg例如使用（所有这些命令都是自由的形式，你可以自由地使用喜欢的任何命令）： – 分享到剪贴板：分享能够文本复制到手机的剪贴板 – 分享同时多个社交网络：分享到AutoShare“社交”命令，在弹出Tasker一个窗口，输入您的个人评论，然后用AutoRemote（http://goo.gl/uJSce）发送到Zapier这又瞬间张贴在Facebook，Twitter等！ 🙂 – URL添加到您的阅读在家列表：分享网址，使用“readathome”命令，打开当你回家你的手机上，甚至您的计算机AutoRemote这些URL（http://goo.gl/uJSce） – 在分享到其他服务之前以你喜欢的任何方式改变文本：使用“修改”命令分享任何东西，修改文本，或改变它在你喜欢的任何方式，并通过AutoShare另一个应用程序转贴 – 添加分享发送和接收能力到独立应用程序 – 将项目添加到您的待办事项列表：以“待办事项”命令分享任何文本，并将其添加到Tasker列表 – 到家里时分享：当你回家记得分享特殊照片么？只需设置连接到AutoShare任务上Wi-Fi连接配置文件，当你回家，你会被提醒即时分享照片</p>
+<p><strong>AutoVoice:</strong></p>
+<p>☑将自定义语音命令添加到Google Now / Assistant / Google Home和Amazon Echo <a href="https://youtu.be/q21X3wVAXI8">https://youtu.be/q21X3wVAXI8</a></p>
+<p>☑自然语言 自然地说！您无需记住设置的确切命令：https://youtu.be/SboXku53g9o</p>
+<p>☑在Mac，Windows，Linux PC或其他Android设备上说出语音命令 在此处查看：https://www.youtube.com/watch?v=5vxslPnywus</p>
+<p>☑不到1分钟的时间即可设置酷炫的新语音命令 创建新的Tasker配置文件-&gt;设置命令过滤器-&gt;创建任务- &gt;完成！</p>
+<p>☑蓝牙耳机兼容性 适用于大多数蓝牙耳机！</p>
+<p>☑从 Tasker 设置中识别 带有多个语音命令的复杂的任务，或者在特定情况下开始识别。您的极限就是您的想象力！</p>
+<p>☑超级灵活的设置可实现超级强大的配置文件 使用了许多自定义变量，对语音命令的反应从未如此轻松！http://joaoapps.com/autovoice/variables/</p>
+<p>☑将所有电话音频重定向到蓝牙耳机 是的，手机上的所有声音都可以放在非A2DP蓝牙小耳机上！</p>
+<p>☑对Tasker中的蓝牙耳机按钮 做出反应使用耳机上的常规呼叫按钮可以在Tasker中进行操作！可能不适用于所有型号的耳机</p>
+<p>☑对您周围的环境噪音做出反应 创建一个婴儿监护仪或一个拍板。噪音从未如此有趣！</p>
+<p><strong>IntentTask:</strong></p>
+<p>Intent（意图）是安卓应用之间的通信的方式: 1) 可以快速方便的添加意图，并且可以有更多的自定义. 可以接收发送意图的返回结果. 2) 可以使用Tasker变量运行程序 3) 可以使用快捷方式 4)可以创建文本处理器来处理文本内容 (Android 6+) .5) 可以为分享操作添加自定义的命令 6) 维持前置应用而不需要无障碍服务 (Android 5.1+)。（注：站长最喜欢的插件）</p>
+<p><strong>TouchTask:</strong></p>
+<p>监听和管理系统手势操作而不需要root 1. 操作: – 行为: 点击, 长按, 滚动, 剪切, 复制, 粘贴,输入文本, 选择文本 – 手势: 划屏 和 固定屏幕 (要求 Android 7+) – 截屏类: 截屏和录屏, 图片压缩, 获取图片颜色的名字和hex值, 获取单点颜色值 (要求Android 5+) – 按键映射 – 解锁屏幕 – 文字识别，二维码识别 2. 事件: – 监听实体按键 (例如音量键) – 监听触屏 (点击 , 长按, 滚动) – 监听手势 (滑动) – 监听屏幕刷新</p>
+<p><strong>SecureTask:</strong></p>
+<p>管理应用：安装，卸载，杀死，冻结</p>
+<p>管理系统安全类的设置：辅助功能等</p>
+<p>管理系统锁屏，锁屏签名</p>
+<p><strong>Notification Listener:</strong></p>
+<p>只能读取标准的Android通知，因此对于某些应用程序，可能仅读取一部分内容。 通知监听器是一个简单的Tasker插件，用于读取其他应用程序的通知。您可以： 1）创建事件以拦截通知； 2）删除全部或部分通知； 3）对通知数据库执行查询； 4）显示代码（Marshamallow +）； 5）自动回复邮件（Lollipop +）； 6）点击通知或通知按钮； 7）使用自定义字段创建通知； 8）序列化/反序列化通知，以便通过网络传输通知； 9）对Lollipop +采取呼叫行动。 要求： Tasker版本4.7+</p>
+<h1 id="tasker-插入代码">
+  Tasker 插入代码
+  <a class="anchor" href="#tasker-%e6%8f%92%e5%85%a5%e4%bb%a3%e7%a0%81">#</a>
+</h1>
+<h2 id="adb-shell-command">
+  adb shell command
+  <a class="anchor" href="#adb-shell-command">#</a>
+</h2>
+<p>创建任务时选择 ADB Wifi，并在“命令”处输入命令。</p>
+<h2 id="java-代码">
+  Java 代码
+  <a class="anchor" href="#java-%e4%bb%a3%e7%a0%81">#</a>
+</h2>
+<p>需要注意的是，Tasker 不支持运行你写好的 Java 代码。</p>
+<blockquote>
+<p>It does not allow you to &lsquo;write Java code&rsquo;&hellip; but the combination of Tasker&rsquo;s logic and flow control with direct access to the Android API is sufficient for most automation purposes.</p>
+</blockquote>
+<p>使用方式是选择 Java 函数，然后在“类或对象”里选 Android API 提供的类或对象，然后在“功能”中选择类方法，如果该方法有参数，就在“参数”中指定参数的值；如果该方法有返回值，可以指定返回值的名称……（实在麻烦，此处应有“让苍天知道我认输”图）</p>
+<h2 id="javascript-代码">
+  Javascript 代码
+  <a class="anchor" href="#javascript-%e4%bb%a3%e7%a0%81">#</a>
+</h2>
+<p>如果选择了 Javascriptlet，可以直接复制黏贴 JS 代码。注意 JS 代码里使用的函数需要是 Tasker 支持的内建函数。</p>
+<blockquote>
+<p>Tasker makes most of it&rsquo;s actions available via functions which can be called directly via name in JavaScript(let) actions and WebView elements.</p>
+</blockquote>
+<h1 id="如何实现多点连续滑动用于滑动图案解锁">
+  如何实现多点连续滑动（用于滑动图案解锁）
+  <a class="anchor" href="#%e5%a6%82%e4%bd%95%e5%ae%9e%e7%8e%b0%e5%a4%9a%e7%82%b9%e8%bf%9e%e7%bb%ad%e6%bb%91%e5%8a%a8%e7%94%a8%e4%ba%8e%e6%bb%91%e5%8a%a8%e5%9b%be%e6%a1%88%e8%a7%a3%e9%94%81">#</a>
+</h1>
+<h2 id="插件录制">
+  插件录制
+  <a class="anchor" href="#%e6%8f%92%e4%bb%b6%e5%bd%95%e5%88%b6">#</a>
+</h2>
+<p>中文名：按键录制 Pro</p>
+<p>英文名：RepetiTouch Pro</p>
+<p>下载该插件可能需要独特的网络环境。网友表示这个软件十分好用，美中不足是需要 root 权限。</p>
+<h2 id="adb-shell">
+  adb shell
+  <a class="anchor" href="#adb-shell">#</a>
+</h2>
+<p>前面说过 input swipe 方法不能实现连续滑动。为了解决这个问题，只能使用 sendevent 了。</p>
+<p>用户在硬件设备上点击后，程序中的 <code>OnClickListener</code> 如何收到这个事件呢？大致的流程如下：</p>
+<blockquote>
+<p>用户点击→（硬件驱动部分）硬件产生一个中断→/dev/input/event*写入一个相应的信号→循环读取/dev/input/event*的事件→分发给WindowManagerServer→最后再发到相应的ViewGroup和View</p>
+</blockquote>
+<p>因此我们可以通过 getevent 和 sendevent 命令来获取点击的事件、或者模拟点击事件。</p>
+<p>如 <code>adb shell getevent event0</code> 的输出：</p>
+<pre tabindex="0"><code>/dev/input/event0: 0003 0039 00000c3a
+/dev/input/event0: 0001 014a 00000001
+/dev/input/event0: 0001 0145 00000001
+/dev/input/event0: 0003 0035 00000124
+/dev/input/event0: 0003 0036 00000393
+/dev/input/event0: 0003 0031 00000005
+/dev/input/event0: 0000 0000 00000000
+/dev/input/event0: 0003 0031 00000006
+/dev/input/event0: 0000 0000 00000000
+/dev/input/event0: 0003 0030 00000007
+/dev/input/event0: 0000 0000 00000000
+/dev/input/event0: 0003 0030 00000006
+/dev/input/event0: 0000 0000 00000000
+/dev/input/event0: 0003 0036 00000391
+/dev/input/event0: 0003 0030 00000007
+/dev/input/event0: 0000 0000 00000000
+/dev/input/event0: 0003 0036 0000038f
+/dev/input/event0: 0003 0030 00000006
+/dev/input/event0: 0000 0000 00000000
+/dev/input/event0: 0003 0035 00000125
+/dev/input/event0: 0003 0036 00000389
+/dev/input/event0: 0000 0000 00000000
+/dev/input/event0: 0003 0035 00000126
+/dev/input/event0: 0003 0036 00000380
+/dev/input/event0: 0000 0000 00000000
+/dev/input/event0: 0003 0035 00000133
+/dev/input/event0: 0003 0036 00000353
+/dev/input/event0: 0000 0000 00000000
+/dev/input/event0: 0003 0035 0000013a
+/dev/input/event0: 0003 0036 00000341
+/dev/input/event0: 0003 0031 00000005
+/dev/input/event0: 0000 0000 00000000
+ 
+....
+/dev/input/event0: 0003 0035 0000031c
+/dev/input/event0: 0003 0036 000002a3
+/dev/input/event0: 0000 0000 00000000
+/dev/input/event0: 0003 0039 ffffffff
+/dev/input/event0: 0001 014a 00000000
+/dev/input/event0: 0001 0145 00000000
+/dev/input/event0: 0000 0000 00000000
+</code></pre><p>sendevent 的命令格式：</p>
+<pre tabindex="0"><code>adb shell sendevent device type code value
+</code></pre><p>device:</p>
+<p>安卓可以使用 <code>adb shell cat /proc/bus/input/devices</code> 查看。</p>
+<p>鸿蒙会报无权限，我经过遍历尝试发现 event3 对应 touch 事件。</p>
+<p><a href="https://bbs.pediy.com/thread-252052.htm">type</a>:</p>
+<p>0000 Synchronization events</p>
+<p>0001 Keys and buttons</p>
+<p>0003 Absolute axes，即描述运动事件的值</p>
+<p><a href="https://bbs.pediy.com/thread-252052.htm">code</a>:</p>
+<p>0000 0000 SYN_REPORT，这里笔者简单理解为与io的flush类似</p>
+<p>0003 0039 开始接触设备的唯一标识号，这里为0xc3a, 0xffffffff代表结束接触</p>
+<p>0001 014a 标明触摸事件，1代表按下，0代表放开</p>
+<p>0001 0145 表明是用手指触摸的，同样1代表按下，0代表放开</p>
+<p>0003 0035 触摸的x坐标</p>
+<p>0003 0036 触摸的y坐标</p>
+<p>0003 0030 接触面椭圆长轴，非必需</p>
+<p>0003 0031 接触面椭圆短轴，非必需</p>
+<h2 id="java-代码-1">
+  Java 代码
+  <a class="anchor" href="#java-%e4%bb%a3%e7%a0%81-1">#</a>
+</h2>
+<p><a href="https://bbs.pediy.com/thread-252052.htm">这篇博客</a> 的作者还提供了可以实现模拟滑动的 Java 类，通过代码可以对上述 sendevent 过程有更深刻的理解。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Java" data-lang="Java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">swipeStart</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>  sendEvent<span style="color:#f92672">(</span>EV_ABS<span style="color:#f92672">,</span> ABS_MT_TRACKING_ID<span style="color:#f92672">,</span> parseTrackingId<span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>  sendEvent<span style="color:#f92672">(</span>EV_KEY<span style="color:#f92672">,</span> BTN_TOUCH<span style="color:#f92672">,</span> PRESS_DOWN<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  sendEvent<span style="color:#f92672">(</span>EV_KEY<span style="color:#f92672">,</span> BTN_TOOL_FINGER<span style="color:#f92672">,</span> PRESS_DOWN<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> SWIPE_RUN_INTERVAL <span style="color:#f92672">=</span> <span style="color:#ae81ff">50</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">swipeRun</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> x1<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> y1<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> x2<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> y2<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// TODO: emulate touch press 3-0x30 3-0x31
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> xStep <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>x2 <span style="color:#f92672">-</span> x1<span style="color:#f92672">)</span> <span style="color:#f92672">/</span> SWIPE_RUN_INTERVAL<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> yStep <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>y2 <span style="color:#f92672">-</span> y1<span style="color:#f92672">)</span> <span style="color:#f92672">/</span> SWIPE_RUN_INTERVAL<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> x <span style="color:#f92672">=</span> x1<span style="color:#f92672">,</span> y <span style="color:#f92672">=</span> y1<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> step <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">;</span> step <span style="color:#f92672">&lt;=</span> SWIPE_RUN_INTERVAL<span style="color:#f92672">;</span> <span style="color:#f92672">++</span>step<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    sendEvent<span style="color:#f92672">(</span>EV_ABS<span style="color:#f92672">,</span> ABS_MT_POSITION_X<span style="color:#f92672">,</span> x<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    sendEvent<span style="color:#f92672">(</span>EV_ABS<span style="color:#f92672">,</span> ABS_MT_POSITION_Y<span style="color:#f92672">,</span> y<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    sendEvent<span style="color:#f92672">(</span>EV_SYN<span style="color:#f92672">,</span> SYN_REPORT<span style="color:#f92672">,</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    x <span style="color:#f92672">+=</span> xStep<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    y <span style="color:#f92672">+=</span> yStep<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">swipeEnd</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>  sendEvent<span style="color:#f92672">(</span>EV_ABS<span style="color:#f92672">,</span> ABS_MT_TRACKING_ID<span style="color:#f92672">,</span> TRACKING_END<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  sendEvent<span style="color:#f92672">(</span>EV_KEY<span style="color:#f92672">,</span> BTN_TOUCH<span style="color:#f92672">,</span> PRESS_UP<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  sendEvent<span style="color:#f92672">(</span>EV_KEY<span style="color:#f92672">,</span> BTN_TOOL_FINGER<span style="color:#f92672">,</span> PRESS_UP<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  sendEvent<span style="color:#f92672">(</span>EV_SYN<span style="color:#f92672">,</span> SYN_REPORT<span style="color:#f92672">,</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Java" data-lang="Java"><span style="display:flex;"><span>EventEmulator<span style="color:#f92672">.</span><span style="color:#a6e22e">swipeStart</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>EventEmulator<span style="color:#f92672">.</span><span style="color:#a6e22e">swipeRun</span><span style="color:#f92672">(</span><span style="color:#ae81ff">357</span><span style="color:#f92672">,</span> <span style="color:#ae81ff">2054</span><span style="color:#f92672">,</span> <span style="color:#ae81ff">1112</span><span style="color:#f92672">,</span> <span style="color:#ae81ff">1308</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>EventEmulator<span style="color:#f92672">.</span><span style="color:#a6e22e">swipeRun</span><span style="color:#f92672">(</span><span style="color:#ae81ff">1112</span><span style="color:#f92672">,</span> <span style="color:#ae81ff">1308</span><span style="color:#f92672">,</span> <span style="color:#ae81ff">1112</span><span style="color:#f92672">,</span> <span style="color:#ae81ff">2032</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>EventEmulator<span style="color:#f92672">.</span><span style="color:#a6e22e">swipeEnd</span><span style="color:#f92672">();</span>
+</span></span></code></pre></div><h1 id="使用-tasker-的一些注意事项">
+  使用 Tasker 的一些注意事项
+  <a class="anchor" href="#%e4%bd%bf%e7%94%a8-tasker-%e7%9a%84%e4%b8%80%e4%ba%9b%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9">#</a>
+</h1>
+<p>（持续更新中……）</p>
+<p>Tasker 和对应的插件必须允许后台常驻，有些插件（比如 TouchTask）可能需要开启无障碍辅助功能。</p>
+<h1 id="参考教程">
+  参考教程
+  <a class="anchor" href="#%e5%8f%82%e8%80%83%e6%95%99%e7%a8%8b">#</a>
+</h1>
+<p>[1] Tasker 自动化，实现网课自动打卡签到：<a href="https://www.bilibili.com/s/video/BV1mE411H7az">https://www.bilibili.com/s/video/BV1mE411H7az</a></p>
+<p>[2] 安卓定时自动打开钉钉考勤打卡：<a href="https://www.jianshu.com/p/7ca93f87a25c">https://www.jianshu.com/p/7ca93f87a25c</a></p>
+<p>[3] 利用 Tasker 打造最强自动签到神器：<a href="https://102345.xyz/jishu/tasker/#toc-head-3">https://102345.xyz/jishu/tasker/#toc-head-3</a></p>
+<p>[4] 华为手机（鸿蒙 OS）开启 adb 调试权限：<a href="https://blog.csdn.net/ckckjsws/article/details/123849295">https://blog.csdn.net/ckckjsws/article/details/123849295</a></p>
+<p>[5] How to Install ADB on Windows, macOS, and Linux: <a href="https://www.xda-developers.com/install-adb-windows-macos-linux/">https://www.xda-developers.com/install-adb-windows-macos-linux/</a></p>
+<p>[6] 安卓通过 adb 模拟键盘输入、点击屏幕、滑动、按键：<a href="https://blog.51cto.com/hspbc/5050990">https://blog.51cto.com/hspbc/5050990</a></p>
+<p>[7] 通过 sendevent 实现多点连续滑动：<a href="https://bbs.pediy.com/thread-252052.htm">https://bbs.pediy.com/thread-252052.htm</a></p>
+<p>[8] Android 通过指令模拟 touch 滑动解锁：<a href="https://blog.csdn.net/xiaobaiing/article/details/51363835">https://blog.csdn.net/xiaobaiing/article/details/51363835</a></p>
+<p>[9] android 在 adb 下模拟长按事件：<a href="https://zhuanlan.zhihu.com/p/26236061">https://zhuanlan.zhihu.com/p/26236061</a></p>
+<p>[10] Tasker 下载：<a href="https://taskerm.com/tasker-download">https://taskerm.com/tasker-download</a></p>
+<p>[11] Tasker Java Support: <a href="https://tasker.joaoapps.com/userguide/en/java.html">https://tasker.joaoapps.com/userguide/en/java.html</a></p>
+<p>[12] Tasker Javascript Support: <a href="https://tasker.joaoapps.com/userguide/en/javascript.html">https://tasker.joaoapps.com/userguide/en/javascript.html</a></p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#简介">简介</a></li>
+    <li><a href="#安装和使用">安装和使用</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#简介-1">简介</a></li>
+    <li><a href="#使用">使用</a>
+      <ul>
+        <li><a href="#input">input</a></li>
+      </ul>
+    </li>
+    <li><a href="#遇到的问题">遇到的问题</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#securesettings">SecureSettings</a></li>
+    <li><a href="#相关链接">相关链接</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#adb-shell-command">adb shell command</a></li>
+    <li><a href="#java-代码">Java 代码</a></li>
+    <li><a href="#javascript-代码">Javascript 代码</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#插件录制">插件录制</a></li>
+    <li><a href="#adb-shell">adb shell</a></li>
+    <li><a href="#java-代码-1">Java 代码</a></li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

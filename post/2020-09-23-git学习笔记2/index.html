@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="git学习笔记(2) # 在上周一直说要学习git的另外三个比较常见的操作，可是因为各种原因一直拖着没学。明日复明日，明日何其多！
+于是下定决心趁着今天做软工小作业，就把这三个git操作学习一番。
+声明：本博客并非作者的原创内容！因为是git新手，所以本系列文章主要提炼了参考网站上的内容，而几乎没有自己的实操经验，只是为了便于未来查阅。如要详细了解对应内容，请点击进入原网站查看。
+1. git rebase（奇妙与危险相伴） # 参考1
+参考2
+在Git中整合来自不同分支的修改主要有两种方法：merge和rebase（变基）。变基顾名思义就是在commit history上看，在某一分支上做的修改“好像”是直接在另一分支上进行的一样。
+基本操作 # 以下图为例：
+如果想要将experiment分支上的修改整合到master分支上，那么最简单的方法是合并。
+但也可以提取C4中引入的修改，再在C3的基础上应用一次。这种操作就叫做rebase。
+$ git checkout experiment	# 检出experiment分支 $ git rebase master	# 变基到master分支上 变基后的结果为： 查看一个经过变基的分支的历史记录时会发现，尽管实际的开发工作是并行的， 但它们看上去就像是串行的一样，提交历史是一条直线没有分叉。
+使用场景(!!!) # 首先我们来看上述参考网站中的一段原文：
+变基的风险 呃，奇妙的变基也并非完美无缺，要用它得遵守一条准则： 如果提交存在于你的仓库之外，而别人可能基于这些提交进行开发，那么不要执行变基。 如果你遵循这条金科玉律，就不会出差错。 否则，人民群众会仇恨你，你的朋友和家人也会嘲笑你，唾弃你。
+正确用法：一般我们这样做的目的是为了确保在向远程分支推送时能保持提交历史的整洁——例如向某个其他人维护的项目贡献代码时。 在这种情况下，你首先在自己的分支里进行开发，当开发完成时你需要先将你的代码变基到 origin/master 上，然后再向主项目提交修改。 这样的话，该项目的维护者就不再需要进行整合工作，只需要快进合并便可。
+错误用法：变基操作的实质是丢弃一些现有的提交，然后相应地新建一些内容一样但实际上不同的提交。 如果你已经将提交推送至某个仓库，而其他人也已经从该仓库拉取提交并进行了后续工作，此时，如果你用 git rebase 命令重新整理了提交并再次推送，你的同伴因此将不得不再次将他们手头的工作与你的提交进行整合，如果接下来你还要拉取并整合他们修改过的提交，事情就会变得一团糟。
+trade-off # 那么在项目中究竟是使用合并还是变基？首先需要考虑commit history的意义。
+一种观点是，仓库的提交历史是对事实的记录。它是针对历史的文档，本身就有价值，不能乱改。 从这个角度看来，改变提交历史是一种亵渎，你使用 谎言 掩盖了实际发生过的事情。 如果由合并产生的提交历史是一团糟怎么办？ 既然事实就是如此，那么这些痕迹就应该被保留下来，让后人能够查阅。
+另一种观点则正好相反，他们认为提交历史是 项目过程中发生的事。 没人会出版一本书的第一版草稿，软件维护手册也是需要反复修订才能方便使用。 持这一观点的人会使用 rebase 及 filter-branch 等工具来编写故事，怎么方便后来的读者就怎么写。">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="git学习笔记(2)" />
+<meta property="og:description" content="git学习笔记(2) # 在上周一直说要学习git的另外三个比较常见的操作，可是因为各种原因一直拖着没学。明日复明日，明日何其多！
+于是下定决心趁着今天做软工小作业，就把这三个git操作学习一番。
+声明：本博客并非作者的原创内容！因为是git新手，所以本系列文章主要提炼了参考网站上的内容，而几乎没有自己的实操经验，只是为了便于未来查阅。如要详细了解对应内容，请点击进入原网站查看。
+1. git rebase（奇妙与危险相伴） # 参考1
+参考2
+在Git中整合来自不同分支的修改主要有两种方法：merge和rebase（变基）。变基顾名思义就是在commit history上看，在某一分支上做的修改“好像”是直接在另一分支上进行的一样。
+基本操作 # 以下图为例：
+如果想要将experiment分支上的修改整合到master分支上，那么最简单的方法是合并。
+但也可以提取C4中引入的修改，再在C3的基础上应用一次。这种操作就叫做rebase。
+$ git checkout experiment	# 检出experiment分支 $ git rebase master	# 变基到master分支上 变基后的结果为： 查看一个经过变基的分支的历史记录时会发现，尽管实际的开发工作是并行的， 但它们看上去就像是串行的一样，提交历史是一条直线没有分叉。
+使用场景(!!!) # 首先我们来看上述参考网站中的一段原文：
+变基的风险 呃，奇妙的变基也并非完美无缺，要用它得遵守一条准则： 如果提交存在于你的仓库之外，而别人可能基于这些提交进行开发，那么不要执行变基。 如果你遵循这条金科玉律，就不会出差错。 否则，人民群众会仇恨你，你的朋友和家人也会嘲笑你，唾弃你。
+正确用法：一般我们这样做的目的是为了确保在向远程分支推送时能保持提交历史的整洁——例如向某个其他人维护的项目贡献代码时。 在这种情况下，你首先在自己的分支里进行开发，当开发完成时你需要先将你的代码变基到 origin/master 上，然后再向主项目提交修改。 这样的话，该项目的维护者就不再需要进行整合工作，只需要快进合并便可。
+错误用法：变基操作的实质是丢弃一些现有的提交，然后相应地新建一些内容一样但实际上不同的提交。 如果你已经将提交推送至某个仓库，而其他人也已经从该仓库拉取提交并进行了后续工作，此时，如果你用 git rebase 命令重新整理了提交并再次推送，你的同伴因此将不得不再次将他们手头的工作与你的提交进行整合，如果接下来你还要拉取并整合他们修改过的提交，事情就会变得一团糟。
+trade-off # 那么在项目中究竟是使用合并还是变基？首先需要考虑commit history的意义。
+一种观点是，仓库的提交历史是对事实的记录。它是针对历史的文档，本身就有价值，不能乱改。 从这个角度看来，改变提交历史是一种亵渎，你使用 谎言 掩盖了实际发生过的事情。 如果由合并产生的提交历史是一团糟怎么办？ 既然事实就是如此，那么这些痕迹就应该被保留下来，让后人能够查阅。
+另一种观点则正好相反，他们认为提交历史是 项目过程中发生的事。 没人会出版一本书的第一版草稿，软件维护手册也是需要反复修订才能方便使用。 持这一观点的人会使用 rebase 及 filter-branch 等工具来编写故事，怎么方便后来的读者就怎么写。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://elenacliu.github.io/post/2020-09-23-git%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B02/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2020-09-23T00:00:00+00:00" />
+<meta property="article:modified_time" content="2020-09-23T00:00:00+00:00" />
+<title>git学习笔记(2) | cliu&#39;s Blog</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
+  <script defer src="/flexsearch.min.js"></script>
+  <script defer src="/en.search.min.b40b5b07da88e813791f2e7ba1e0c6adf9255e68628ef8ae5a15446cb4e5697f.js" integrity="sha256-tAtbB9qI6BN5Hy57oeDGrfklXmhijviuWhVEbLTlaX8=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>cliu&#39;s Blog</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>git学习笔记(2)</strong>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-git-rebase奇妙与危险相伴">1. git rebase（奇妙与危险相伴）</a>
+      <ul>
+        <li><a href="#基本操作">基本操作</a></li>
+        <li><a href="#使用场景">使用场景(!!!)</a></li>
+        <li><a href="#trade-off">trade-off</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-git-cherry-pick">2. git cherry-pick</a>
+      <ul>
+        <li><a href="#基本操作-1">基本操作</a></li>
+        <li><a href="#解决冲突">解决冲突</a></li>
+        <li><a href="#仓库之间的转移">仓库之间的转移</a></li>
+        <li><a href="#cherry-pick潜在的问题">cherry-pick潜在的问题</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-git-pull">3. git pull</a>
+      <ul>
+        <li><a href="#基本用法">基本用法</a></li>
+        <li><a href="#更保险的用法">更保险的用法</a></li>
+        <li><a href="#强制pull覆盖当前分支慎用">强制pull覆盖当前分支（慎用）</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="git学习笔记2">
+  git学习笔记(2)
+  <a class="anchor" href="#git%e5%ad%a6%e4%b9%a0%e7%ac%94%e8%ae%b02">#</a>
+</h1>
+<p>在上周一直说要学习git的另外三个比较常见的操作，可是因为各种原因一直拖着没学。明日复明日，明日何其多！</p>
+<p>于是下定决心趁着今天做软工小作业，就把这三个git操作学习一番。</p>
+<p><strong>声明</strong>：本博客并非作者的原创内容！因为是git新手，所以本系列文章主要提炼了参考网站上的内容，而几乎没有自己的实操经验，只是为了便于未来查阅。如要详细了解对应内容，请点击进入原网站查看。</p>
+<h2 id="1-git-rebase奇妙与危险相伴">
+  1. git rebase（奇妙与危险相伴）
+  <a class="anchor" href="#1-git-rebase%e5%a5%87%e5%a6%99%e4%b8%8e%e5%8d%b1%e9%99%a9%e7%9b%b8%e4%bc%b4">#</a>
+</h2>
+<p><a href="https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%8F%98%E5%9F%BA]%28https://git-scm.com/book/zh/v2/Git-%e5%88%86%e6%94%af-%e5%8f%98%e5%9f%ba%29">参考1</a></p>
+<p><a href="http://jartto.wang/2018/12/11/git-rebase/">参考2</a></p>
+<p>在Git中整合来自不同分支的修改主要有两种方法：<code>merge</code>和<code>rebase</code>（变基）。变基顾名思义就是在commit history上看，在某一分支上做的修改“好像”是直接在另一分支上进行的一样。</p>
+<h3 id="基本操作">
+  基本操作
+  <a class="anchor" href="#%e5%9f%ba%e6%9c%ac%e6%93%8d%e4%bd%9c">#</a>
+</h3>
+<p>以下图为例：</p>
+<p><img src="https://git-scm.com/book/en/v2/images/basic-rebase-1.png" alt="分叉的提交历史。" /></p>
+<p>如果想要将experiment分支上的修改整合到master分支上，那么最简单的方法是合并。</p>
+<p>但也可以提取C4中引入的修改，再<strong>在C3的基础上</strong>应用一次。这种操作就叫做<code>rebase</code>。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ git checkout experiment	<span style="color:#75715e"># 检出experiment分支</span>
+</span></span><span style="display:flex;"><span>$ git rebase master			<span style="color:#75715e"># 变基到master分支上</span>
+</span></span></code></pre></div><p>变基后的结果为：
+<img src="https://git-scm.com/book/en/v2/images/basic-rebase-3.png" alt="将 &lt;code&gt;C4&lt;/code&gt; 中的修改变基到 &lt;code&gt;C3&lt;/code&gt; 上。" /></p>
+<p>查看一个经过变基的分支的历史记录时会发现，尽管实际的开发工作是并行的， 但它们看上去就像是串行的一样，提交历史是一条直线没有分叉。</p>
+<h3 id="使用场景">
+  使用场景(!!!)
+  <a class="anchor" href="#%e4%bd%bf%e7%94%a8%e5%9c%ba%e6%99%af">#</a>
+</h3>
+<p>首先我们来看上述参考网站中的一段原文：</p>
+<blockquote>
+<p>变基的风险
+呃，奇妙的变基也并非完美无缺，要用它得遵守一条准则：
+<strong>如果提交存在于你的仓库之外，而别人可能基于这些提交进行开发，那么不要执行变基</strong>。
+如果你遵循这条金科玉律，就不会出差错。 否则，<strong>人民群众会仇恨你，你的朋友和家人也会嘲笑你，唾弃你</strong>。</p>
+</blockquote>
+<p><strong>正确用法</strong>：一般我们这样做的目的是为了确保在向远程分支推送时能保持提交历史的整洁——例如向某个其他人维护的项目贡献代码时。 在这种情况下，你首先在自己的分支里进行开发，当开发完成时你需要先将你的代码变基到 <code>origin/master</code> 上，然后再向主项目提交修改。 这样的话，该项目的维护者就不再需要进行整合工作，只需要快进合并便可。</p>
+<p><strong>错误用法</strong>：变基操作的实质是丢弃一些现有的提交，然后相应地新建一些内容一样但实际上不同的提交。 如果你已经将提交推送至某个仓库，而其他人也已经从该仓库拉取提交并进行了后续工作，此时，如果你用 <code>git rebase</code> 命令重新整理了提交并再次推送，你的同伴因此将不得不再次将他们手头的工作与你的提交进行整合，如果接下来你还要拉取并整合他们修改过的提交，事情就会变得<strong>一团糟</strong>。</p>
+<h3 id="trade-off">
+  trade-off
+  <a class="anchor" href="#trade-off">#</a>
+</h3>
+<p>那么在项目中究竟是使用合并还是变基？首先需要考虑commit history的意义。</p>
+<blockquote>
+<p>一种观点是，仓库的提交历史是对<strong>事实的记录</strong>。它是针对历史的文档，本身就有价值，不能乱改。 从这个角度看来，改变提交历史是一种亵渎，你使用 <em>谎言</em> 掩盖了实际发生过的事情。 如果由合并产生的提交历史是一团糟怎么办？ 既然事实就是如此，那么这些痕迹就应该被保留下来，让后人能够查阅。</p>
+</blockquote>
+<blockquote>
+<p>另一种观点则正好相反，他们认为提交历史是 <strong>项目过程中发生的事</strong>。 没人会出版一本书的第一版草稿，软件维护手册也是需要反复修订才能方便使用。 持这一观点的人会使用 <code>rebase</code> 及 <code>filter-branch</code> 等工具来编写故事，怎么方便后来的读者就怎么写。</p>
+</blockquote>
+<p>总的原则是，<strong>只对尚未推送或分享给别人的本地修改执行变基操作清理历史， 从不对已推送至别处的提交执行变基操作</strong>，这样，你才能享受到两种方式带来的便利。</p>
+<h2 id="2-git-cherry-pick">
+  2. git cherry-pick
+  <a class="anchor" href="#2-git-cherry-pick">#</a>
+</h2>
+<p><a href="https://www.ruanyifeng.com/blog/2020/04/git-cherry-pick.html">git cherry-pick 教程</a></p>
+<p>对于多分支的代码库，将代码从一个分支转移到另一个分支，如果我们需要另一个分支的所有代码变动，那么就采用合并<code>git merge</code>的方式。如果我们只需要部分的代码变动（某几个提交），这时就采用<code>git cherry-pick</code>。</p>
+<p>（图源：https://www.ruanyifeng.com/blog/2020/04/git-cherry-pick.html）</p>
+<p><img src="https://www.wangbase.com/blogimg/asset/202004/bg2020042723.jpg" alt="img" /></p>
+<h3 id="基本操作-1">
+  基本操作
+  <a class="anchor" href="#%e5%9f%ba%e6%9c%ac%e6%93%8d%e4%bd%9c-1">#</a>
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ git cherry-pick &lt;commitHash&gt;
+</span></span></code></pre></div><p>将指定的提交应用于<strong>当前分支</strong>。会在当前分支产生一个新的提交，并且这两个内容相同的提交hash值不同。</p>
+<pre tabindex="0"><code> a - b - c - d   Master
+      \
+       e - f - g Feature
+</code></pre><p>将f应用到master分支</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ git checkout master	<span style="color:#75715e"># 切到master分支</span>
+</span></span><span style="display:flex;"><span>$ git cherry-pick f		<span style="color:#75715e"># cherry-pick</span>
+</span></span></code></pre></div><p>结果为：</p>
+<pre tabindex="0"><code> a - b - c - d - f  Master
+      \
+       e - f - g Feature
+</code></pre><p><code>git cherry-pick</code>命令的参数，不一定是提交的哈希值，分支名也是可以的，表示转移该分支的最新提交。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ git cherry-pick feature
+</span></span></code></pre></div><p>上面代码表示将<code>feature</code>分支的最近一次提交，转移到当前分支。</p>
+<h3 id="解决冲突">
+  解决冲突
+  <a class="anchor" href="#%e8%a7%a3%e5%86%b3%e5%86%b2%e7%aa%81">#</a>
+</h3>
+<p>如果操作过程中发生代码冲突，<code>cherry-pick</code> 会停下来，让用户决定如何继续操作。（下面整个流程都有点像<code>merge</code>过程）</p>
+<h4 id="a---continue">
+  a. <code>--continue</code>
+  <a class="anchor" href="#a---continue">#</a>
+</h4>
+<p>用户解决代码冲突后，第一步将修改的文件重新加入暂存区（<code>git add .</code>），第二步使用下面的命令，让<code> cherry-pick</code> 过程继续执行。</p>
+<h4 id="b---abort">
+  b. <code>--abort</code>
+  <a class="anchor" href="#b---abort">#</a>
+</h4>
+<p>发生代码冲突后，放弃合并，回到操作前的样子。</p>
+<h4 id="c---quit">
+  c. <code>--quit</code>
+  <a class="anchor" href="#c---quit">#</a>
+</h4>
+<p>发生代码冲突后，退出<code>cherry-pick</code>，但是不回到操作前的样子，这种情况下当前分支中未冲突的内容状态将为<code>modified</code></p>
+<blockquote>
+<p><code>--quit</code></p>
+<p>Forget about the current operation in progress. Can be used to clear the sequencer state after a failed cherry-pick or revert.</p>
+</blockquote>
+<h3 id="仓库之间的转移">
+  仓库之间的转移
+  <a class="anchor" href="#%e4%bb%93%e5%ba%93%e4%b9%8b%e9%97%b4%e7%9a%84%e8%bd%ac%e7%a7%bb">#</a>
+</h3>
+<p><code>cherry-pick</code>命令不仅可以合并同一个仓库的不同分支的提交，还可以合并不同仓库的提交，方法是先将该库加为远程仓库。</p>
+<p>因此如果想要将远程仓库A的内容添加到本地仓库B中，首先要在将A添加为B的远程仓库之一，再<code>git fetch A</code>, 再使用<code>git cherry-pick &lt;commitHash&gt;</code>转移提交。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ git remote add target git://giturl
+</span></span><span style="display:flex;"><span>$ git fetch target
+</span></span><span style="display:flex;"><span>$ git log target/master		<span style="color:#75715e"># 找到要合并的那个commit</span>
+</span></span><span style="display:flex;"><span>$ git cherry-pick &lt;commitHash&gt;
+</span></span></code></pre></div><h3 id="cherry-pick潜在的问题">
+  cherry-pick潜在的问题
+  <a class="anchor" href="#cherry-pick%e6%bd%9c%e5%9c%a8%e7%9a%84%e9%97%ae%e9%a2%98">#</a>
+</h3>
+<h4 id="tl-dr">
+  TL; DR
+  <a class="anchor" href="#tl-dr">#</a>
+</h4>
+<p>Raymond Chen在《The Old New Thing》中写了10篇文章阐述在项目中最好使用merge而非cherry-pick的原因，并提出解决/替代办法。（实在是太长了，只看了前2篇……）</p>
+<p>索引如下：</p>
+<p><a href="https://devblogs.microsoft.com/oldnewthing/20180323-01/?p=98325">https://devblogs.microsoft.com/oldnewthing/20180323-01/?p=98325</a></p>
+<h4 id="原因">
+  原因
+  <a class="anchor" href="#%e5%8e%9f%e5%9b%a0">#</a>
+</h4>
+<p>Part1: bad</p>
+<blockquote>
+<p>Basically, when you cherry-pick a commit, you now have two copies of the commit sitting in the graph. <strong>Any lines of code affected by that commit must remain untouched in both branches until the two copies of the commit finally merge.</strong> If either branch modifies any line touched by the cherry-pick, then that creates a powderkeg that can sit quietly indefinitely. It is at the time somebody tries to merge the two commits together that the explosion occurs, and that point could be in a faraway place not immediately related to the branches involved in the cherry-pick. This means that the person trying to resolve the merge was never part of the cherry-pick madness and may not know who to talk to in order to figure out what happened.</p>
+</blockquote>
+<p>由于cherry-pick会产生两个内容相同但是在提交历史上没有父子关系的commit，因此不能在二者最终合并前对那次提交的任何内容进行修改！（因为一旦修改必然会产生冲突，而且这个冲突不是立马显现的，很可能在之后让别的不知情分支遭殃！）</p>
+<p>Part2: worse</p>
+<blockquote>
+<p>But you know what’s worse than a merge conflict?</p>
+<p>No merge conflict.</p>
+</blockquote>
+<p>本质上是three-way merge算法中会认为某两个commit是一样的。</p>
+<p><img src="https://i.loli.net/2020/09/23/YQS4O5mbawqytWZ.png" alt="image-20200923135448616.png" /></p>
+<blockquote>
+<p>Now we perform the merge. Git looks for a merge base, which is commit A, the most recent common ancestor between the two branches. Git then performs a three-way merge using A as the base, M3 as HEAD, and F3 as the inbound change. All that matters now is the delta between the base and the two terminal commits, so let’s remove the irrelevant commits from the diagram.</p>
+</blockquote>
+<p><img src="https://i.loli.net/2020/09/23/RanJ4dUlOoWIQqM.png" alt="image-20200923135503255.png" /></p>
+<blockquote>
+<p>Comparing the base to the head of the master branch, we see that <code>apple</code> changed to <code>berry</code>. Comparing the base to the head of the feature branch, we see that <code>apple</code> didn’t change at all.</p>
+</blockquote>
+<h2 id="3-git-pull">
+  3. git pull
+  <a class="anchor" href="#3-git-pull">#</a>
+</h2>
+<h3 id="基本用法">
+  基本用法
+  <a class="anchor" href="#%e5%9f%ba%e6%9c%ac%e7%94%a8%e6%b3%95">#</a>
+</h3>
+<p><code>git pull</code>命令的作用是：取回远程主机某个分支的更新，再与本地的指定分支合并，它的完整格式稍稍有点复杂。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ git pull &lt;远程主机名&gt; &lt;远程分支名&gt; : &lt;本地分支名&gt;
+</span></span></code></pre></div><p>例如，取回<code>origin</code>主机的<code>next</code>分支，并与本地的<code>master</code>分支合并；因此<code>pull</code>= <code>fetch</code> +<code> merge</code>。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ git pull origin next : master
+</span></span></code></pre></div><p>如果远程分支<code>next</code>要与当前分支合并，则冒号后面的部分可以省略。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ git pull origin next
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 这等同于</span>
+</span></span><span style="display:flex;"><span>$ git fetch origin
+</span></span><span style="display:flex;"><span>$ git merge origin/next
+</span></span></code></pre></div><p><strong>注意</strong>：在某些场合，git会自动在本地分支与远程分支之间建立追踪关系，如在<code>git clone</code>时，所有本地分支默认与远程主机的同名分支建立追踪关系，也就是说本地的<code>master</code>分支自动关联<code>origin/master</code>分支。</p>
+<p><strong>手动</strong>建立追踪关系：</p>
+<p>指定<code>master</code>分支追踪<code>origin/next</code>分支。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ git branch --set-upstream master origin/next
+</span></span></code></pre></div><p>如果当前分支和远程分支存在追踪关系，则<code>git pull</code>就可以省略远程分支名。本地的当前分支自动与对应origin主机的追踪分支合并。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ git pull origin
+</span></span></code></pre></div><p>如果当前分支只有一个追踪分支，则连远程主机名都可以省略。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ git pull
+</span></span></code></pre></div><h3 id="更保险的用法">
+  更保险的用法
+  <a class="anchor" href="#%e6%9b%b4%e4%bf%9d%e9%99%a9%e7%9a%84%e7%94%a8%e6%b3%95">#</a>
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ git fetch origin master : temp	<span style="color:#75715e"># 在本地新建一个temp分支，并将远程origin仓库的master分支代码下载到temp分支</span>
+</span></span><span style="display:flex;"><span>$ git diff temp	 <span style="color:#75715e"># 来比较本地代码与刚刚远程下载下来的代码的区别</span>
+</span></span><span style="display:flex;"><span>$ git merge temp  <span style="color:#75715e"># 合并temp分支到本地的master分支</span>
+</span></span><span style="display:flex;"><span>$ git branch -d temp	<span style="color:#75715e"># 如果不想保留temp分支，可以将其删除</span>
+</span></span></code></pre></div><h3 id="强制pull覆盖当前分支慎用">
+  强制pull覆盖当前分支（慎用）
+  <a class="anchor" href="#%e5%bc%ba%e5%88%b6pull%e8%a6%86%e7%9b%96%e5%bd%93%e5%89%8d%e5%88%86%e6%94%af%e6%85%8e%e7%94%a8">#</a>
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ git fetch --all
+</span></span><span style="display:flex;"><span>$ git reset --hard origin/master 
+</span></span><span style="display:flex;"><span>$ git pull
+</span></span></code></pre></div></article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-git-rebase奇妙与危险相伴">1. git rebase（奇妙与危险相伴）</a>
+      <ul>
+        <li><a href="#基本操作">基本操作</a></li>
+        <li><a href="#使用场景">使用场景(!!!)</a></li>
+        <li><a href="#trade-off">trade-off</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-git-cherry-pick">2. git cherry-pick</a>
+      <ul>
+        <li><a href="#基本操作-1">基本操作</a></li>
+        <li><a href="#解决冲突">解决冲突</a></li>
+        <li><a href="#仓库之间的转移">仓库之间的转移</a></li>
+        <li><a href="#cherry-pick潜在的问题">cherry-pick潜在的问题</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-git-pull">3. git pull</a>
+      <ul>
+        <li><a href="#基本用法">基本用法</a></li>
+        <li><a href="#更保险的用法">更保险的用法</a></li>
+        <li><a href="#强制pull覆盖当前分支慎用">强制pull覆盖当前分支（慎用）</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

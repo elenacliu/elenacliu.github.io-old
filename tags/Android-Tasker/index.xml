@@ -13,9 +13,9 @@
       <pubDate>Sat, 02 Jul 2022 00:00:00 +0000</pubDate>
       
       <guid>http://elenacliu.github.io/post/2022-07-02-Tasker%E7%AC%94%E8%AE%B0/</guid>
-      <description>Tasker 简介 Tasker 是一款在安卓手机上实现定时任务的付费应用，官方提供 7 天的免费试用期。其功能非常强大，能够在无 root 权限下完成对手机的各种模拟操作。当然，和 Tasker 搭配的插件很多是需要 root 权限才可以完成工作的。
+      <description>Tasker # 简介 # Tasker 是一款在安卓手机上实现定时任务的付费应用，官方提供 7 天的免费试用期。其功能非常强大，能够在无 root 权限下完成对手机的各种模拟操作。当然，和 Tasker 搭配的插件很多是需要 root 权限才可以完成工作的。
 笔者使用的是 HarmonyOS，但没找到 root 的方法，所以网友提出的很多操作方法没法实践。
-安装和使用 安装链接：点击这里
+安装和使用 # 安装链接：点击这里
 该应用的 UI 十分简陋，这里记录一些基本使用步骤。
 任务 点击右下角加号可以进入创建任务的界面
 进入创建任务的界面，可以选择定义任务的方式
@@ -25,9 +25,8 @@
 插件则可以调用其他 Tasker 支持的应用，比如 SecureSettings，AutoInput…… 这些插件可以加强 Tasker 执行任务的功能。插件的具体功能在对应部分讲解。
 配置文件 点击右下角加号可以添加配置文件
 配置一般是触发任务的条件。因此在添加配置的时候，需要指定事件、位置、或者时间等条件。
-ADB 简介 相信曾经使用过 Android Studio 开发安卓应用的人都听说过这个玩意，全称 Android Debug Bridge。虽然官方网页上对 ADB 的原理介绍非常简略，但这个通信过程好像并不简单。打算未来再开篇文章研究下。
-从功能来说，感觉 ADB 其实就是提供了用其他设备（可能是 PC）调试安卓设备的方法。无论是 emulator 还是 shell，都是很方便的。
-使用 目前只使用了 adb shell 的方法，用命令行进行调试。另，笔者 PC 端的操作系统是 Windows10。</description>
+ADB # 简介 # 相信曾经使用过 Android Studio 开发安卓应用的人都听说过这个玩意，全称 Android Debug Bridge。虽然官方网页上对 ADB 的原理介绍非常简略，但这个通信过程好像并不简单。打算未来再开篇文章研究下。
+从功能来说，感觉 ADB 其实就是提供了用其他设备（可能是 PC）调试安卓设备的方法。无论是 emulator 还是 shell，都是很方便的。</description>
     </item>
     
   </channel>

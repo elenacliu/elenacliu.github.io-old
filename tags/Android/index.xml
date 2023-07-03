@@ -26,7 +26,7 @@ References:
       <pubDate>Fri, 31 Jul 2020 00:00:00 +0000</pubDate>
       
       <guid>http://elenacliu.github.io/post/2020-07-31-Android-Studio%E5%AE%89%E8%A3%85%E8%AE%B0%E5%BD%95/</guid>
-      <description>Android Studio安装记录 去年就搞过AS，但是因为完全零基础踩了不少坑：不知道安装SDK的前提是安装JRE/JDK；SDK和gradle下载不知道如何使用镜像站，网速很差，下载的东西根本不全，后来总是出现奇奇怪怪的问题完全不能使用。
+      <description>Android Studio安装记录 # 去年就搞过AS，但是因为完全零基础踩了不少坑：不知道安装SDK的前提是安装JRE/JDK；SDK和gradle下载不知道如何使用镜像站，网速很差，下载的东西根本不全，后来总是出现奇奇怪怪的问题完全不能使用。
 今年因为课程需要再次下载，现记录一下步骤备用。
 官网 版本4.0.1
 选择.exe版本下载。

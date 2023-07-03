@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="进程与线程模型 # 进程 # 进程的定义：进程是具有独立功能的程序关于某个数据集合上的一次运行活动，是系统进行资源分配和调度的独立单位。
+进程状态 # 进程的基本状态：运行态、就绪态、等待态
+运行：占有 CPU，并在 CPU 上运行
+就绪：已经具备运行条件，但由于没有空闲 CPU，而暂时无法运行
+等待/阻塞 (注意不是挂起)：因为等待某一事件（如完成 IO）而暂时不能运行
+进程的其他状态 # 创建：已完成创建一进程所必要的工作。如分配了 PCB，拥有 PID。但未同意执行该进程，因为资源有限。
+终止：终止执行后，进程进入该状态。可以完成一些数据统计工作，并进行资源回收。
+挂起：把一个进程从内存转到磁盘。进程不占用内存空间，其进程映像（但不包括进程的代码段和数据段）交换到磁盘上。用于调节负载。
+就绪挂起：suspended ready
+阻塞挂起：suspended block
+下面摘自：https://www.orzzone.com/process-state-transition.html
+引入挂起状态后，需要实现进程在挂起（即在外存）状态和非挂起（即在内存）状态之间的转换。由于被挂起的进程不能被调度运行，因此通常将挂起状态称为静止状态，而将非挂起状态称为活跃状态。根据挂起前进程所处的状态，可以将挂起状态分为：静止就绪状态和静止阻塞状态。
+系统通常将具有相同状态的进程组成一个或多个队列。为了区别，将进程基本状态中的就绪状态改称为活动就绪状态，阻塞状态改称为活动阻塞状态。相应地，我们又多了 6 种转换关系：
+活动阻塞状态挂起变为静止阻塞态。主要有两种情况会发生这种挂起（进程由内存换出至外存）状态变化：①若当前不存在活动就绪进程，则至少有一个活动阻塞进程由内存兑换至外存成为静止阻塞进程，以腾出内存空间，从外存调入一个静止就绪进程使其变为活动就绪进程（保证内存中至少有一个活动就绪进程，可供进程调度程序调度运行以免CPU空闲）；②操作系统根据当前的资源状态和性能要求，可以将某些活动阻塞进程换出至外存成为静止阻塞进程。 静止阻塞态激活变为活动阻塞态。一般在满足两个条件下，系统可以激活（进程由外存换入至内存）一个静止阻塞态进程，使之成为活动阻塞进程。即：①操作系统已经得知导致该进程阻塞的事件即将结束；②内存中已经有了一大块空闲的空间。 静止阻塞态变为静止就绪态。当在外存上的静止阻塞进程所需资源得到满足或者等待的事件已经完成时，该进程由静止阻塞态变为静止就绪态（但仍然在外存）。 静止就绪态激活变为活动就绪态。主要有三种情况会发生这种激活（进程由外存换入至内存）状态变化：①外存上的静止就绪进程具有比内存中的活动就绪进程更高的优先级；②内存中已经有了一大块空闲的空间；③当前内存中没有活动就绪进程。 活动就绪态挂起变为静止就绪态。这种状态变化主要是由于系统调节负荷（即内存紧张）的需要，或者是系统优化性能的需求，而将某些目前暂不需要运行的活动就绪进程由内存换出至外存。 运行态挂起（由内存换出至外存）变为静止就绪态。这种状态变化制药是运行进程出现了错误或异常，或者是对运行进程进行分析的需要。 可见，只有处于活动就绪态的进程，才能参与进程调度得到CPU，并在获得CPU后立即投入运行。具有挂起状态的系统虽然提高了内存的利用率，但同时也使管理更加复杂，且增加了系统的开销。
+进程控制块 PCB（Process Control Block） # 操作系统表示进程的一个专门的数据结构，记录进程的各种属性，描述进程的动态变化过程。
+又称为：进程描述符、进程属性
+操作系统通过 PCB 来控制和管理进程
+PCB 是系统感知进程存在的唯一标志 进程与 PCB 是一一对应的 Linux：task_struct
+Windows: EPROCESS, KPROCESS, PEB
+PCB 的主要内容
+进程描述信息 进程标识符 进程名，通常基于可执行文件名 用户标识符；进程组关系 进程控制信息 当前状态；阻塞原因 优先级 代码执行入口地址 可执行文件名（磁盘地址） 运行统计信息（执行时间页面调度） 进程间同步和通信 进程的队列指针 进程的消息队列指针 所拥有的资源和使用情况 虚拟地址空间的现状 打开文件列表 CPU 现场信息 寄存器值（通用寄存器、PC、PSW、栈指针） 指向赋予该进程的段/页表的指针 进程地址空间 # /proc/{pid}/maps 文件">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="操作系统之进程与线程模型" />
+<meta property="og:description" content="进程与线程模型 # 进程 # 进程的定义：进程是具有独立功能的程序关于某个数据集合上的一次运行活动，是系统进行资源分配和调度的独立单位。
+进程状态 # 进程的基本状态：运行态、就绪态、等待态
+运行：占有 CPU，并在 CPU 上运行
+就绪：已经具备运行条件，但由于没有空闲 CPU，而暂时无法运行
+等待/阻塞 (注意不是挂起)：因为等待某一事件（如完成 IO）而暂时不能运行
+进程的其他状态 # 创建：已完成创建一进程所必要的工作。如分配了 PCB，拥有 PID。但未同意执行该进程，因为资源有限。
+终止：终止执行后，进程进入该状态。可以完成一些数据统计工作，并进行资源回收。
+挂起：把一个进程从内存转到磁盘。进程不占用内存空间，其进程映像（但不包括进程的代码段和数据段）交换到磁盘上。用于调节负载。
+就绪挂起：suspended ready
+阻塞挂起：suspended block
+下面摘自：https://www.orzzone.com/process-state-transition.html
+引入挂起状态后，需要实现进程在挂起（即在外存）状态和非挂起（即在内存）状态之间的转换。由于被挂起的进程不能被调度运行，因此通常将挂起状态称为静止状态，而将非挂起状态称为活跃状态。根据挂起前进程所处的状态，可以将挂起状态分为：静止就绪状态和静止阻塞状态。
+系统通常将具有相同状态的进程组成一个或多个队列。为了区别，将进程基本状态中的就绪状态改称为活动就绪状态，阻塞状态改称为活动阻塞状态。相应地，我们又多了 6 种转换关系：
+活动阻塞状态挂起变为静止阻塞态。主要有两种情况会发生这种挂起（进程由内存换出至外存）状态变化：①若当前不存在活动就绪进程，则至少有一个活动阻塞进程由内存兑换至外存成为静止阻塞进程，以腾出内存空间，从外存调入一个静止就绪进程使其变为活动就绪进程（保证内存中至少有一个活动就绪进程，可供进程调度程序调度运行以免CPU空闲）；②操作系统根据当前的资源状态和性能要求，可以将某些活动阻塞进程换出至外存成为静止阻塞进程。 静止阻塞态激活变为活动阻塞态。一般在满足两个条件下，系统可以激活（进程由外存换入至内存）一个静止阻塞态进程，使之成为活动阻塞进程。即：①操作系统已经得知导致该进程阻塞的事件即将结束；②内存中已经有了一大块空闲的空间。 静止阻塞态变为静止就绪态。当在外存上的静止阻塞进程所需资源得到满足或者等待的事件已经完成时，该进程由静止阻塞态变为静止就绪态（但仍然在外存）。 静止就绪态激活变为活动就绪态。主要有三种情况会发生这种激活（进程由外存换入至内存）状态变化：①外存上的静止就绪进程具有比内存中的活动就绪进程更高的优先级；②内存中已经有了一大块空闲的空间；③当前内存中没有活动就绪进程。 活动就绪态挂起变为静止就绪态。这种状态变化主要是由于系统调节负荷（即内存紧张）的需要，或者是系统优化性能的需求，而将某些目前暂不需要运行的活动就绪进程由内存换出至外存。 运行态挂起（由内存换出至外存）变为静止就绪态。这种状态变化制药是运行进程出现了错误或异常，或者是对运行进程进行分析的需要。 可见，只有处于活动就绪态的进程，才能参与进程调度得到CPU，并在获得CPU后立即投入运行。具有挂起状态的系统虽然提高了内存的利用率，但同时也使管理更加复杂，且增加了系统的开销。
+进程控制块 PCB（Process Control Block） # 操作系统表示进程的一个专门的数据结构，记录进程的各种属性，描述进程的动态变化过程。
+又称为：进程描述符、进程属性
+操作系统通过 PCB 来控制和管理进程
+PCB 是系统感知进程存在的唯一标志 进程与 PCB 是一一对应的 Linux：task_struct
+Windows: EPROCESS, KPROCESS, PEB
+PCB 的主要内容
+进程描述信息 进程标识符 进程名，通常基于可执行文件名 用户标识符；进程组关系 进程控制信息 当前状态；阻塞原因 优先级 代码执行入口地址 可执行文件名（磁盘地址） 运行统计信息（执行时间页面调度） 进程间同步和通信 进程的队列指针 进程的消息队列指针 所拥有的资源和使用情况 虚拟地址空间的现状 打开文件列表 CPU 现场信息 寄存器值（通用寄存器、PC、PSW、栈指针） 指向赋予该进程的段/页表的指针 进程地址空间 # /proc/{pid}/maps 文件" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://elenacliu.github.io/post/2023-06-12-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E4%B9%8B%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2023-06-12T00:00:00+00:00" />
+<meta property="article:modified_time" content="2023-06-12T00:00:00+00:00" />
+<title>操作系统之进程与线程模型 | cliu&#39;s Blog</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
+  <script defer src="/flexsearch.min.js"></script>
+  <script defer src="/en.search.min.b40b5b07da88e813791f2e7ba1e0c6adf9255e68628ef8ae5a15446cb4e5697f.js" integrity="sha256-tAtbB9qI6BN5Hy57oeDGrfklXmhijviuWhVEbLTlaX8=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>cliu&#39;s Blog</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>操作系统之进程与线程模型</strong>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#进程">进程</a>
+      <ul>
+        <li><a href="#进程状态">进程状态</a></li>
+        <li><a href="#进程的其他状态">进程的其他状态</a></li>
+        <li><a href="#进程控制块-pcbprocess-control-block">进程控制块 PCB（Process Control Block）</a></li>
+        <li><a href="#进程地址空间">进程地址空间</a></li>
+        <li><a href="#上下文">上下文</a></li>
+        <li><a href="#进程队列">进程队列</a></li>
+      </ul>
+    </li>
+    <li><a href="#进程控制">进程控制</a>
+      <ul>
+        <li><a href="#进程创建">进程创建</a></li>
+        <li><a href="#进程撤销">进程撤销</a></li>
+        <li><a href="#进程阻塞和进程唤醒">进程阻塞和进程唤醒</a></li>
+        <li><a href="#unix-的几个进程控制操作">Unix 的几个进程控制操作</a></li>
+      </ul>
+    </li>
+    <li><a href="#线程">线程</a>
+      <ul>
+        <li><a href="#线程的实现">线程的实现</a></li>
+      </ul>
+    </li>
+    <li><a href="#协程">协程</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="进程与线程模型">
+  进程与线程模型
+  <a class="anchor" href="#%e8%bf%9b%e7%a8%8b%e4%b8%8e%e7%ba%bf%e7%a8%8b%e6%a8%a1%e5%9e%8b">#</a>
+</h1>
+<h2 id="进程">
+  进程
+  <a class="anchor" href="#%e8%bf%9b%e7%a8%8b">#</a>
+</h2>
+<p>进程的定义：进程是具有独立功能的程序关于某个数据集合上的一次运行活动，是系统进行<strong>资源分配</strong>和<strong>调度</strong>的独立单位。</p>
+<h3 id="进程状态">
+  进程状态
+  <a class="anchor" href="#%e8%bf%9b%e7%a8%8b%e7%8a%b6%e6%80%81">#</a>
+</h3>
+<p>进程的基本状态：运行态、就绪态、等待态</p>
+<p>运行：占有 CPU，并在 CPU 上运行</p>
+<p>就绪：已经具备运行条件，但由于没有空闲 CPU，而暂时无法运行</p>
+<p>等待/阻塞 (注意不是挂起)：因为等待某一事件（如完成 IO）而暂时不能运行</p>
+<h3 id="进程的其他状态">
+  进程的其他状态
+  <a class="anchor" href="#%e8%bf%9b%e7%a8%8b%e7%9a%84%e5%85%b6%e4%bb%96%e7%8a%b6%e6%80%81">#</a>
+</h3>
+<p>创建：已完成创建一进程所必要的工作。如分配了 PCB，拥有 PID。但未同意执行该进程，因为资源有限。</p>
+<p>终止：终止执行后，进程进入该状态。可以完成一些数据统计工作，并进行资源回收。</p>
+<p>挂起：把一个进程<strong>从内存转到磁盘</strong>。进程不占用内存空间，其进程映像（但不包括进程的代码段和数据段）交换到磁盘上。用于调节负载。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/elenacliu/PicGoPics/img/202306111822226.png" alt="image-20230611182240999" /></p>
+<p>就绪挂起：suspended ready</p>
+<p>阻塞挂起：suspended block</p>
+<p>下面摘自：https://www.orzzone.com/process-state-transition.html</p>
+<p>引入挂起状态后，需要实现进程在挂起（即在外存）状态和非挂起（即在内存）状态之间的转换。由于被挂起的进程不能被调度运行，因此通常将挂起状态称为静止状态，而将非挂起状态称为活跃状态。根据挂起前进程所处的状态，可以将挂起状态分为：静止就绪状态和静止阻塞状态。</p>
+<p><strong>系统通常将具有相同状态的进程组成一个或多个队列</strong>。为了区别，将进程基本状态中的就绪状态改称为活动就绪状态，阻塞状态改称为活动阻塞状态。相应地，我们又多了 6 种转换关系：</p>
+<ol>
+<li>活动阻塞状态挂起变为静止阻塞态。主要有两种情况会发生这种挂起（进程由内存换出至外存）状态变化：①若当前不存在活动就绪进程，则至少有一个活动阻塞进程由内存兑换至外存成为静止阻塞进程，以腾出内存空间，从外存调入一个静止就绪进程使其变为活动就绪进程（保证内存中至少有一个活动就绪进程，可供进程调度程序调度运行以免CPU空闲）；②操作系统根据当前的资源状态和性能要求，可以将某些活动阻塞进程换出至外存成为静止阻塞进程。</li>
+<li>静止阻塞态激活变为活动阻塞态。一般在满足两个条件下，系统可以激活（进程由外存换入至内存）一个静止阻塞态进程，使之成为活动阻塞进程。即：①操作系统已经得知导致该进程阻塞的事件即将结束；②内存中已经有了一大块空闲的空间。</li>
+<li>静止阻塞态变为静止就绪态。当在外存上的静止阻塞进程所需资源得到满足或者等待的事件已经完成时，该进程由静止阻塞态变为静止就绪态（但仍然在外存）。</li>
+<li>静止就绪态激活变为活动就绪态。主要有三种情况会发生这种激活（进程由外存换入至内存）状态变化：①外存上的静止就绪进程具有比内存中的活动就绪进程更高的优先级；②内存中已经有了一大块空闲的空间；③当前内存中没有活动就绪进程。</li>
+<li>活动就绪态挂起变为静止就绪态。这种状态变化主要是由于系统调节负荷（即内存紧张）的需要，或者是系统优化性能的需求，而将某些目前暂不需要运行的活动就绪进程由内存换出至外存。</li>
+<li>运行态挂起（由内存换出至外存）变为静止就绪态。这种状态变化制药是运行进程出现了错误或异常，或者是对运行进程进行分析的需要。</li>
+</ol>
+<p>可见，只有处于活动就绪态的进程，才能参与进程调度得到CPU，并在获得CPU后立即投入运行。具有挂起状态的系统虽然提高了内存的利用率，但同时也使管理更加复杂，且增加了系统的开销。</p>
+<h3 id="进程控制块-pcbprocess-control-block">
+  进程控制块 PCB（Process Control Block）
+  <a class="anchor" href="#%e8%bf%9b%e7%a8%8b%e6%8e%a7%e5%88%b6%e5%9d%97-pcbprocess-control-block">#</a>
+</h3>
+<p>操作系统表示进程的一个专门的数据结构，记录进程的各种属性，描述进程的动态变化过程。</p>
+<p>又称为：进程描述符、进程属性</p>
+<p>操作系统通过 PCB 来控制和管理进程</p>
+<ul>
+<li>PCB 是系统感知进程存在的唯一标志</li>
+<li>进程与 PCB 是一一对应的</li>
+</ul>
+<p>Linux：task_struct</p>
+<p>Windows: EPROCESS, KPROCESS, PEB</p>
+<p><strong>PCB 的主要内容</strong></p>
+<ul>
+<li>进程描述信息
+<ul>
+<li>进程标识符</li>
+<li>进程名，通常基于可执行文件名</li>
+<li>用户标识符；进程组关系</li>
+</ul>
+</li>
+<li>进程控制信息
+<ul>
+<li>当前状态；阻塞原因</li>
+<li>优先级</li>
+<li>代码执行入口地址</li>
+<li>可执行文件名（磁盘地址）</li>
+<li>运行统计信息（执行时间页面调度）</li>
+<li>进程间同步和通信</li>
+<li>进程的队列指针</li>
+<li>进程的消息队列指针</li>
+</ul>
+</li>
+<li>所拥有的资源和使用情况
+<ul>
+<li>虚拟地址空间的现状</li>
+<li>打开文件列表</li>
+</ul>
+</li>
+<li>CPU 现场信息
+<ul>
+<li>寄存器值（通用寄存器、PC、PSW、栈指针）</li>
+<li>指向赋予该进程的段/页表的指针</li>
+</ul>
+</li>
+</ul>
+<h3 id="进程地址空间">
+  进程地址空间
+  <a class="anchor" href="#%e8%bf%9b%e7%a8%8b%e5%9c%b0%e5%9d%80%e7%a9%ba%e9%97%b4">#</a>
+</h3>
+<p><img src="https://cdn.jsdelivr.net/gh/elenacliu/PicGoPics/img/202306112108594.png" alt="image-20230611191142880" /></p>
+<p><img src="https://cdn.jsdelivr.net/gh/elenacliu/PicGoPics/img/202306112107478.png" alt="image-20230611205234858" /></p>
+<p>/proc/{pid}/maps 文件</p>
+<ul>
+<li>显示进程映射了的内存区域和访问权限</li>
+<li>在内核中，进程的一段地址空间用 vm_area_struct 表示，所有地址空间存储在 task-&gt;mm-&gt;mmap 链表中</li>
+<li>一个文件可以映射到进程的一段内存区域中，映射的文件描述符保存在 vm_area_struct-&gt;vm_file，这种内存区域叫做有名内存区域，另一个是匿名映射内存区域</li>
+</ul>
+<h3 id="上下文">
+  上下文
+  <a class="anchor" href="#%e4%b8%8a%e4%b8%8b%e6%96%87">#</a>
+</h3>
+<p>进程运行时，其硬件状态保存在 CPU 上的寄存器中</p>
+<p>寄存器：程序计数器、程序状态寄存器、栈指针、通用寄存器、其他控制寄存器</p>
+<p>进程不运行时，这些寄存器的值都保存在 PCB 中（xv6 中叫 trapframe）</p>
+<p>将 CPU 硬件状态从一个进程切换到另一个进程的过程称为上下文切换。（但注意，切换的时候进程的地址空间对应的那些物理内存还是驻留在内存的，除非为了腾出内存空间被挂起而交换到硬盘）</p>
+<h3 id="进程队列">
+  进程队列
+  <a class="anchor" href="#%e8%bf%9b%e7%a8%8b%e9%98%9f%e5%88%97">#</a>
+</h3>
+<p>操作系统为每一类进程建立一个或者多个队列。队列的元素为 PCB。伴随进程状态的改变，其 PCB 从一个队列进入另一个队列。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/elenacliu/PicGoPics/img/202306112107768.png" alt="image-20230611210744869" /></p>
+<p><img src="https://cdn.jsdelivr.net/gh/elenacliu/PicGoPics/img/202306112109630.png" alt="image-20230611210956903" /></p>
+<h2 id="进程控制">
+  进程控制
+  <a class="anchor" href="#%e8%bf%9b%e7%a8%8b%e6%8e%a7%e5%88%b6">#</a>
+</h2>
+<p>进程控制操作完成进程各状态间的转换，由具有特定功能的<strong>原语</strong>完成</p>
+<p>原语（primitive）：完成某种特定功能的一段程序，具有不可分割性或不可中断性。即原语的执行必须是连续的，在执行过程中不允许被中断。</p>
+<h3 id="进程创建">
+  进程创建
+  <a class="anchor" href="#%e8%bf%9b%e7%a8%8b%e5%88%9b%e5%bb%ba">#</a>
+</h3>
+<p>Unix：fork, exec, spawn</p>
+<p>Windows: CreateProcess</p>
+<h3 id="进程撤销">
+  进程撤销
+  <a class="anchor" href="#%e8%bf%9b%e7%a8%8b%e6%92%a4%e9%94%80">#</a>
+</h3>
+<p>Unix: exit</p>
+<p>Windows: ExitProcess</p>
+<h3 id="进程阻塞和进程唤醒">
+  进程阻塞和进程唤醒
+  <a class="anchor" href="#%e8%bf%9b%e7%a8%8b%e9%98%bb%e5%a1%9e%e5%92%8c%e8%bf%9b%e7%a8%8b%e5%94%a4%e9%86%92">#</a>
+</h3>
+<p>处于运行状态的进程，在其运行过程中期待某一事件发生，如等待键盘输入、等待磁盘数据传输完成、等待其它进程发送消息，当被等待的事件未发生时，由进程自己执行阻塞原语，使自己由运行态变为阻塞态。</p>
+<p>Unix：wait</p>
+<p>Windows：WaitForSingleObject</p>
+<h3 id="unix-的几个进程控制操作">
+  Unix 的几个进程控制操作
+  <a class="anchor" href="#unix-%e7%9a%84%e5%87%a0%e4%b8%aa%e8%bf%9b%e7%a8%8b%e6%8e%a7%e5%88%b6%e6%93%8d%e4%bd%9c">#</a>
+</h3>
+<h4 id="fork">
+  fork()
+  <a class="anchor" href="#fork">#</a>
+</h4>
+<p>通过复制调用进程来建立新的进程，是最基本的进程建立过程</p>
+<ul>
+<li>
+<p>为子进程分配一个空闲的进程描述符</p>
+</li>
+<li>
+<p>分配给子进程一个唯一标识 pid</p>
+</li>
+<li>
+<p><strong>以一次一页的方式复制父进程地址空间</strong>（可以用 COW 优化）</p>
+</li>
+<li>
+<p>从父进程处继承共享资源，如打开的文件和当前工作目录等</p>
+</li>
+<li>
+<p>将子进程的状态设为就绪，插入到就绪队列</p>
+</li>
+<li>
+<p>对子进程返回标识符 0</p>
+</li>
+<li>
+<p>向父进程返回子进程的 pid</p>
+</li>
+</ul>
+<p>COW 机制：</p>
+<p>在 fork 时，子进程的 page table 与父进程完全一致。并且将每个可写页面标记成 COW 页面，同时记录每个页面的引用次数。</p>
+<p>如果任一进程想要更改页面的内容，并且该页面是 COW 的，那就应该为这一页新分配内存，将之前的页表项的映射关系取消，页面引用数减1。在某进程退出时，如果遇到有页面的引用数大于1，则该物理页面不释放。</p>
+<h4 id="exec">
+  exec()
+  <a class="anchor" href="#exec">#</a>
+</h4>
+<p>包括一系列系统调用，它们都是通过用一段新的代码覆盖原来的内存空间，实现进程执行代码的转换</p>
+<h4 id="wait">
+  wait()
+  <a class="anchor" href="#wait">#</a>
+</h4>
+<p>提供初级的进程同步措施，能使一个进程等待，直到另外一个进程结束为止。</p>
+<pre tabindex="0"><code>All of these (wait/waitpid/waitid) system calls are used to wait for state changes in a child of the calling process, and obtain information about the child whose state has changed.  A state change is considered to be: the child terminated; the child was stopped by a signal; or the child was resumed by a signal
+</code></pre><h4 id="exit">
+  exit()
+  <a class="anchor" href="#exit">#</a>
+</h4>
+<p>用来终止一个进程的运行</p>
+<p>问题：Linux 中什么是 zombie 进程？什么是 orphan 进程？</p>
+<p><img src="https://cdn.jsdelivr.net/gh/elenacliu/PicGoPics/img/202306112136917.png" alt="image-20230611213655078" /></p>
+<p>下面摘自：https://en.wikipedia.org/wiki/Zombie_process</p>
+<p>On <a href="https://en.wikipedia.org/wiki/Unix">Unix</a> and <a href="https://en.wikipedia.org/wiki/Unix-like">Unix-like</a> computer <a href="https://en.wikipedia.org/wiki/Operating_system">operating systems</a>, a <strong>zombie process</strong> or <strong>defunct process</strong> is a <a href="https://en.wikipedia.org/wiki/Process_%28computing%29">process</a> that has completed execution (via the <code>exit</code> <a href="https://en.wikipedia.org/wiki/System_call">system call</a>) but still has an entry in the <a href="https://en.wikipedia.org/wiki/Process_table">process table</a>: it is a process in the &ldquo;<a href="https://en.wikipedia.org/wiki/Process_state#Terminated">Terminated state</a>&rdquo;. This occurs for the <a href="https://en.wikipedia.org/wiki/Child_process">child processes</a>, where the entry is still needed to allow the <a href="https://en.wikipedia.org/wiki/Parent_process">parent process</a> to read its child&rsquo;s <a href="https://en.wikipedia.org/wiki/Exit_status">exit status</a>: once the exit status is read via the <code>wait</code> <a href="https://en.wikipedia.org/wiki/System_call">system call</a>, the zombie&rsquo;s entry is removed from the process table and it is said to be &ldquo;reaped&rdquo;. A child process always first becomes a zombie before being removed from the resource table. In most cases, under normal system operation zombies are immediately waited on by their parent and then reaped by the system – processes that stay zombies for a long time are generally an error and cause a <a href="https://en.wikipedia.org/wiki/Resource_leak">resource leak</a>, but the only resource they occupy is the process table entry – process ID.</p>
+<p>也就是说，zombie 进程已经终止（die）了、但是没来得及由父进程确认其退出状态。（not reaped）</p>
+<p>When a process ends via <code>exit</code>, all of the memory and resources associated with it are deallocated so they can be used by other processes. However, the process&rsquo;s entry in the process table remains.</p>
+<p>因为 zombie 进程已经调用过 exit，所以它拥有的内存和其他资源都被释放了。只占有 PID。</p>
+<p>Zombie processes should not be confused with <a href="https://en.wikipedia.org/wiki/Orphan_process">orphan processes</a>: an orphan process is a process that is still executing, but whose parent has died. When the parent dies, the orphaned child process is adopted by <code>init</code> (process ID 1). When orphan processes die, they do not remain as zombie processes; instead, they are <code>wait</code>ed on by <code>init</code>. The result is that a process that is both a zombie and an orphan will be reaped automatically.</p>
+<p>orphan 进程是还在执行，但父进程已经终止了的进程。当父进程终止后，init 进程会成为 orphan 进程的父进程托管它。</p>
+<h2 id="线程">
+  线程
+  <a class="anchor" href="#%e7%ba%bf%e7%a8%8b">#</a>
+</h2>
+<p>进程的两个基本属性</p>
+<ul>
+<li>资源的拥有者
+<ul>
+<li>一个虚拟地址空间，一些占有的资源(文件，I/O设备)</li>
+</ul>
+</li>
+<li>调度单位
+<ul>
+<li>一个执行（路径）轨迹，状态、优先级</li>
+</ul>
+</li>
+<li>将原来进程的两个属性分别处理
+<ul>
+<li>线程：进程的一个运行实体，是 CPU 的调度单位</li>
+</ul>
+</li>
+</ul>
+<p>线程共享的内容包括：</p>
+<p>进程代码段
+进程数据段
+进程打开的文件描述符、信号的处理器、进程的当前目录和进程用户 ID 与进程组 ID</p>
+<p>线程独有的内容包括：</p>
+<p>线程 ID
+寄存器组的值
+线程的堆栈：有自己的栈和栈指针
+错误返回码
+线程的信号屏蔽码</p>
+<h3 id="线程的实现">
+  线程的实现
+  <a class="anchor" href="#%e7%ba%bf%e7%a8%8b%e7%9a%84%e5%ae%9e%e7%8e%b0">#</a>
+</h3>
+<p>用户级线程：在用户空间实现</p>
+<p>核心级线程：在内核中实现</p>
+<p>混合两者：在内核中实现，支持用户线程</p>
+<h4 id="用户级线程">
+  用户级线程
+  <a class="anchor" href="#%e7%94%a8%e6%88%b7%e7%ba%a7%e7%ba%bf%e7%a8%8b">#</a>
+</h4>
+<p><img src="https://cdn.jsdelivr.net/gh/elenacliu/PicGoPics/img/202306112209185.png" alt="image-20230611220858679" /></p>
+<p><img src="https://cdn.jsdelivr.net/gh/elenacliu/PicGoPics/img/202306112209307.png" alt="image-20230611220922212" /></p>
+<p>优点：</p>
+<ul>
+<li>线程切换快</li>
+<li>调度算法是应用程序特定的</li>
+<li>用户级线程可以运行在任何 OS 上（只需要实现线程库）</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>大多数系统调用是阻塞的，因此，由于内核阻塞进程，故进程中所有线程也被阻塞</li>
+<li>内核只将处理器分配给进程，同一进程中的两个线程不能同时运行于两 个处理器上</li>
+</ul>
+<h4 id="核心级线程">
+  核心级线程
+  <a class="anchor" href="#%e6%a0%b8%e5%bf%83%e7%ba%a7%e7%ba%bf%e7%a8%8b">#</a>
+</h4>
+<p><img src="https://cdn.jsdelivr.net/gh/elenacliu/PicGoPics/img/202306112304060.png" alt="image-20230611230417522" /></p>
+<h4 id="混合模型">
+  混合模型
+  <a class="anchor" href="#%e6%b7%b7%e5%90%88%e6%a8%a1%e5%9e%8b">#</a>
+</h4>
+<p>线程创建在用户空间完成</p>
+<p>线程调度等在核心态完成</p>
+<p>多个用户线程多路复用多个内核级线程</p>
+<h4 id="用户线程内核线程lwp-三者之间的关系">
+  用户线程、内核线程、LWP 三者之间的关系
+  <a class="anchor" href="#%e7%94%a8%e6%88%b7%e7%ba%bf%e7%a8%8b%e5%86%85%e6%a0%b8%e7%ba%bf%e7%a8%8blwp-%e4%b8%89%e8%80%85%e4%b9%8b%e9%97%b4%e7%9a%84%e5%85%b3%e7%b3%bb">#</a>
+</h4>
+<p><img src="https://cdn.jsdelivr.net/gh/elenacliu/PicGoPics/img/202306112323823.png" alt="image-20230611232346977" /></p>
+<h2 id="协程">
+  协程
+  <a class="anchor" href="#%e5%8d%8f%e7%a8%8b">#</a>
+</h2>
+<p>这部分内容来自：https://www.cnblogs.com/Survivalist/p/11527949.html#%E5%8D%8F%E7%A8%8B</p>
+<p>协程，英文Coroutines，是一种基于线程之上，但又比线程更加轻量级的存在，这种由程序员自己写程序来管理的轻量级线程叫做『用户空间线程』，具有对内核来说不可见的特性。</p>
+<p>因为是自主开辟的异步任务，所以很多人也更喜欢叫它们纤程（Fiber），或者绿色线程（GreenThread）。正如一个进程可以拥有多个线程一样，一个线程也可以拥有多个协程。</p>
+<p>笔者的疑惑：协程好像就是开了历史的倒车（？），其实就是程序员自主实现的用户空间的线程，不受操作系统的调度，因而开销更小。</p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#进程">进程</a>
+      <ul>
+        <li><a href="#进程状态">进程状态</a></li>
+        <li><a href="#进程的其他状态">进程的其他状态</a></li>
+        <li><a href="#进程控制块-pcbprocess-control-block">进程控制块 PCB（Process Control Block）</a></li>
+        <li><a href="#进程地址空间">进程地址空间</a></li>
+        <li><a href="#上下文">上下文</a></li>
+        <li><a href="#进程队列">进程队列</a></li>
+      </ul>
+    </li>
+    <li><a href="#进程控制">进程控制</a>
+      <ul>
+        <li><a href="#进程创建">进程创建</a></li>
+        <li><a href="#进程撤销">进程撤销</a></li>
+        <li><a href="#进程阻塞和进程唤醒">进程阻塞和进程唤醒</a></li>
+        <li><a href="#unix-的几个进程控制操作">Unix 的几个进程控制操作</a></li>
+      </ul>
+    </li>
+    <li><a href="#线程">线程</a>
+      <ul>
+        <li><a href="#线程的实现">线程的实现</a></li>
+      </ul>
+    </li>
+    <li><a href="#协程">协程</a></li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

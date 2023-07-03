@@ -13,7 +13,7 @@
       <pubDate>Fri, 05 Nov 2021 00:00:00 +0000</pubDate>
       
       <guid>http://elenacliu.github.io/post/2021-11-05-something_about_install_from_source_code/</guid>
-      <description>几种常见的安装方式 (Linux) apt system 根据 Debian 官网上的定义：
+      <description>几种常见的安装方式 (Linux) # apt system # 根据 Debian 官网上的定义：
 Being able to install and remove packages is great, but the basic software for doing this (known as dpkg) does exactly that and nothing more. This is fine if you download one or two packages by hand, but quickly becomes cumbersome when you are trying to manage a large number of packages. Furthermore, if your shiny new package requires software you haven&amp;rsquo;t yet installed, you have to download the newly required software by hand.</description>
     </item>
     

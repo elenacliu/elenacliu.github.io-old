@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="6D Pose Estimation # 6D Pose # 6D pose means the 6 degrees of freedom of an object in camera-centered coordinates: 3D position $\mathrm{x}=(x,y,z)$ and 3D orientation $\theta=(r,p,y)$, where $r$ means roll (翻滚角), $p$ means pitch (俯仰角), and $y$ means yaw (偏航角).
+The three nouns come from aviation. The gifs below from this site illustrate them clearly:
+roll:
+pitch:
+yaw:
+The picture below shows which coordinate axis the three rotation angles correspond to.">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="6D Pose Estimation" />
+<meta property="og:description" content="6D Pose Estimation # 6D Pose # 6D pose means the 6 degrees of freedom of an object in camera-centered coordinates: 3D position $\mathrm{x}=(x,y,z)$ and 3D orientation $\theta=(r,p,y)$, where $r$ means roll (翻滚角), $p$ means pitch (俯仰角), and $y$ means yaw (偏航角).
+The three nouns come from aviation. The gifs below from this site illustrate them clearly:
+roll:
+pitch:
+yaw:
+The picture below shows which coordinate axis the three rotation angles correspond to." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://elenacliu.github.io/post/2023-07-03-6D-Pose-Estimation/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2023-07-03T00:00:00+00:00" />
+<meta property="article:modified_time" content="2023-07-03T00:00:00+00:00" />
+<title>6D Pose Estimation | cliu&#39;s Blog</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
+  <script defer src="/flexsearch.min.js"></script>
+  <script defer src="/en.search.min.b40b5b07da88e813791f2e7ba1e0c6adf9255e68628ef8ae5a15446cb4e5697f.js" integrity="sha256-tAtbB9qI6BN5Hy57oeDGrfklXmhijviuWhVEbLTlaX8=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>cliu&#39;s Blog</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>6D Pose Estimation</strong>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#6d-pose">6D Pose</a></li>
+    <li><a href="#pose-estimation">Pose Estimation</a>
+      <ul>
+        <li><a href="#instance-level-pose-estimation">Instance-level pose estimation</a></li>
+        <li><a href="#category-level-pose-estimation">Category-level pose estimation</a></li>
+      </ul>
+    </li>
+    <li><a href="#challenges">Challenges</a>
+      <ul>
+        <li><a href="#challenges-of-instances">Challenges of instances</a></li>
+        <li><a href="#challenges-of-categories">Challenges of categories</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="6d-pose-estimation">
+  6D Pose Estimation
+  <a class="anchor" href="#6d-pose-estimation">#</a>
+</h1>
+<h2 id="6d-pose">
+  6D Pose
+  <a class="anchor" href="#6d-pose">#</a>
+</h2>
+<p>6D pose means the 6 degrees of freedom of an object in <em>camera-centered</em> coordinates: 3D position $\mathrm{x}=(x,y,z)$ and 3D orientation $\theta=(r,p,y)$, where $r$ means roll (翻滚角), $p$ means pitch (俯仰角), and $y$ means yaw (偏航角).</p>
+<p>The three nouns come from aviation. The gifs below from <a href="https://howthingsfly.si.edu/flight-dynamics/roll-pitch-and-yaw">this site</a> illustrate them clearly:</p>
+<p>roll:</p>
+<p><img src="https://howthingsfly.si.edu/sites/default/files/2020-06/roll.gif" alt="roll" /></p>
+<p>pitch:</p>
+<p><img src="https://howthingsfly.si.edu/sites/default/files/2020-06/pitch.gif" alt="pitch" /></p>
+<p>yaw:</p>
+<p><img src="https://howthingsfly.si.edu/sites/default/files/2020-06/yaw2.gif" alt="yaw" /></p>
+<p>The picture below shows which coordinate axis the three rotation angles correspond to.</p>
+<!-- raw HTML omitted -->
+<h2 id="pose-estimation">
+  Pose Estimation
+  <a class="anchor" href="#pose-estimation">#</a>
+</h2>
+<h3 id="instance-level-pose-estimation">
+  Instance-level pose estimation
+  <a class="anchor" href="#instance-level-pose-estimation">#</a>
+</h3>
+<h4 id="single-instance">
+  Single instance
+  <a class="anchor" href="#single-instance">#</a>
+</h4>
+<p>Given an RGB-D image input $I$ where an instance $S$ of the interested object $O$ exists, we cast 6D object pose estimation as a joint probability estimation problem, and formulate it as given below:
+$$
+(\mathrm{x}, \theta)^*=\arg\max_{\mathrm{x}, \theta}p(\mathrm{x},\theta|I,S)
+$$
+This formulation assumes that there only exists one instance of the interested object in the RGB-D image I, and hence, producing the pair of pose parameters $(\mathrm{x}, \theta)$, which is of the instance $S$. Note that, this existence is apriori known by any 6D object pose estimation method. So to an extent, pose estimation includes the object detection task.</p>
+<p>Q: How is the information of instance $S$ given?</p>
+<p>A:</p>
+<h4 id="multi-instances">
+  Multi-instances
+  <a class="anchor" href="#multi-instances">#</a>
+</h4>
+<p>In case the image $I$ involves multiple instances $\mathcal{S}=\{S_i|i=1,&hellip;,n\}$ of the object of interest, the formulation of the problem takes the following form:
+$$
+(x_i, \theta_i)=\arg\max_{\mathrm{x}_i,\theta_i}p(\mathrm{x}_i,\theta_i|I,\mathcal{S}),i=1,&hellip;,n
+$$
+The number of instances $n$ is apriori known by the methods.</p>
+<h3 id="category-level-pose-estimation">
+  Category-level pose estimation
+  <a class="anchor" href="#category-level-pose-estimation">#</a>
+</h3>
+<h4 id="single-instance-per-category">
+  Single instance per category
+  <a class="anchor" href="#single-instance-per-category">#</a>
+</h4>
+<p>Given an instance $C$ of an interested category $c$, the 6D object pose estimation problem is formulated at the level of categories:
+$$
+(\mathrm{x}, \theta)^*=\arg\max_{\mathrm{x}, \theta}p(\mathrm{x},\theta|I,C,c)
+$$
+This equation assumes that there is only one instance of the interested category in the RGB-D image $I$ (apriori known by any 6D object pose estimation method).</p>
+<p>TODO: 所以这个方法是能通过 category c 找到 instance C 的位置吗？并需要不知道 instance C 到底是什么？</p>
+<h4 id="multi-instances-per-category">
+  Multi-instances per category
+  <a class="anchor" href="#multi-instances-per-category">#</a>
+</h4>
+<p>In case the image $I$ involves multiple instances $\mathcal{C}=\{C_i|i=1,&hellip;,n\}$ of the category of interest:
+$$
+(\mathrm{x}<em>i, \theta_i)^*=\arg\max</em>{\mathrm{x}_i, \theta_i}p(\mathrm{x}_i,\theta_i|I,\mathcal{C},c)
+$$</p>
+<h2 id="challenges">
+  Challenges
+  <a class="anchor" href="#challenges">#</a>
+</h2>
+<p>Note that the instances&rsquo; challenges can also be observed at the level of categories, but not the other way round.</p>
+<h3 id="challenges-of-instances">
+  Challenges of instances
+  <a class="anchor" href="#challenges-of-instances">#</a>
+</h3>
+<h4 id="viewpoint-variability-视点变化">
+  Viewpoint variability 视点变化
+  <a class="anchor" href="#viewpoint-variability-%e8%a7%86%e7%82%b9%e5%8f%98%e5%8c%96">#</a>
+</h4>
+<p>viewpoint variability 和 pose space variability 实际上是相对的。毕竟 camera 所在 viewpoint 的变化和物体的 pose 变化本质上是相对运动。而不同的 viewpoint 观察到的物体的形状可能具有很大差异。</p>
+<h4 id="texture-less-objects">
+  Texture-less objects
+  <a class="anchor" href="#texture-less-objects">#</a>
+</h4>
+<p>Texture is an important information for RGB cameras. An object of interest can easily be distinguished from background or any other instances available in the scene, in case it is sufficiently textured. The texture on the surface allows to define discriminative features to represent the interested object. However, when objects are texture-less, this discriminative property disappears, and thus making methods strongly dependent on depth channel in order to estimate 6D poses of objects.</p>
+<p>纹理方便用来区分 object of interest 和背景+其他物体。如果没有纹理，那么只能依靠深度信息来区分了。</p>
+<h4 id="occlusion-遮挡">
+  Occlusion 遮挡
+  <a class="anchor" href="#occlusion-%e9%81%ae%e6%8c%a1">#</a>
+</h4>
+<p>Occlusion occurs when an object of interest is partly or completely blocked by other objects existing in the scene.</p>
+<h4 id="clutter-混乱">
+  Clutter 混乱
+  <a class="anchor" href="#clutter-%e6%b7%b7%e4%b9%b1">#</a>
+</h4>
+<p>Clutter is a challenge mainly associated with complicated background of images, in which existing objects of interest even cannot be detected in naked eyes（不过这个就太苛刻了吧）</p>
+<h4 id="similar-looking-distractors">
+  Similar-Looking Distractors
+  <a class="anchor" href="#similar-looking-distractors">#</a>
+</h4>
+<p>当缺乏一些 discriminative features 时，6D pose estimator 容易做出误判。</p>
+<h3 id="challenges-of-categories">
+  Challenges of categories
+  <a class="anchor" href="#challenges-of-categories">#</a>
+</h3>
+<h4 id="intra-class-variation">
+  Intra-class variation
+  <a class="anchor" href="#intra-class-variation">#</a>
+</h4>
+<p>Despite the fact that instances from the same category typically have similar physical propertities, they are not exactly the same.</p>
+<p>Texture and color variations are seen in RGB channel, geometry and shape discrepancies are observed in depth channel.</p>
+<p>Geometric dissimilarities are related to scale and dimensions of the instances, and shape-wise, they appear different in case they physically have extra parts out of the common ones.</p>
+<p>尽管相同类别的物体确实有共同的物理属性，但是它们并非完全一致。比如：纹理和颜色的区别可以由 RGB 的值观测到，而几何与形状的区别可以由 depth 信息观测到。</p>
+<p>几何上的区别主要和物体的不同尺寸有关（比如小杯子和大杯子），而形状上的区别主要来源于不同物品除了共同的部分会有一点小区别。</p>
+<h4 id="distribution-shift">
+  Distribution shift
+  <a class="anchor" href="#distribution-shift">#</a>
+</h4>
+<p>The objects in the target domain are different than that are of the source domain, there is a shift between the marginal probability distributions of these two domains.</p>
+<p>Additionally, this distribution shift itself also <em>changes</em> as the instances in the target domain are <em>unseen</em> to the 6D pose estimator.</p>
+<p>物品在 source domain 上的分布会和在 target domain 上的有偏差（shift），并且 target domain 中的物品对 estimator 来说是未知的，所以观测到的 shift 会随着 target domain 中的实际物品变化。</p>
+<h4 id="multi-hypothesis-issue">
+  Multi-hypothesis issue
+  <a class="anchor" href="#multi-hypothesis-issue">#</a>
+</h4>
+<p><img src="/img/image-20230703235347606.png" alt="image-20230703235347606" /></p>
+<p>对于某一个特定角度的 view，可以对物体的 pose 做多种合理假设。比如(a)中的碗，由于是对称的，所以多种 orientation 都合理；又比如当(b)中的杯子的把被遮挡时，这个杯子的 orientation 也可以做多种合理假设。</p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [["$", "$"]],
+    },
+    displayMath: [
+      ["$$", "$$"],
+      ["\[\[", "\]\]"],
+    ],
+    svg: {
+      fontCache: "global",
+    },
+  };
+</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script
+  id="MathJax-script"
+  async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+></script>
+
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#6d-pose">6D Pose</a></li>
+    <li><a href="#pose-estimation">Pose Estimation</a>
+      <ul>
+        <li><a href="#instance-level-pose-estimation">Instance-level pose estimation</a></li>
+        <li><a href="#category-level-pose-estimation">Category-level pose estimation</a></li>
+      </ul>
+    </li>
+    <li><a href="#challenges">Challenges</a>
+      <ul>
+        <li><a href="#challenges-of-instances">Challenges of instances</a></li>
+        <li><a href="#challenges-of-categories">Challenges of categories</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

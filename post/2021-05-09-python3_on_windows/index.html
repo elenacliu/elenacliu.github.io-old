@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="神奇现象 # 一直以来,对于 python 和 python3,我都是这样记忆的: linux 上 pip3 和 python3, windows 上 pip 和 python
+但在做作业的时候, 忘了自己在 windows 上, 于是 python3 ./load_data.py 就这么顺手打出来了, 可是什么也没有发生. 经检查不是代码的问题,毕竟 print() 都没执行, 最后发现应该用 python 来执行命令. 那么问题来了:
+为什么 python3 执行时没有报错: no such command 在 powershell 中输入 python3 后跳到了microsoft store? 但我显然不会通过此途径下载 python 在 powershell 中输入 where python3 后,得到的结果是 C:\Users\******\AppData\Local\Microsoft\WindowsApps\python3.exe, 而输入 where python 后, 得到的结果是 D:\ProgramData\Anaconda3\python.exe 和 C:\Users\******\AppData\Local\Microsoft\WindowsApps\python.exe. 说明python3.exe 是存在的, 只不过安装的方式比较特别 于是终极问题是: 为什么用这个 python3.exe 执行代码, 不报错但也什么都没有发生? 直观感觉这个 python3.">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="windows python3 or python?" />
+<meta property="og:description" content="神奇现象 # 一直以来,对于 python 和 python3,我都是这样记忆的: linux 上 pip3 和 python3, windows 上 pip 和 python
+但在做作业的时候, 忘了自己在 windows 上, 于是 python3 ./load_data.py 就这么顺手打出来了, 可是什么也没有发生. 经检查不是代码的问题,毕竟 print() 都没执行, 最后发现应该用 python 来执行命令. 那么问题来了:
+为什么 python3 执行时没有报错: no such command 在 powershell 中输入 python3 后跳到了microsoft store? 但我显然不会通过此途径下载 python 在 powershell 中输入 where python3 后,得到的结果是 C:\Users\******\AppData\Local\Microsoft\WindowsApps\python3.exe, 而输入 where python 后, 得到的结果是 D:\ProgramData\Anaconda3\python.exe 和 C:\Users\******\AppData\Local\Microsoft\WindowsApps\python.exe. 说明python3.exe 是存在的, 只不过安装的方式比较特别 于是终极问题是: 为什么用这个 python3.exe 执行代码, 不报错但也什么都没有发生? 直观感觉这个 python3." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://elenacliu.github.io/post/2021-05-09-python3_on_windows/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2021-05-09T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-05-09T00:00:00+00:00" />
+<title>windows python3 or python? | cliu&#39;s Blog</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
+  <script defer src="/flexsearch.min.js"></script>
+  <script defer src="/en.search.min.b40b5b07da88e813791f2e7ba1e0c6adf9255e68628ef8ae5a15446cb4e5697f.js" integrity="sha256-tAtbB9qI6BN5Hy57oeDGrfklXmhijviuWhVEbLTlaX8=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>cliu&#39;s Blog</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>windows python3 or python?</strong>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents"></nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="神奇现象">
+  神奇现象
+  <a class="anchor" href="#%e7%a5%9e%e5%a5%87%e7%8e%b0%e8%b1%a1">#</a>
+</h1>
+<p>一直以来,对于 python 和 python3,我都是这样记忆的:
+linux 上 pip3 和 python3, windows 上 pip 和 python</p>
+<p>但在做作业的时候, 忘了自己在 windows 上, 于是 <code>python3 ./load_data.py</code> 就这么顺手打出来了, 可是什么也没有发生. 经检查不是代码的问题,毕竟 <code>print()</code> 都没执行, 最后发现应该用 <code>python</code> 来执行命令. 那么问题来了:</p>
+<ul>
+<li>为什么 <code>python3</code> 执行时没有报错: no such command</li>
+<li>在 powershell 中输入 <code>python3</code> 后跳到了microsoft store? 但我显然不会通过此途径下载 python</li>
+<li>在 powershell 中输入 where python3 后,得到的结果是 <code>C:\Users\******\AppData\Local\Microsoft\WindowsApps\python3.exe</code>, 而输入 where python 后, 得到的结果是 <code>D:\ProgramData\Anaconda3\python.exe</code> 和 <code>C:\Users\******\AppData\Local\Microsoft\WindowsApps\python.exe</code>. 说明python3.exe 是存在的, 只不过安装的方式比较特别</li>
+</ul>
+<p>于是终极问题是: 为什么用这个 python3.exe 执行代码, 不报错但也什么都没有发生? 直观感觉这个 python3.exe 的运行环境肯定是存在问题的(我最初以为是后台下载的时候网络还是什么东西出问题了导致环境不全). 或者说, 它是什么?</p>
+<h1 id="解释">
+  解释
+  <a class="anchor" href="#%e8%a7%a3%e9%87%8a">#</a>
+</h1>
+<p>本篇参考如下博客: 迷惑行为：Win10 中的 Python: <a href="https://shuhari.dev/blog/2019/11/win10-store-python">https://shuhari.dev/blog/2019/11/win10-store-python</a></p>
+<p>大概是因为, 微软试图让 windows 自带 python 环境(这个看上去很容易办到, 但是为啥非要以这个方式实现呢?疑惑) 它的作用在于当调用 python/python3 命令时, 自动跳转到 microsoft store 下载. 可是如下的结果确实说明这个方法不一定对每位用户都是一个好的选择:</p>
+<p><img src="https://i.loli.net/2021/05/09/BR6PYEc9xl1tISF.png" alt="image.png" /></p>
+<p>实话说用 microsoft store 下载东西好像体验一直不是很好&hellip;..</p>
+<p>不过上述功能可以通过&quot;应用程序别名&quot;关闭掉:</p>
+<p><img src="https://i.loli.net/2021/05/09/dHNE3uv9LmD4WIq.png" alt="image.png" /></p>
+<h1 id="python3-or-python">
+  python3 or python
+  <a class="anchor" href="#python3-or-python">#</a>
+</h1>
+<p>最后的问题: why <code>python3</code> on OSX and linux, but <code>python</code> on windows?</p>
+<p>so上是这样说的:</p>
+<blockquote>
+<p>OSX and Linux have python executable installed by default as a rule and it refers to Python 2 version in most cases at the moment that is why you need a separate python3 name there. There is no Python on Windows by default. And therefore any version that you&rsquo;ve installed is just python (I guess). The recommended way to manage multiple python versions is to use the Python launcher.</p>
+</blockquote>
+<p>看来等 windows 也有自带的 python 的时候,也得用 python3 跑程序了.</p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents"></nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="几种常见的安装方式 (Linux) # apt system # 根据 Debian 官网上的定义：
+Being able to install and remove packages is great, but the basic software for doing this (known as dpkg) does exactly that and nothing more. This is fine if you download one or two packages by hand, but quickly becomes cumbersome when you are trying to manage a large number of packages. Furthermore, if your shiny new package requires software you haven&rsquo;t yet installed, you have to download the newly required software by hand.">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="something about installing from source code" />
+<meta property="og:description" content="几种常见的安装方式 (Linux) # apt system # 根据 Debian 官网上的定义：
+Being able to install and remove packages is great, but the basic software for doing this (known as dpkg) does exactly that and nothing more. This is fine if you download one or two packages by hand, but quickly becomes cumbersome when you are trying to manage a large number of packages. Furthermore, if your shiny new package requires software you haven&rsquo;t yet installed, you have to download the newly required software by hand." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://elenacliu.github.io/post/2021-11-05-something_about_install_from_source_code/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2021-11-05T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-11-05T00:00:00+00:00" />
+<title>something about installing from source code | cliu&#39;s Blog</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
+  <script defer src="/flexsearch.min.js"></script>
+  <script defer src="/en.search.min.b40b5b07da88e813791f2e7ba1e0c6adf9255e68628ef8ae5a15446cb4e5697f.js" integrity="sha256-tAtbB9qI6BN5Hy57oeDGrfklXmhijviuWhVEbLTlaX8=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>cliu&#39;s Blog</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>something about installing from source code</strong>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#apt-system">apt system</a></li>
+    <li><a href="#从源代码安装">从源代码安装</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#prerequisites">prerequisites</a></li>
+    <li><a href="#downloading-the-source">downloading the source</a></li>
+    <li><a href="#configuration">configuration</a>
+      <ul>
+        <li><a href="#host-build-and-target-specification">Host, Build and Target Specification</a></li>
+        <li><a href="#options-specification">Options Specification</a></li>
+      </ul>
+    </li>
+    <li><a href="#building">Building</a>
+      <ul>
+        <li><a href="#build-a-native-compiler">Build a native compiler</a></li>
+        <li><a href="#build-a-cross-compiler">Build a cross compiler</a></li>
+      </ul>
+    </li>
+    <li><a href="#testing">Testing</a></li>
+    <li><a href="#installation">Installation</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="几种常见的安装方式-linux">
+  几种常见的安装方式 (Linux)
+  <a class="anchor" href="#%e5%87%a0%e7%a7%8d%e5%b8%b8%e8%a7%81%e7%9a%84%e5%ae%89%e8%a3%85%e6%96%b9%e5%bc%8f-linux">#</a>
+</h1>
+<h2 id="apt-system">
+  apt system
+  <a class="anchor" href="#apt-system">#</a>
+</h2>
+<p>根据 Debian 官网上的定义：</p>
+<blockquote>
+<p>Being able to install and remove packages is great, but the basic software for doing this (known as dpkg) does exactly that and nothing more. This is fine if you download one or two packages by hand, but quickly becomes cumbersome when you are trying to manage a large number of packages. Furthermore, if your shiny new package requires software you haven&rsquo;t yet installed, you have to download the newly required software by hand. And if you later decide to remove the no-longer-shiny package, these extra packages will linger on your system, consuming hard drive space, unless you manually remove them.</p>
+<p>Obviously, all of this manual labor is a tedious chore, and so most package management systems come with software which takes care of some or all of it for you. apt is a common base on which to build these programs: in addition to aptitude, programs such as synaptic and apt-watch make use of apt.</p>
+<p>apt works by keeping a list of the packages that can be downloaded from Debian on your computer. This list is used to find packages that need to be upgraded and to install new packages. apt can also solve many dependency problems automatically: for instance, when you choose to install a package, it will find any additional required packages and install those as well.</p>
+<p>When working with a package manager based on apt, such as aptitude, you will typically perform three basic tasks: you will update the list of packages that are available by downloading new lists from the Debian servers, you will select which packages should be installed, upgraded, or removed, and finally, you will commit your selections by actually performing the installations, removals, etc.</p>
+<p>apt-based package managers read the list of “sources” &ndash; repositories of Debian packages &ndash; from the file /etc/apt/sources.list. The format and contents of this file are beyond the scope of this document, but are described in the manual page sources.list(5).</p>
+</blockquote>
+<p>其主要优点是：可以根据软件的依赖自动帮你下载依赖中的 packages，无需一个个手动下载；同时，如果要卸载软件，也会根据总体的依赖情况帮你卸载掉当初引入且不被其他 package 所依赖的 extra packages.</p>
+<p>其工作方式是：首先读取 sources list（位于 /etc/apt/sources.list）（它的格式就不细讲了，差不多理解就行），逐一地访问 uri 上的 packages.gz 文件检查依赖（如 <a href="https://mirrors.tuna.tsinghua.edu.cn/debian/dists/bookworm/main/binary-amd64/packages.gz">https://mirrors.tuna.tsinghua.edu.cn/debian/dists/bookworm/main/binary-amd64/packages.gz</a> ），确定涉及的 package，然后去找需要安装的“东西”。找到的是什么东西呢？是以 .deb 为后缀的文件，它可以通过 <code>sudo dpkg -i 软件包名.deb</code> 的方式安装。并将从 uri 获得的 deb 文件放置在 /var/cache/apt/archives</p>
+<p>dpkg 如何安装 deb 呢，参考<a href="https://askubuntu.com/questions/540937/what-does-apt-get-install-do-under-the-hood">这里</a>的回答：</p>
+<blockquote>
+<ul>
+<li>extract the package and copy the content to the right location, and check for pre-existing files and modifications on them,</li>
+<li>run package maintainer scripts: preinst, postinst, (and prerm, postrm before these, if a package is being upgraded)</li>
+<li>execute some actions based on triggers</li>
+</ul>
+</blockquote>
+<h2 id="从源代码安装">
+  从源代码安装
+  <a class="anchor" href="#%e4%bb%8e%e6%ba%90%e4%bb%a3%e7%a0%81%e5%ae%89%e8%a3%85">#</a>
+</h2>
+<p>顾名思义，手头只有某个 package 的源代码和相应的构建工具，只能亲自让代码-&gt;二进制程序+头文件，并让这些二进制程序和头文件归位，以便编译和运行我自己的代码的时候可以找到它们。</p>
+<h1 id="为什么要从源码安装">
+  为什么要从源码安装
+  <a class="anchor" href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e8%a6%81%e4%bb%8e%e6%ba%90%e7%a0%81%e5%ae%89%e8%a3%85">#</a>
+</h1>
+<p>转眼间，距离上一次写（shui）技术博客已经整整 4 个月了，这 4 个月经历了人生中第一份实习，还打了一场保研之战，终于都过去了。</p>
+<p>上个学期以来，我差不多 install from source 了以下一些东西：g++/gcc, python3, opencv, （某家的）mpi，踩了一些坑，发现了一点规律，就此记录。</p>
+<p>不得不从源码安装的理由无非是 sources.list 里面没找到我们想安装的东西，一般都是太老或者太新的版本。当然，sources.list 里面有什么，和系统版本也是有关的。</p>
+<h1 id="从源码安装的基本步骤">
+  从源码安装的基本步骤
+  <a class="anchor" href="#%e4%bb%8e%e6%ba%90%e7%a0%81%e5%ae%89%e8%a3%85%e7%9a%84%e5%9f%ba%e6%9c%ac%e6%ad%a5%e9%aa%a4">#</a>
+</h1>
+<p>由于各种库都大同小异，因此从 GCC 入手介绍。</p>
+<p>在 GNU GCC 的<a href="https://gcc.gnu.org/install/">官网</a>上可以看到如下步骤：</p>
+<ul>
+<li>prerequisites</li>
+<li>downloading the source</li>
+<li>configuration</li>
+<li>building</li>
+<li>testing (optional)</li>
+<li>final installation</li>
+</ul>
+<h2 id="prerequisites">
+  prerequisites
+  <a class="anchor" href="#prerequisites">#</a>
+</h2>
+<p>其实是从源码安装所需要的基本工具，比如安装新版本的 GCC 需要：</p>
+<ul>
+<li>ISO C++11 compiler（一般是系统自带的）</li>
+<li>C standard library and headers (C 标准库和头文件)</li>
+<li>gzip or bzip2 or tar（下载代码一定是压缩后文件，因此也必须拥有解压工具）</li>
+<li>GNU make（基础构建工具）</li>
+<li>GNU Multiple Precision Library (GMP is a free library for arbitrary precision arithmetic, operating on signed integers, rational numbers, and floating-point numbers.)</li>
+<li>GNU MPFR Library (The MPFR library is a C library for multiple-precision floating-point computations with correct rounding.)</li>
+<li>MPC Library (a C library for the arithmetic of complex numbers with arbitrarily high precision and correct rounding of the result.)</li>
+</ul>
+<p>等条件。（可以看到后面三个和算术运算有关系，神秘）</p>
+<h2 id="downloading-the-source">
+  downloading the source
+  <a class="anchor" href="#downloading-the-source">#</a>
+</h2>
+<p>使用 git 或者 wget 就可以将网上分发的代码下载到自己的电脑上啦！</p>
+<p>当然，如果服务直接访问某些网站不太行，就自己下载以后 scp 传到服务器上吧~</p>
+<h2 id="configuration">
+  configuration
+  <a class="anchor" href="#configuration">#</a>
+</h2>
+<blockquote>
+<p>Like most GNU software, GCC must be configured before it can be built.</p>
+</blockquote>
+<p>顾名思义，这是通过选项，给后面的 build &amp; install 阶段做配置（比如要挑选哪些部分来 build），生成对应配置的 Makefile 文件。</p>
+<p>有两个概念，一个是 <em>srcdir</em>，代表 GCC source repository 的顶层目录，一个是 <em>objdir</em>，代表的是 build/object 文件夹的顶层目录。</p>
+<p>一般来说，<em>srcdir</em> 和 <em>objdir</em> 最好是<strong>单独的两个文件夹</strong>，且 <em>objdir</em> 不要是 <em>srcdir</em> 的子文件夹；<em>srcdir</em> = <em>objdir</em> 的情况可能可以成功，但是不推荐。</p>
+<p>进行配置的步骤基本是：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>% mkdir objdir
+</span></span><span style="display:flex;"><span>% cd objdir
+</span></span><span style="display:flex;"><span>% srcdir/configure <span style="color:#f92672">[</span>options<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>target<span style="color:#f92672">]</span>
+</span></span></code></pre></div><h3 id="host-build-and-target-specification">
+  Host, Build and Target Specification
+  <a class="anchor" href="#host-build-and-target-specification">#</a>
+</h3>
+<blockquote>
+<p>Specify the host, build and target machine configurations. You do this when you run the configure script.</p>
+<p>The build machine is the system which you are using, the host machine is the system where you want to run the resulting compiler (normally the build machine), and the target machine is the system for which you want the compiler to generate code.</p>
+</blockquote>
+<p><em>build</em> machine 是现在使用的系统，<em>host</em> machine 是希望运行生成的编译器的系统（通常就是 <em>build</em> machine），<em>target</em> machine 是希望编译器为其生成代码的系统。</p>
+<p>补充知识:</p>
+<p>Triple:</p>
+<p>通用形式是：<code>&lt;arch&gt;&lt;sub&gt;-&lt;vendor&gt;-&lt;sys&gt;-&lt;abi&gt;</code></p>
+<ul>
+<li>arch = x86_64, i386, arm, thumb, mips, etc</li>
+<li>sub = for ex. on ARM: v5, v6m, v7a, v7m, etc</li>
+<li>vendor = pc, apple, nvidia, ibm, etc</li>
+<li>sys = none, linux, win32, darwin, cuda, etc</li>
+<li>abi = eabi, gnu, android, macho, elf, etc
+(关于 abi 是什么，就不在这里详细介绍了，新的博客提上日程啦)</li>
+</ul>
+<h3 id="options-specification">
+  Options Specification
+  <a class="anchor" href="#options-specification">#</a>
+</h3>
+<p>下面列出几个常用的:</p>
+<ul>
+<li>
+<p><code>--prefix=dirname</code>: Specify the toplevel installation directory. This is the recommended way to install the tools into a directory other than the default. The toplevel installation directory defaults to /usr/local. <strong>We highly recommend against dirname being the same or a subdirectory of objdir or vice versa</strong>. If specifying a directory beneath a user’s home directory tree, some shells will not expand dirname correctly if it contains the ‘~’ metacharacter; use $HOME instead.</p>
+<ul>
+<li>和 prefix 有关的还有，但 <strong>Normally you should not need to use these options</strong>
+<ul>
+<li><code>--exec-prefix=dirname</code>: Specify the toplevel installation directory for architecture-dependent files. The default is prefix.</li>
+<li><code>--bindir=dirname</code>: Specify the installation directory for the executables called by users (such as gcc and g++). The default is exec-prefix/bin.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><code>--program-prefix=prefix</code>, <code>--program-suffix=suffix</code>: This option prepends prefix/suffix to the names of programs to install in bindir (see above). For example, specifying &ndash;program-prefix=foo- would result in ‘gcc’ being installed as /usr/local/bin/foo-gcc.</p>
+</li>
+<li>
+<p><code>--with-local-prefix=dirname</code>: Specify the installation directory for local include files. The default is /usr/local. Specify this option if you want the compiler to search directory dirname/include for locally installed header files instead of /usr/local/include.</p>
+<p><strong>You should specify &ndash;with-local-prefix only if your site has a different convention (not /usr/local) for where to put site-specific files.</strong></p>
+<p><strong>The default value for &ndash;with-local-prefix is /usr/local regardless of the value of &ndash;prefix. Specifying &ndash;prefix has no effect on which directory GCC searches for local header files. This may seem counterintuitive, but actually it is logical.</strong></p>
+<p>这说明即便将 include 的头文件放在了 prefix 下且把  &ndash;with-local-prefix 设置成为了 prefix，在编译时如果不加 <code>-I</code> 的编译选项指定头文件位置，编译器默认是不会去 prefix/include 文件夹搜索头文件的。这个选项在编译多个不在同一个目录下的文件非常有用。</p>
+<p>Both the <em>local-prefix include directory</em> and the <em>GCC-prefix include directory</em> are part of GCC’s “system include” directories.</p>
+<p>Both the local-prefix include directory and the GCC-prefix include directory are part of GCC’s “system include” directories. Although these two directories are not fixed, they need to be searched in the proper order for the correct processing of the include_next directive. The local-prefix include directory is searched before the GCC-prefix include directory. Another characteristic of system include directories is that pedantic warnings are turned off for headers in these directories.</p>
+<p><a href="https://stackoverflow.com/questions/42739295/does-g-not-take-header-files-from-the-first-include-path-it-exists-in">一个疑问是：local-prefix include dir 和 GCC-prefix include dir 有什么区别呢？</a></p>
+</li>
+<li>
+<p><code>--disable-multilib</code>:
+Specify that multiple target libraries to support different target variants, calling conventions, etc. should not be built. The default is to build a predefined set of them.</p>
+</li>
+<li>
+<p><code>--enable-languages=lang1,lang2,…</code>:
+Specify that only a particular subset of compilers and their runtime libraries should be built. For a list of valid values for langN you can issue the following command in the gcc directory of your GCC source tree: <code>grep ^language= */config-lang.in</code></p>
+</li>
+</ul>
+<h2 id="building">
+  Building
+  <a class="anchor" href="#building">#</a>
+</h2>
+<h3 id="build-a-native-compiler">
+  Build a native compiler
+  <a class="anchor" href="#build-a-native-compiler">#</a>
+</h3>
+<p>执行 <code>make</code> 命令，对 GCC 的源码进行编译</p>
+<h3 id="build-a-cross-compiler">
+  Build a cross compiler
+  <a class="anchor" href="#build-a-cross-compiler">#</a>
+</h3>
+<blockquote>
+<p>When building a cross compiler, it is not generally possible to do a 3-stage bootstrap of the compiler. This makes for an interesting problem as parts of GCC can only be built with GCC.</p>
+<p>To build a cross compiler, we recommend first building and installing a native compiler. You can then use the native GCC compiler to build the cross compiler. The installed native compiler needs to be GCC version 2.95 or later.</p>
+</blockquote>
+<h2 id="testing">
+  Testing
+  <a class="anchor" href="#testing">#</a>
+</h2>
+<p>测试阶段。对于 GCC 主要测试：</p>
+<blockquote>
+<p>This will test various components of GCC, such as compiler front ends and runtime libraries.</p>
+</blockquote>
+<p>源自维基百科：</p>
+<p>The front end analyzes the source code to build an internal representation of the program, called the intermediate representation (IR). It also manages the symbol table, a data structure mapping each symbol in the source code to associated information such as location, type and scope.</p>
+<ul>
+<li>line reconstruction</li>
+<li>preprocessing</li>
+<li>lexical analysis</li>
+<li>syntax analysis</li>
+<li>semantic analysis</li>
+</ul>
+<h2 id="installation">
+  Installation
+  <a class="anchor" href="#installation">#</a>
+</h2>
+<p><code>cd objdir &amp;&amp; make install</code></p>
+<blockquote>
+<p>We strongly recommend to install into a target directory where there is no previous version of GCC present.</p>
+</blockquote>
+<p>这一步就是把编译所得的产物和相应的头文件放在合适的位置（可能需要管理员权限）。具体地：</p>
+<blockquote>
+<p>user level binaries can be found in prefix/bin where prefix is the value you specified with the &ndash;prefix to configure (or /usr/local by default). (If you specified &ndash;bindir, that directory will be used instead; otherwise, if you specified &ndash;exec-prefix, exec-prefix/bin will be used.) Headers for the C++ library are installed in prefix/include; libraries in libdir (normally prefix/lib); internal parts of the compiler in libdir/gcc and libexecdir/gcc; documentation in info format in infodir (normally prefix/info).</p>
+</blockquote>
+<p>还有一种写法是：</p>
+<p><code>make DESTDIR=path-to-rootdir install</code></p>
+<p>DESTDIR 是什么呢？</p>
+<p><a href="https://petsc.org/release/install/install/#installs-for-package-managers-using-destdir-very-uncommon">https://petsc.org/release/install/install/#installs-for-package-managers-using-destdir-very-uncommon</a></p>
+<p><a href="https://stackoverflow.com/questions/11307465/destdir-and-prefix-of-make">https://stackoverflow.com/questions/11307465/destdir-and-prefix-of-make</a></p>
+<p><a href="https://www.gnu.org/software/automake/manual/html_node/DESTDIR.html">https://www.gnu.org/software/automake/manual/html_node/DESTDIR.html</a></p>
+<p>可以看到这个选项是为 Package Managers 准备的，因为这些人需要知道 install 的时候安装了哪些文件，使用　DESTDIR　选项（绝对路径）后，会将所有文件安装到 <code>${DESTDIR}/prefix/</code> 下。方便其打包。</p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#apt-system">apt system</a></li>
+    <li><a href="#从源代码安装">从源代码安装</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#prerequisites">prerequisites</a></li>
+    <li><a href="#downloading-the-source">downloading the source</a></li>
+    <li><a href="#configuration">configuration</a>
+      <ul>
+        <li><a href="#host-build-and-target-specification">Host, Build and Target Specification</a></li>
+        <li><a href="#options-specification">Options Specification</a></li>
+      </ul>
+    </li>
+    <li><a href="#building">Building</a>
+      <ul>
+        <li><a href="#build-a-native-compiler">Build a native compiler</a></li>
+        <li><a href="#build-a-cross-compiler">Build a cross compiler</a></li>
+      </ul>
+    </li>
+    <li><a href="#testing">Testing</a></li>
+    <li><a href="#installation">Installation</a></li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

@@ -16,11 +16,11 @@
       <description>因为我的笔记本电脑是 Windows 系统，在很多场景下不方便环境配置，因此经常在 Linux 服务器上进行 GitHub 项目的开发。为了在服务器上更方便地连接到 GitHub 的服务器，我在使用 ssh 连接服务器时默认开启了 ForwardAgent 选项。
 但最近一个多月以来，我发现在本机 ssh-agent 添加了本地私钥并正常运行、且本机可以 ssh 连接到 GitHub 服务器（命令 ssh -T git@github.com）的情况下，通过 ssh 远程连接到 Ubuntu 20.04/22.04 Server 后，Ubuntu Server 无法 ssh 连接到 GitHub 服务器。
 通过一系列探索和尝试，最终解决了该问题，特记录之。
-ssh agent 原理 参考：
+ssh agent 原理 # 参考：
 https://smallstep.com/blog/ssh-agent-explained/
 https://www.ruanyifeng.com/blog/2011/12/ssh_remote_login.html
 上面描述的是问题现象，解决问题前需要大致了解 SSH Agent 的工作原理。
-什么是 ssh agent ssh agent 是一个保存用于公钥认证（RSA, DSA）的私钥的程序。它将用户的私钥和证书保存在内存中，供 ssh 使用。ssh agent 和 ssh 是两个不同的程序，它们分别运行，并且 ssh agent 一般在登陆会话开始时启动。
+什么是 ssh agent # ssh agent 是一个保存用于公钥认证（RSA, DSA）的私钥的程序。它将用户的私钥和证书保存在内存中，供 ssh 使用。ssh agent 和 ssh 是两个不同的程序，它们分别运行，并且 ssh agent 一般在登陆会话开始时启动。
 ssh agent 通过下面的方式确保用户私钥安全：
 不会将私钥写入硬盘 不允许将用户的私钥被导出 另外，私钥只是用来进行 authentication 的，并不是用来对发送和接收的消息做加解密的。</description>
     </item>
