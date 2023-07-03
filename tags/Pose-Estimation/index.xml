@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Pose Estimation on cliu&#39;s Blog</title>
+    <link>http://elenacliu.github.io/tags/Pose-Estimation/</link>
+    <description>Recent content in Pose Estimation on cliu&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 03 Jul 2023 00:00:00 +0000</lastBuildDate><atom:link href="http://elenacliu.github.io/tags/Pose-Estimation/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>6D Pose Estimation</title>
+      <link>http://elenacliu.github.io/post/2023-07-03-6D-Pose-Estimation/</link>
+      <pubDate>Mon, 03 Jul 2023 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2023-07-03-6D-Pose-Estimation/</guid>
+      <description>6D Pose Estimation 6D Pose 6D pose means the 6 degrees of freedom of an object in camera-centered coordinates: 3D position $\mathrm{x}=(x,y,z)$ and 3D orientation $\theta=(r,p,y)$, where $r$ means roll (翻滚角), $p$ means pitch (俯仰角), and $y$ means yaw (偏航角).
+The three nouns come from aviation. The gifs below from this site illustrate them clearly:
+roll:
+pitch:
+yaw:
+The picture below shows which coordinate axis the three rotation angles correspond to.</description>
+    </item>
+    
+  </channel>
+</rss>

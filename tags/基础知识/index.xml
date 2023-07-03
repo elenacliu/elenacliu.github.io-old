@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>基础知识 on cliu&#39;s Blog</title>
+    <link>http://elenacliu.github.io/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/</link>
+    <description>Recent content in 基础知识 on cliu&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 05 Nov 2021 00:00:00 +0000</lastBuildDate><atom:link href="http://elenacliu.github.io/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>something about installing from source code</title>
+      <link>http://elenacliu.github.io/post/2021-11-05-something_about_install_from_source_code/</link>
+      <pubDate>Fri, 05 Nov 2021 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2021-11-05-something_about_install_from_source_code/</guid>
+      <description>几种常见的安装方式 (Linux) apt system 根据 Debian 官网上的定义：
+Being able to install and remove packages is great, but the basic software for doing this (known as dpkg) does exactly that and nothing more. This is fine if you download one or two packages by hand, but quickly becomes cumbersome when you are trying to manage a large number of packages. Furthermore, if your shiny new package requires software you haven&amp;rsquo;t yet installed, you have to download the newly required software by hand.</description>
+    </item>
+    
+  </channel>
+</rss>

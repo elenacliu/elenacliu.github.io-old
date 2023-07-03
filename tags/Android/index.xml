@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Android on cliu&#39;s Blog</title>
+    <link>http://elenacliu.github.io/tags/Android/</link>
+    <description>Recent content in Android on cliu&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 03 Jul 2022 00:00:00 +0000</lastBuildDate><atom:link href="http://elenacliu.github.io/tags/Android/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>adb 笔记</title>
+      <link>http://elenacliu.github.io/post/2022-07-03-adb%E7%AC%94%E8%AE%B0/</link>
+      <pubDate>Sun, 03 Jul 2022 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2022-07-03-adb%E7%AC%94%E8%AE%B0/</guid>
+      <description>This is my first post written in English, because I think in such way it will be easier for foreigners to read my technical blogs.
+Lately I tried to use Tasker, an application on Android, to do some timed tasks. You can write &amp;ldquo;ADB Wifi&amp;rdquo; codes in Tasker. However, what is ADB? How does it work to communicate between host and target device?
+References:
+[1] Android Debug Bridge: https://developer.android.com/studio/command-line/adb
+[2] ADB (Android Debug Bridge): How it works?</description>
+    </item>
+    
+    <item>
+      <title>Android-Studio安装记录</title>
+      <link>http://elenacliu.github.io/post/2020-07-31-Android-Studio%E5%AE%89%E8%A3%85%E8%AE%B0%E5%BD%95/</link>
+      <pubDate>Fri, 31 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2020-07-31-Android-Studio%E5%AE%89%E8%A3%85%E8%AE%B0%E5%BD%95/</guid>
+      <description>Android Studio安装记录 去年就搞过AS，但是因为完全零基础踩了不少坑：不知道安装SDK的前提是安装JRE/JDK；SDK和gradle下载不知道如何使用镜像站，网速很差，下载的东西根本不全，后来总是出现奇奇怪怪的问题完全不能使用。
+今年因为课程需要再次下载，现记录一下步骤备用。
+官网 版本4.0.1
+选择.exe版本下载。
+安装完成后，点击运行AS，遇到的第一个错误
+原因：电脑没有SDK而且下载的android studio又是不带SDK的；
+按照网上教程的说法，先点击Cancel，进入主页面再在SDK manager工具里面进行下载。（但是实操发现不是这么个步骤）
+点击Cancel后就一路Next进入配置步骤。但是不知道为什么又从dl.google官网上下载了一大堆东西。
+当时的配置基本情况如下：
+从显示的信息来看应该是在这一步要主动给我安装SDK，前提是你的电脑环境已经配置好了JDK。
+Setup Type: Standard SDK Folder: C:\Users\*****\AppData\Local\Android\Sdk JDK Location: D:\AS\jre (Note: Gradle may be using JAVA_HOME when invoked from command line. More info...) Total Download Size: 498 MB SDK Components to Download: Android Emulator 235 MB Android SDK Build-Tools 30.0.1 51.3 MB Android SDK Platform 30 49.9 MB Android SDK Platform-Tools 8.03 MB Android SDK Tools 149 MB Intel x86 Emulator Accelerator (HAXM installer) 2.</description>
+    </item>
+    
+  </channel>
+</rss>

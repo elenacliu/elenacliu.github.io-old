@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>cliu&#39;s Blog</title>
+    <link>http://elenacliu.github.io/</link>
+    <description>Recent content on cliu&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 03 Jul 2023 00:00:00 +0000</lastBuildDate><atom:link href="http://elenacliu.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>6D Pose Estimation</title>
+      <link>http://elenacliu.github.io/post/2023-07-03-6D-Pose-Estimation/</link>
+      <pubDate>Mon, 03 Jul 2023 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2023-07-03-6D-Pose-Estimation/</guid>
+      <description>6D Pose Estimation 6D Pose 6D pose means the 6 degrees of freedom of an object in camera-centered coordinates: 3D position $\mathrm{x}=(x,y,z)$ and 3D orientation $\theta=(r,p,y)$, where $r$ means roll (翻滚角), $p$ means pitch (俯仰角), and $y$ means yaw (偏航角).
+The three nouns come from aviation. The gifs below from this site illustrate them clearly:
+roll:
+pitch:
+yaw:
+The picture below shows which coordinate axis the three rotation angles correspond to.</description>
+    </item>
+    
+    <item>
+      <title>操作系统之进程与线程模型</title>
+      <link>http://elenacliu.github.io/post/2023-06-12-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E4%B9%8B%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B/</link>
+      <pubDate>Mon, 12 Jun 2023 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2023-06-12-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E4%B9%8B%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B/</guid>
+      <description>进程与线程模型 进程 进程的定义：进程是具有独立功能的程序关于某个数据集合上的一次运行活动，是系统进行资源分配和调度的独立单位。
+进程状态 进程的基本状态：运行态、就绪态、等待态
+运行：占有 CPU，并在 CPU 上运行
+就绪：已经具备运行条件，但由于没有空闲 CPU，而暂时无法运行
+等待/阻塞 (注意不是挂起)：因为等待某一事件（如完成 IO）而暂时不能运行
+进程的其他状态 创建：已完成创建一进程所必要的工作。如分配了 PCB，拥有 PID。但未同意执行该进程，因为资源有限。
+终止：终止执行后，进程进入该状态。可以完成一些数据统计工作，并进行资源回收。
+挂起：把一个进程从内存转到磁盘。进程不占用内存空间，其进程映像（但不包括进程的代码段和数据段）交换到磁盘上。用于调节负载。
+就绪挂起：suspended ready
+阻塞挂起：suspended block
+下面摘自：https://www.orzzone.com/process-state-transition.html
+引入挂起状态后，需要实现进程在挂起（即在外存）状态和非挂起（即在内存）状态之间的转换。由于被挂起的进程不能被调度运行，因此通常将挂起状态称为静止状态，而将非挂起状态称为活跃状态。根据挂起前进程所处的状态，可以将挂起状态分为：静止就绪状态和静止阻塞状态。
+系统通常将具有相同状态的进程组成一个或多个队列。为了区别，将进程基本状态中的就绪状态改称为活动就绪状态，阻塞状态改称为活动阻塞状态。相应地，我们又多了 6 种转换关系：
+活动阻塞状态挂起变为静止阻塞态。主要有两种情况会发生这种挂起（进程由内存换出至外存）状态变化：①若当前不存在活动就绪进程，则至少有一个活动阻塞进程由内存兑换至外存成为静止阻塞进程，以腾出内存空间，从外存调入一个静止就绪进程使其变为活动就绪进程（保证内存中至少有一个活动就绪进程，可供进程调度程序调度运行以免CPU空闲）；②操作系统根据当前的资源状态和性能要求，可以将某些活动阻塞进程换出至外存成为静止阻塞进程。 静止阻塞态激活变为活动阻塞态。一般在满足两个条件下，系统可以激活（进程由外存换入至内存）一个静止阻塞态进程，使之成为活动阻塞进程。即：①操作系统已经得知导致该进程阻塞的事件即将结束；②内存中已经有了一大块空闲的空间。 静止阻塞态变为静止就绪态。当在外存上的静止阻塞进程所需资源得到满足或者等待的事件已经完成时，该进程由静止阻塞态变为静止就绪态（但仍然在外存）。 静止就绪态激活变为活动就绪态。主要有三种情况会发生这种激活（进程由外存换入至内存）状态变化：①外存上的静止就绪进程具有比内存中的活动就绪进程更高的优先级；②内存中已经有了一大块空闲的空间；③当前内存中没有活动就绪进程。 活动就绪态挂起变为静止就绪态。这种状态变化主要是由于系统调节负荷（即内存紧张）的需要，或者是系统优化性能的需求，而将某些目前暂不需要运行的活动就绪进程由内存换出至外存。 运行态挂起（由内存换出至外存）变为静止就绪态。这种状态变化制药是运行进程出现了错误或异常，或者是对运行进程进行分析的需要。 可见，只有处于活动就绪态的进程，才能参与进程调度得到CPU，并在获得CPU后立即投入运行。具有挂起状态的系统虽然提高了内存的利用率，但同时也使管理更加复杂，且增加了系统的开销。
+进程控制块 PCB（Process Control Block） 操作系统表示进程的一个专门的数据结构，记录进程的各种属性，描述进程的动态变化过程。
+又称为：进程描述符、进程属性
+操作系统通过 PCB 来控制和管理进程
+PCB 是系统感知进程存在的唯一标志 进程与 PCB 是一一对应的 Linux：task_struct
+Windows: EPROCESS, KPROCESS, PEB
+PCB 的主要内容
+进程描述信息 进程标识符 进程名，通常基于可执行文件名 用户标识符；进程组关系 进程控制信息 当前状态；阻塞原因 优先级 代码执行入口地址 可执行文件名（磁盘地址） 运行统计信息（执行时间页面调度） 进程间同步和通信 进程的队列指针 进程的消息队列指针 所拥有的资源和使用情况 虚拟地址空间的现状 打开文件列表 CPU 现场信息 寄存器值（通用寄存器、PC、PSW、栈指针） 指向赋予该进程的段/页表的指针 进程地址空间 /proc/{pid}/maps 文件</description>
+    </item>
+    
+    <item>
+      <title>操作系统之异常处理机制</title>
+      <link>http://elenacliu.github.io/post/2023-06-11-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E4%B9%8B%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E6%9C%BA%E5%88%B6/</link>
+      <pubDate>Sun, 11 Jun 2023 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2023-06-11-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E4%B9%8B%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E6%9C%BA%E5%88%B6/</guid>
+      <description>异常处理 寄存器 处理器由运算器、控制器、一系列的寄存器以及高速缓存构成。
+用户可见寄存器：机器语言可以直接引用
+数据寄存器：也称为通用寄存器 地址寄存器：地址寄存器可以分为两种类型：一种是基地址寄存器，它存储的是变量或数组的起始地址; 另一种是偏移地址寄存器，它存储的是相对于基地址的偏移地址。 条件码寄存器：条件码（condition code）寄存器，是 CPU 维护的一组单个位的用于描述最近的算术或逻辑操作的状态属性，条件分支指令可以检测这些寄存器的值来确定转移方向,最常用的条件码有: CF（进位标志）、ZF（零标志）、SF（符号标志）、OF（溢出标志） 控制和状态寄存器：用于控制处理器的操作，在某种特权级别下可以访问和修改
+程序计数器（PC）：用来存储指向下一条指令的地址 指令寄存器（IR：instruction register）：用于取指后暂存当前正在执行的指令 程序状态字（PSW：program status word）：PSW用来存放两类信息：一类是体现当前指令执行结果的各种状态信息，称为状态标志，如有无借位进位（CY位）、有无溢出（OF位）、结果正负（SF位）、结果是否为零（ZF位）、奇偶标志位（PF位）等；另一类是存放控制信息，称为控制状态，如允许中断(IF位)，跟踪标志（TF位），方向标志(DF)等。有些机器中将PSW称为标志寄存器FR（Flag Register）。 比如 x86 的 FLAGS 寄存器：
+低 16 位是 FLAGS
+中间 16 位是 EFLAGS
+IOPL：I/O 特权级
+NT：嵌套任务标志
+RF：重新启动标志
+AC：对准检查方式位
+VIF：虚拟中断标志
+VIP：虚拟中断 pending 标志
+ID：The ID flag (bit 21) in the EFLAGS register indicates support for the CPUID instruction. If a software procedure can set and clear this flag, the processor executing the procedure supports the CPUID instruction.</description>
+    </item>
+    
+    <item>
+      <title>花样滑冰积分规则</title>
+      <link>http://elenacliu.github.io/post/2023-06-04-%E8%8A%B1%E6%A0%B7%E6%BB%91%E5%86%B0%E7%A7%AF%E5%88%86%E8%A7%84%E5%88%99/</link>
+      <pubDate>Sun, 04 Jun 2023 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2023-06-04-%E8%8A%B1%E6%A0%B7%E6%BB%91%E5%86%B0%E7%A7%AF%E5%88%86%E8%A7%84%E5%88%99/</guid>
+      <description>本文参考：https://www.tumblr.com/the-real-xmonster/172317267829/world-standing-how-does-it-work-i-got-several
+ISU World Standing 最近因为作业的缘故，需要了解国际滑联（ISU）给花样滑冰运动员积分排名的方式。从 ISU 的官方页面知道有两个比较重要的排名，分别是 ISU World Standing, ISU World Season&amp;rsquo;s Ranking
+这两个排名中比较重要的是 ISU World Standing，为什么呢？这是因为国际滑联会根据这个排名确定花滑世锦赛上短节目（short program）比赛的顺序。分数最高的 6 名选手将在最后一组出场（不过，这 6 个人的确切出场顺序将抽签决定）。
+ISU World Standing 是积分制的排名系统，综合考察了过去三个赛季的积分。每个赛季为期一年，如2020-2021年为一个赛季。最近两年的积分按照原始积分计算，而最远的那个赛季的积分要乘70%，进行削弱。
+下面我们介绍每个赛季的积分如何计算。每个赛季的积分取决于两个因素：选手参加了什么类型的比赛，以及在比赛中获得的排名。
+比赛共有三个档次：
+档次1: 冬奥会，世锦赛，欧洲锦标赛，四大洲锦标赛 档次2: 花滑大奖赛的六个分站赛（Grand Pix）和总决赛（Grand Pix Final） 档次3: 所有其他 ISU 认可的国际个人比赛 ISU 给每种类型比赛的评分如下：
+但是，上表中的 IC（international competitions）并不适用于挑战者系列赛事（ISU Challenger Series）。这个系列的比赛比一般的 IC 比赛评定的分数更高，但是又比大奖赛低。
+最佳积分原则 对档次1的比赛，只有该赛季的最佳成绩才被统计。比如，陈巍在2017-2018赛季的积分是1200，因为他在世锦赛取得了冠军。他在冬奥会上的积分是787（第五名），但因为比世锦赛的成绩更低，所以不被记入。
+对档次2和档次3的比赛，取最高的两次成绩之和。注意，最高成绩是从积分来说的，而不是排名高低。
+最终积分 对于档次1比赛的积分，选择过去三个赛季中最好的2次成绩。
+对于档次2/3比赛的积分，选择过去三个赛季中最好的4次成绩。
+然后将挑选出来的这些积分相加，就得到了他们的总积分，再根据这个积分排名，可以得到他们的 World Standing。
+以羽生结弦在2017-2018年的 World Standing 为例：
+2017-2018 season points（100%）：
+档次1：1200（冬奥会 1st）
+档次2：最佳，360（GP Rostelecom Cup 2nd）；次佳，无</description>
+    </item>
+    
+    <item>
+      <title>Figure skating elements (jump)</title>
+      <link>http://elenacliu.github.io/post/2023-06-03-%E8%8A%B1%E6%A0%B7%E6%BB%91%E5%86%B0%E6%8A%80%E6%9C%AF%E5%85%83%E7%B4%A0%E4%B9%8B%E8%B7%B3%E8%B7%83/</link>
+      <pubDate>Sat, 03 Jun 2023 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2023-06-03-%E8%8A%B1%E6%A0%B7%E6%BB%91%E5%86%B0%E6%8A%80%E6%9C%AF%E5%85%83%E7%B4%A0%E4%B9%8B%E8%B7%B3%E8%B7%83/</guid>
+      <description>以下内容来自：https://www.youtube.com/watch?v=HkcAmGCkjtA
+基本规律 Every jump is landed in the same way, so you look at the entrance of the jump to tell them apart.
+所有的跳跃在落地时使用的都是同一方式。所以通过进入跳跃的方式来区分不同的跳跃。
+对于右撇子来说，在空中的旋转一般是逆时针的。如果一位运动员在空中的旋转是顺时针的，那么他所有的动作的左右都和其他运动员相反。
+all jumps land on the right back outside edge
+所有的跳跃都在 right back outside edge 落地。
+right：右脚 back：向后滑行 outside：冰刀外侧 edge：冰刃 下面是演示图：
+两种类型：点冰跳，结环跳 (2 categories: toe jumps, edge jumps) Toe jumps: Toe Loop, Flip, Lutz
+Edge jumps: Salchow, Loop, Axel
+后外点冰跳 Toe Loop entered from a turn or as the 2nd/3rd jump in combination（因为只有 turn 或者前面的 jump 结束之后，左脚才会在后面，才可能左脚尖踮地跳起） strike the ice with the left toe pick In high-level ladies skating, the toe loop is almost always used as the and/3rd jump in a combo, never on its own except for the VERY few women who can do a Quad Toe Loop 要注意，点冰脚不是起跳脚。因此右脚起跳，右脚落冰。 后内点冰跳 Flip Loop entered from a turn left back inside edge (maybe a shallow inside edge, especially for women) right toe pick strikes the ice 左脚起跳，右脚落冰 勾手跳 Lutz usually entered from a longer, straight backwards glide left back outside edge（因为脚要往外撇一下，看起来像是崴脚了） right toe pick strikes the ice 左脚起跳，右脚落冰 后内结环跳 Salchow entered from a turn No toe pick assistance &amp;ldquo;sweeping&amp;rdquo; motion of blades Legs form / \ shape take off from left blade（从左刃起跳） 左脚起跳，右脚落冰 后外结环跳 Loop often entered from a turn left leg crossed over right leg in X shape take off from right blade can also be used as 2nd or 3rd jump in combination 右脚起跳，右脚落冰（所以 Loop 容易和 Toe Loop 弄混） 阿克塞尔跳 Axel the only jump that takes off forward 首先向后滑动，然后看向左侧 and then, left foot steps forward, draw back arms, lift right leg（借力） and jump (take off from the left blade) because it takes off forward and lands backward, the axel has an extra half rotation (相当于正面起跳，落地时是背面，多出半圈) 左脚起跳，右脚落冰 Euler (pronounced &amp;ldquo;oiler&amp;rdquo;)</description>
+    </item>
+    
+    <item>
+      <title>区块链相关概念解释</title>
+      <link>http://elenacliu.github.io/post/2023-05-26-%E5%8C%BA%E5%9D%97%E9%93%BE%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5/</link>
+      <pubDate>Fri, 26 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2023-05-26-%E5%8C%BA%E5%9D%97%E9%93%BE%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5/</guid>
+      <description>注意：本文仅作技术概念解释，并不输出任何主观投资意见。
+本文主要按照以下逻辑组织：
+区块链 blockchain、比特币 bitcoin、以太坊 ethereum、智能合约 smart contract、去中心化应用 DApp、代币 token、共识机制 consensus mechanism（内容较多，预计开一篇新的 post 来总结） ERC20 BRC20 区块链 从抽象的角度来讲，区块链是一个分布式“账本”。分布式是指区块链是由许多对等的节点（node）共同构成；账本的比喻是指区块链就像一个大账本，存储了每一项交易的信息；至于为什么叫做“区块”“链”，是因为多个交易（transaction）的执行会形成一个新的区块（block）来保存交易信息，而这些区块以链（chain）的形式连接起来（类似计算机数据结构中的链表），实际上，每个区块都记录了它前一个区块的唯一哈希标识（hash），而当前区块的标识则由时间戳、前面区块的标识和当前区块的内容共同计算得到。如果区块的内容被矿工（miner）核验（verify，其实就是挖矿，具体操作将在后面的“共识机制”部分解释）通过，那么新区块就会诞生并连接到区块链上（这个过程也成为“上链”）。
+因此，一旦有人改动了链上区块的内容，该区块及其所有后继区块的标识会“失效”（如何定义“失效”将在后面的“共识机制”部分进行解释），可能导致分布式环境中该节点被认为是出错或恶意节点，被排除出去。
+一个形象的在线 demo，可以帮助理解区块链：
+https://andersbrownworth.com/blockchain/blockchain
+区块链分叉 因为区块链是去中心化的数据结构，所以不同副本之间不能总是保持一致。区块有可能在不同时间到达不同节点，导致节点有不同的区块链视角。解决的办法是，每一个节点总是选择并尝试延长代表累计了最大工作量证明的区块链，也就是最长的或最大累计难度的链。节点通过将记录在每个区块中的难度加总起来，得到建立这个链所要付出的工作量证明的总量。只要所有的节点选择最长累计难度的区块链，整个比特币网络最终会收敛到一致的状态。分叉即在不同区块链间发生的临时差异，当更多的区块添加到了某个分叉中，这个问题便会迎刃而解。
+从理论上来说，两个区块的分叉是有可能的，这种情况发生在因先前分叉而相互对立起来的矿工，又几乎同时发现了两个不同区块的解。然而，这种情况发生的几率是很低的。单区块分叉每周都会发生，而双块分叉则非常罕见。所以这里提到的区块链分叉是区块链的一种临时状态，最终分叉很大概率会消失。
+比特币将区块间隔设计为10分钟，是在更快速的交易确认和更低的分叉概率间作出的妥协。更短的区块产生间隔会让交易清算更快地完成，也会导致更加频繁地区块链分叉。与之相对地，更长的间隔会减少分叉数量，却会导致更长的清算时间。
+本节参考资料：
+Understanding Double-Spending and How to Prevent Attacks (investopedia.com)
+https://ethereum.org/en/developers/docs/intro-to-ethereum/
+https://www.8btc.com/books/261/master_bitcoin/_book/8/8.html
+比特币 挖矿奖励 矿工们通过为比特币网络提供算力来换取获得比特币奖励的机会。矿工们在挖矿过程中会得到两种类型的奖励：创建新区块的新币奖励，以及区块中所含交易的交易费。
+上面所述区块链需要有矿工核验区块内容并将区块上链，这个过程需要消耗算力。为了激励各计算节点进行计算，如果某计算节点成功核验区块内容并计算得到了该区块的 hash（挖矿），那么这个节点就会得到创建新区块的比特币奖励。
+矿工们同时也会获取交易费。每笔交易都可能包含一笔交易费，交易费是每笔交易记录的输入和输出的差额。在挖矿过程中成功“挖出”新区块的矿工可以得到该区块中包含的所有交易“小费”。目前，这笔费用占矿工收入的0.5%或更少，大部分收益仍来自挖矿所得的比特币奖励。然而随着挖矿奖励的递减，以及每个区块中包含的交易数量增加，交易费在矿工收益中所占的比重将会逐渐增加。在2140年之后，所有的矿工收益都将由交易费构成。
+注意，一个区块往往包含多个交易。区块链中的每个区块都包含了产生于该区块的所有交易，且以 Merkle 树表示（关于 Merkle 树的内容，可以参考 mastering bitcoin 书籍的 7.7 节）。而矿工从自己的内存中收集所有交易、准备打包区块时，如果发现某交易提供更多的交易费，那么就会将它作为本次打包优先考虑的交易记录。
+挖矿同时还保护着比特币系统的安全，防止欺诈交易，避免“双重支付”，“双重支付”是指多次花费同一笔比特币。该部分将在“共识机制”部分阐述。
+交易确认 一个区块产生后，并不会被立即信任。网络上的节点总是信任最长的区块链，当一条交易记录被打包进一个区块后，就有了一个“确认”，而在这个区块所在的链后面再加入一个区块，就是第二个确认，如此下去，如果一个交易有了 6 个确认，就认为这个交易已经确定了，会被永远记录在区块链中。6 个确认的理由是：每个确认就是一次挖矿过程，需要提供严格的计算，因此，这 6 个区块被同一个矿工创建的概率很低，所以一个矿工伪造交易不太可能。由于比特币区块的平均产生时间是 10 分钟，所以一个交易最快需要 1 小时左右才能保证成功。
+交易广播 比特币交易中没有过期、超时的概念，一笔交易现在有效，那么它就永远有效。然而，如果一笔交易只在全网广播了一次，那么它只会保存在一个挖矿节点的内存中。因为内存池是以未持久化的方式保存在挖矿节点存储器中的，所以一旦这个节点重新启动，内存池中的数据就会被完全擦除。而且，即便一笔有效交易被传播到了全网，如果它长时间未处理，它将从挖矿节点的内存池中消失。如果交易本应该在一段时间内被处理而实际没有，那么钱包软件应该重新发送交易或重新支付更高的矿工费。
+比特币链的硬分叉和软分叉 硬分叉：硬分叉是一种不支持向后兼容的软件升级方式。通常，这些情况发生在节点以与旧节点的规则冲突的方式添加新规则时。新节点只能与运行新版本的软件节点进行交互。结果，区块链发生了分裂，生产出两个单独的网络：一个按照旧规则运行，一个则按照新规则运行。</description>
+    </item>
+    
+    <item>
+      <title>OpenSSH Agent Forward 失败解决方法</title>
+      <link>http://elenacliu.github.io/post/2023-04-30-SSH-Agent-Forward-%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95/</link>
+      <pubDate>Sun, 30 Apr 2023 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2023-04-30-SSH-Agent-Forward-%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95/</guid>
+      <description>因为我的笔记本电脑是 Windows 系统，在很多场景下不方便环境配置，因此经常在 Linux 服务器上进行 GitHub 项目的开发。为了在服务器上更方便地连接到 GitHub 的服务器，我在使用 ssh 连接服务器时默认开启了 ForwardAgent 选项。
+但最近一个多月以来，我发现在本机 ssh-agent 添加了本地私钥并正常运行、且本机可以 ssh 连接到 GitHub 服务器（命令 ssh -T git@github.com）的情况下，通过 ssh 远程连接到 Ubuntu 20.04/22.04 Server 后，Ubuntu Server 无法 ssh 连接到 GitHub 服务器。
+通过一系列探索和尝试，最终解决了该问题，特记录之。
+ssh agent 原理 参考：
+https://smallstep.com/blog/ssh-agent-explained/
+https://www.ruanyifeng.com/blog/2011/12/ssh_remote_login.html
+上面描述的是问题现象，解决问题前需要大致了解 SSH Agent 的工作原理。
+什么是 ssh agent ssh agent 是一个保存用于公钥认证（RSA, DSA）的私钥的程序。它将用户的私钥和证书保存在内存中，供 ssh 使用。ssh agent 和 ssh 是两个不同的程序，它们分别运行，并且 ssh agent 一般在登陆会话开始时启动。
+ssh agent 通过下面的方式确保用户私钥安全：
+不会将私钥写入硬盘 不允许将用户的私钥被导出 另外，私钥只是用来进行 authentication 的，并不是用来对发送和接收的消息做加解密的。</description>
+    </item>
+    
+    <item>
+      <title>2022年终总结</title>
+      <link>http://elenacliu.github.io/post/2022-12-31-%E5%B9%B4%E7%BB%88%E6%80%BB%E7%BB%93/</link>
+      <pubDate>Sat, 31 Dec 2022 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2022-12-31-%E5%B9%B4%E7%BB%88%E6%80%BB%E7%BB%93/</guid>
+      <description>转眼间就到了 2022 年的最后一天了。这一年我进行了很多尝试，有了新的收获和思考。仅从我个人的角度来说，2022 年是完满的一年，年初的一些大致规划都实现了。但 2022 年也有很多遗憾，来者犹可追。
+时间线 2022.1~2022.5
+顺利完成了毕设，第一次感受到了什么是稳扎稳打、循序渐进的科研。 学习了现代西班牙语1，很喜欢 Estrella 老师，亲切随和。课堂发言时总担心出错，她开导我学习语言的目的就是为了交流，会说二外是一件很酷的事情。确实很酷，尤其是世界杯的时候能大概看懂梅西讲话字幕 : ) 学习了经济学原理，第一次从计算机以外的视角看待世界。人性很奇妙。 周日上午在音乐图书馆学习吉他。主要学习和弦和节奏。 最后一门专业限选课：网络原理专题训练。“出来混总是要还的“。 鸿雁训练营的伦巴课：上了4节课，后来因为疫情没法上了。拉丁舞的舞步是基本功，要扭出味道很难。 学生节转到春季学期进行，成为了学生节志愿者。办好一次学生节真的不容易。所有人都辛苦了！ 2022.5~2022.6
+北京疫情开始严重，每天在寝室上课、学习。 周日的吉他课被迫转到线上，节奏部分耽误了。 2022.6
+毕业季。和亲朋好友在校园里拍了美美的照片，离别的时候看着空空的床铺，很难过。毕业典礼那天太热了，我选择了延期参加，希望明年还能有机会趁着毕业典礼的机会回来看看。 为系毕联活动尽了自己的一份力。我会永远记得这个夏天。 几乎是压着 ddl 申请了中科院开源之夏（ospp）项目，为 Jina AI 社区集成主流的 3D 点云分类网络。成功中选。 给 nsd 提交了校外经济学辅修的修读申请。 2022.7~2022.8
+远程科研，继续自己的毕设研究。 完成开源之夏项目。 陪伴家人，买菜做饭，学习钢琴，复习吉他。 7月底和高中同学一起去贵州毕业旅行，累并快乐着。贵阳真的好凉快，物价超值！ 入选研究生新生领航计划。 nsd 校外经济学辅修项目免试录取。 2022.9
+家乡疫情开始严重，趁着没有波及到所在地时提前返校。离开家人有些不舍。
+研究生开学，导师双选。没什么波澜。
+通过了开学的编程能力测试，不用修C/Java语言课了。开心。
+赶 ICLR deadline，每天奔波约 40 km，很累，但很有希望。
+入选了爱心社项目组。参加每周例会。
+开源之夏项目收尾工作。
+9 月是北京最美最舒适的日子，那段时间几乎每天穿过丰台往返于大兴和海淀之间，看遍了北京的秋高气爽。也明白了每个北漂的辛苦和不易。
+2022.10~2022.11 全年最忙碌的一个半月，忙到爆炸
+尝试了新发型。
+国庆之后开始赶 CVPR deadline。简单一行字，实际上几座大山压得人喘不过气。
+开源之夏项目终审通过。
+上课，作业，pre。主动挑大梁。
+2022.11
+PKUGeekGame v2：历时整整一周，第一次打 CTF。不知道那周怎么过来的，只要睁眼就在解题。不过，体验一次做 hacker 的感觉就好，因为实在是占用休息时间。好在有个不错的结果。 毕设科研项目收尾。 CVPR deadline 结束。 收到了开源社区的实习邀请，但考虑到时间因素还是婉拒了。 北京疫情又开始严重，学校开始封校。 2022.</description>
+    </item>
+    
+    <item>
+      <title>adb 笔记</title>
+      <link>http://elenacliu.github.io/post/2022-07-03-adb%E7%AC%94%E8%AE%B0/</link>
+      <pubDate>Sun, 03 Jul 2022 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2022-07-03-adb%E7%AC%94%E8%AE%B0/</guid>
+      <description>This is my first post written in English, because I think in such way it will be easier for foreigners to read my technical blogs.
+Lately I tried to use Tasker, an application on Android, to do some timed tasks. You can write &amp;ldquo;ADB Wifi&amp;rdquo; codes in Tasker. However, what is ADB? How does it work to communicate between host and target device?
+References:
+[1] Android Debug Bridge: https://developer.android.com/studio/command-line/adb
+[2] ADB (Android Debug Bridge): How it works?</description>
+    </item>
+    
+    <item>
+      <title>Tasker 笔记</title>
+      <link>http://elenacliu.github.io/post/2022-07-02-Tasker%E7%AC%94%E8%AE%B0/</link>
+      <pubDate>Sat, 02 Jul 2022 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2022-07-02-Tasker%E7%AC%94%E8%AE%B0/</guid>
+      <description>Tasker 简介 Tasker 是一款在安卓手机上实现定时任务的付费应用，官方提供 7 天的免费试用期。其功能非常强大，能够在无 root 权限下完成对手机的各种模拟操作。当然，和 Tasker 搭配的插件很多是需要 root 权限才可以完成工作的。
+笔者使用的是 HarmonyOS，但没找到 root 的方法，所以网友提出的很多操作方法没法实践。
+安装和使用 安装链接：点击这里
+该应用的 UI 十分简陋，这里记录一些基本使用步骤。
+任务 点击右下角加号可以进入创建任务的界面
+进入创建任务的界面，可以选择定义任务的方式
+比较常用的有代码、任务和插件。
+其中代码可以选择 adb wifi, Java function, Java object, Javascript, Javascriptlet, shell 脚本等等。
+任务有等待、执行任务（一般是你定义好的其他任务）。
+插件则可以调用其他 Tasker 支持的应用，比如 SecureSettings，AutoInput…… 这些插件可以加强 Tasker 执行任务的功能。插件的具体功能在对应部分讲解。
+配置文件 点击右下角加号可以添加配置文件
+配置一般是触发任务的条件。因此在添加配置的时候，需要指定事件、位置、或者时间等条件。
+ADB 简介 相信曾经使用过 Android Studio 开发安卓应用的人都听说过这个玩意，全称 Android Debug Bridge。虽然官方网页上对 ADB 的原理介绍非常简略，但这个通信过程好像并不简单。打算未来再开篇文章研究下。
+从功能来说，感觉 ADB 其实就是提供了用其他设备（可能是 PC）调试安卓设备的方法。无论是 emulator 还是 shell，都是很方便的。
+使用 目前只使用了 adb shell 的方法，用命令行进行调试。另，笔者 PC 端的操作系统是 Windows10。</description>
+    </item>
+    
+    <item>
+      <title>something about installing from source code</title>
+      <link>http://elenacliu.github.io/post/2021-11-05-something_about_install_from_source_code/</link>
+      <pubDate>Fri, 05 Nov 2021 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2021-11-05-something_about_install_from_source_code/</guid>
+      <description>几种常见的安装方式 (Linux) apt system 根据 Debian 官网上的定义：
+Being able to install and remove packages is great, but the basic software for doing this (known as dpkg) does exactly that and nothing more. This is fine if you download one or two packages by hand, but quickly becomes cumbersome when you are trying to manage a large number of packages. Furthermore, if your shiny new package requires software you haven&amp;rsquo;t yet installed, you have to download the newly required software by hand.</description>
+    </item>
+    
+    <item>
+      <title>windows python3 or python?</title>
+      <link>http://elenacliu.github.io/post/2021-05-09-python3_on_windows/</link>
+      <pubDate>Sun, 09 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2021-05-09-python3_on_windows/</guid>
+      <description>神奇现象 一直以来,对于 python 和 python3,我都是这样记忆的: linux 上 pip3 和 python3, windows 上 pip 和 python
+但在做作业的时候, 忘了自己在 windows 上, 于是 python3 ./load_data.py 就这么顺手打出来了, 可是什么也没有发生. 经检查不是代码的问题,毕竟 print() 都没执行, 最后发现应该用 python 来执行命令. 那么问题来了:
+为什么 python3 执行时没有报错: no such command 在 powershell 中输入 python3 后跳到了microsoft store? 但我显然不会通过此途径下载 python 在 powershell 中输入 where python3 后,得到的结果是 C:\Users\******\AppData\Local\Microsoft\WindowsApps\python3.exe, 而输入 where python 后, 得到的结果是 D:\ProgramData\Anaconda3\python.exe 和 C:\Users\******\AppData\Local\Microsoft\WindowsApps\python.exe. 说明python3.exe 是存在的, 只不过安装的方式比较特别 于是终极问题是: 为什么用这个 python3.exe 执行代码, 不报错但也什么都没有发生? 直观感觉这个 python3.exe 的运行环境肯定是存在问题的(我最初以为是后台下载的时候网络还是什么东西出问题了导致环境不全).</description>
+    </item>
+    
+    <item>
+      <title>win10 or Linux? 我都要</title>
+      <link>http://elenacliu.github.io/post/2021-01-22-windows%E9%87%8D%E8%A3%85%E5%92%8C%E5%8F%8C%E7%B3%BB%E7%BB%9F%E5%AE%89%E8%A3%85%E8%AE%B0%E5%BD%95/</link>
+      <pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2021-01-22-windows%E9%87%8D%E8%A3%85%E5%92%8C%E5%8F%8C%E7%B3%BB%E7%BB%9F%E5%AE%89%E8%A3%85%E8%AE%B0%E5%BD%95/</guid>
+      <description>TL; DR 总的来讲这两天就做了下面几件事情
+重装 windows 系统
+制作 windows 启动盘（ &amp;gt; 8G ）
+修改系统盘的Partition table格式：MBR to GPT
+对系统盘进行格式化并重新分区
+修改 windows 系统所在分区的文件系统： NTFS to FAT32
+正式开始重装
+安装 Ubuntu 双系统
+制作 Ubuntu 启动盘 开始重装 设置分区 安装显卡驱动 安装输入法 修改 grub 以修改默认启动顺序 各种其他环境的配置（ to be continued ） 前言 其实去年暑假就打算重装一下电脑了，但当时把其他事情的优先级放置得比较靠前就没开搞。再加上大三上的各种大作业的环境配置，让我感觉没有一个原生的Linux环境真是太麻烦了（尽管有 wsl2 但还是没有在用 Linux 的感觉）……所以趁此寒假赶紧开始。
+谨以此文纪念寒假中花在这件事上的三天，并感谢某可爱在此过程中给予的关心和帮助~笔芯~:kissing_heart:
+第一部分：重装windows 参考链接
+先讲讲我这台电脑在此之前的基本信息吧
+SSD: MBR, NTFS, 128G HDD: GPT, NTFS, 1T BIOS: Legacy BIOS Memory: 8G GPU: NVIDIA GEFORCE GTX 1050 由于我之后需要安装 Ubuntu 双系统，参考这篇博客后发现 UEFI 引导比较稳妥，因此决定摒弃 Legacy BIOS 。但 UEFI 要求系统盘对应的分区表是 GPT ，因此肯定需要做从 MBR 到 GPT 的修改；但电脑在运行操作系统的时候肯定不能对 C 盘进行该修改，一番搜索后发现安装过程中按 Shift+F10 （有的电脑需要加Fn）可以调出 windows 命令行（不过此时操作系统尚未装好，一些命令是无法使用的）此时可以通过 diskpart 命令对磁盘进行格式化、分区、分区表转换等操作。</description>
+    </item>
+    
+    <item>
+      <title>git学习笔记(2)</title>
+      <link>http://elenacliu.github.io/post/2020-09-23-git%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B02/</link>
+      <pubDate>Wed, 23 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2020-09-23-git%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B02/</guid>
+      <description>git学习笔记(2) 在上周一直说要学习git的另外三个比较常见的操作，可是因为各种原因一直拖着没学。明日复明日，明日何其多！
+于是下定决心趁着今天做软工小作业，就把这三个git操作学习一番。
+声明：本博客并非作者的原创内容！因为是git新手，所以本系列文章主要提炼了参考网站上的内容，而几乎没有自己的实操经验，只是为了便于未来查阅。如要详细了解对应内容，请点击进入原网站查看。
+1. git rebase（奇妙与危险相伴） 参考1
+参考2
+在Git中整合来自不同分支的修改主要有两种方法：merge和rebase（变基）。变基顾名思义就是在commit history上看，在某一分支上做的修改“好像”是直接在另一分支上进行的一样。
+基本操作 以下图为例：
+如果想要将experiment分支上的修改整合到master分支上，那么最简单的方法是合并。
+但也可以提取C4中引入的修改，再在C3的基础上应用一次。这种操作就叫做rebase。
+$ git checkout experiment	# 检出experiment分支 $ git rebase master	# 变基到master分支上 变基后的结果为： 查看一个经过变基的分支的历史记录时会发现，尽管实际的开发工作是并行的， 但它们看上去就像是串行的一样，提交历史是一条直线没有分叉。
+使用场景(!!!) 首先我们来看上述参考网站中的一段原文：
+变基的风险 呃，奇妙的变基也并非完美无缺，要用它得遵守一条准则： 如果提交存在于你的仓库之外，而别人可能基于这些提交进行开发，那么不要执行变基。 如果你遵循这条金科玉律，就不会出差错。 否则，人民群众会仇恨你，你的朋友和家人也会嘲笑你，唾弃你。
+正确用法：一般我们这样做的目的是为了确保在向远程分支推送时能保持提交历史的整洁——例如向某个其他人维护的项目贡献代码时。 在这种情况下，你首先在自己的分支里进行开发，当开发完成时你需要先将你的代码变基到 origin/master 上，然后再向主项目提交修改。 这样的话，该项目的维护者就不再需要进行整合工作，只需要快进合并便可。
+错误用法：变基操作的实质是丢弃一些现有的提交，然后相应地新建一些内容一样但实际上不同的提交。 如果你已经将提交推送至某个仓库，而其他人也已经从该仓库拉取提交并进行了后续工作，此时，如果你用 git rebase 命令重新整理了提交并再次推送，你的同伴因此将不得不再次将他们手头的工作与你的提交进行整合，如果接下来你还要拉取并整合他们修改过的提交，事情就会变得一团糟。
+trade-off 那么在项目中究竟是使用合并还是变基？首先需要考虑commit history的意义。
+一种观点是，仓库的提交历史是对事实的记录。它是针对历史的文档，本身就有价值，不能乱改。 从这个角度看来，改变提交历史是一种亵渎，你使用 谎言 掩盖了实际发生过的事情。 如果由合并产生的提交历史是一团糟怎么办？ 既然事实就是如此，那么这些痕迹就应该被保留下来，让后人能够查阅。
+另一种观点则正好相反，他们认为提交历史是 项目过程中发生的事。 没人会出版一本书的第一版草稿，软件维护手册也是需要反复修订才能方便使用。 持这一观点的人会使用 rebase 及 filter-branch 等工具来编写故事，怎么方便后来的读者就怎么写。
+总的原则是，只对尚未推送或分享给别人的本地修改执行变基操作清理历史， 从不对已推送至别处的提交执行变基操作，这样，你才能享受到两种方式带来的便利。
+2. git cherry-pick git cherry-pick 教程</description>
+    </item>
+    
+    <item>
+      <title>git学习笔记(1)</title>
+      <link>http://elenacliu.github.io/post/2020-09-15-git%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</link>
+      <pubDate>Tue, 15 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2020-09-15-git%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</guid>
+      <description>git学习笔记(1) 声明：本博客并非作者的原创内容！因为是git新手，所以本系列文章主要提炼了参考网站上的内容，而几乎没有自己的实操经验，只是为了便于未来查阅。
+1. fast forward &amp;amp; no fast forward 在当前分支合并到另一分支时，如果没有冲突需要解决，就会直接移动文件指针。这个过程叫做fast forward。
+举个例子：
+开发一直在master分支进行，但忽然有了新想法于是新建了一个dev分支并进行了一系列提交，完成后想要回到master分支，此时master分支在创建dev分支后并未产生新的commit。此时的合并就叫做fast forward。
+如下图：
+全过程的树状图为：
+合并之前：
+合并之后：
+可以看到并没有创建一个新的merge commit，而是直接将master指针移动到了dev的最新commit上。
+2. git merge &amp;amp; git revert &amp;amp; git reset 合并&amp;amp;撤销合并&amp;amp;版本回滚 2.1 合并分支 如果想要将dev分支合并到master分支上，应该先git checkout master抵达master分支，再git merge &amp;ndash;no-ff dev将dev分支合并过来 如果遇到冲突且想取消合并，git merge &amp;ndash;abort 如果遇到冲突且想解决冲突，则在编辑器中（Q: 怎么找到所有有冲突的地方？）修改后在master分支中git add -u, 再git commit -m &amp;ldquo;Merge dev into master&amp;rdquo;。 合并时遇到冲突想要取消操作，恢复index，git merge --abort
+git show &amp;lt;commit&amp;gt;操作会显示所处的Parent的版本线索。(index)
+在合并之前要保证没有未commit的文件。如果有未commit的文件但是现在又不想提交，应该使用stash命令暂存。
+问题：git merge后如何检查是否还存在冲突没有解决？（背景：在工作中，遇到一个问题，在git merge后，发生冲突，而当冲突较多的时候，逐个检查冲突，有的时候会遗漏一些文件，导致带有冲突标记的文件上传到了 Git 服务器上，如何解决这个问题呢？）
+使用以下命令可以快速检查是否还存在有带有冲突标记的文件。 git diff --check
+2.2 撤销合并（合并回滚） merge后没有别的操作和改动时：</description>
+    </item>
+    
+    <item>
+      <title>Android-Studio安装记录</title>
+      <link>http://elenacliu.github.io/post/2020-07-31-Android-Studio%E5%AE%89%E8%A3%85%E8%AE%B0%E5%BD%95/</link>
+      <pubDate>Fri, 31 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2020-07-31-Android-Studio%E5%AE%89%E8%A3%85%E8%AE%B0%E5%BD%95/</guid>
+      <description>Android Studio安装记录 去年就搞过AS，但是因为完全零基础踩了不少坑：不知道安装SDK的前提是安装JRE/JDK；SDK和gradle下载不知道如何使用镜像站，网速很差，下载的东西根本不全，后来总是出现奇奇怪怪的问题完全不能使用。
+今年因为课程需要再次下载，现记录一下步骤备用。
+官网 版本4.0.1
+选择.exe版本下载。
+安装完成后，点击运行AS，遇到的第一个错误
+原因：电脑没有SDK而且下载的android studio又是不带SDK的；
+按照网上教程的说法，先点击Cancel，进入主页面再在SDK manager工具里面进行下载。（但是实操发现不是这么个步骤）
+点击Cancel后就一路Next进入配置步骤。但是不知道为什么又从dl.google官网上下载了一大堆东西。
+当时的配置基本情况如下：
+从显示的信息来看应该是在这一步要主动给我安装SDK，前提是你的电脑环境已经配置好了JDK。
+Setup Type: Standard SDK Folder: C:\Users\*****\AppData\Local\Android\Sdk JDK Location: D:\AS\jre (Note: Gradle may be using JAVA_HOME when invoked from command line. More info...) Total Download Size: 498 MB SDK Components to Download: Android Emulator 235 MB Android SDK Build-Tools 30.0.1 51.3 MB Android SDK Platform 30 49.9 MB Android SDK Platform-Tools 8.03 MB Android SDK Tools 149 MB Intel x86 Emulator Accelerator (HAXM installer) 2.</description>
+    </item>
+    
+    <item>
+      <title>Parser</title>
+      <link>http://elenacliu.github.io/post/2020-06-15-Parser/</link>
+      <pubDate>Mon, 15 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2020-06-15-Parser/</guid>
+      <description>Parser 与表达式解析有关的题目多半要用栈或者递归来解决（我习惯用栈+迭代）。数据结构课程栈一章，中缀表达式求值算法可以供参考（核心在于两个栈，一个放操作数，一个放操作符） 这里列出了LC上关于解析的常见题目
+LC726. 原子的数量 题目链接
+方法1：栈+迭代 如果没有听说过中缀表达式求值的算法，推荐一看，对于本题的理解很有帮助。
+还是那句话，写代码的前提要知道是我们自己遇到这个问题怎么解决。
+对于给定字符串f，我们无非要做以下三件事：
+提取元素名称atom 提取紧跟着的元素个数cnt 根据括号关系计算元素出现的总次数num 对上述第三点，如果我知道两个括号之间所有的元素和他们在括号内的个数，再乘以括号后紧跟着的数字，不就能够解决了吗？
+我们设置两个容器，一个是括号栈parentheses_stack，用来匹配括号，另一个是一个元素信息列表element_info，用来记录字符串f中出现的元素的名称、当前个数、当前被几个括号包围（之所以不像中缀表达式求值那样设计两个栈，是因为在表达式求值的场景中，操作符有目数的限制，因此对放置操作数的容器只有末尾的pop和push操作，而且最后一定只有一个value做结果，因此用只栈放置操作数是可以的）
+可能有人会疑惑为什么这里要记录某元素当前被几个括号包围，实际上正是通过这个数和括号栈（只放置了(括号）的中的括号个数的大小关系，判断元素信息列表中的哪些元素的个数在本轮中需要乘以括号后的数字（这也是我认为最比较巧妙的一个点）。
+以K4(ON(SO3)2)2为例，演示过程：
+代码 class Solution: def countOfAtoms(self, f: str) -&amp;gt; str: i = 0 n = len(f) element_info = list() # list of [element_name, number_of_element, number_of_parentheses] parentheses_stack = list() # atom = str() distribution = dict() while i &amp;lt; n: # 如果遇到的是字母 # 如果遇到的是大写字母 atom = str() if f[i].isupper(): atom = f[i] i += 1 # 跟着小写字母 while i &amp;lt; n and f[i].</description>
+    </item>
+    
+    <item>
+      <title>双指针</title>
+      <link>http://elenacliu.github.io/post/2020-06-11-%E5%8F%8C%E6%8C%87%E9%92%88/</link>
+      <pubDate>Thu, 11 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2020-06-11-%E5%8F%8C%E6%8C%87%E9%92%88/</guid>
+      <description>双指针 有以下几种情况：
+首尾开始，向中间移动，直到两者相遇（这种情况数组通常是有序的） 都从头开始，同时向后移动，直到其中一个到达末尾 快慢指针算法（比如找链表的中点，倒数第N个点等等） 几个编程时要注意的问题：
+移动指针时千万注意不要越界！不要越界！不要越界！在while条件部分的前面加上判断！ LC15. 三数之和 题目链接
+这题要求是三数之和为0，且不能重复。
+三数之和为0比较好办，先对数组进行排序，然后对下标i, j, k依次固定i，对数组后面的部分执行2sum算法即可。
+不能重复怎么办？那就先看看什么情况下会发生重复。
+清楚了这一点后本题就变得很简单了！
+时间复杂度$O(n^2)$，空间复杂度$O(n)$
+class Solution: def threeSum(self, nums: List[int]) -&amp;gt; List[List[int]]: nums.sort() # print(nums) N = len(nums) if N &amp;lt;= 2: return list(list()) i = 0 lst = list() while i &amp;lt; N - 2: j, k = i + 1, N - 1 # print(i) while j &amp;lt; k: if nums[j] + nums[k] &amp;gt; -nums[i]: k -= 1 elif nums[j] + nums[k] &amp;lt; -nums[i]: j += 1 else: # print(j, k) lst.</description>
+    </item>
+    
+    <item>
+      <title>单调栈</title>
+      <link>http://elenacliu.github.io/post/2020-06-09-%E5%8D%95%E8%B0%83%E6%A0%88/</link>
+      <pubDate>Tue, 09 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2020-06-09-%E5%8D%95%E8%B0%83%E6%A0%88/</guid>
+      <description>单调栈 单调栈，顾名思义，是栈中的元素满足一定的单调性。对于从栈底到栈顶单调减少的单调栈，在向栈顶push元素的时候，如果栈顶元素比该元素小，则直接push进去；如果栈顶元素比该元素大，则将栈顶元素pop出来，再比较新的栈顶元素与该元素的大小。实际上我们在使用单调栈的时候，很少直接存储数值，而是存储数组下标，C++代码如下：
+stack&amp;lt;int&amp;gt; monotonestk; // insert the ith number of vector &amp;#39;nums&amp;#39; while(!monotonestk.empty() &amp;amp;&amp;amp; nums[monotonestk.top()] &amp;lt; nums[i])	// 单调递减的栈 monotonestk.pop(); monotonestk.push(i); 实际上在数据结构课堂上老师讲过用这个解决直方图最大矩形的问题，其中一个算法细节还在期中考试考过，但是当时理解并不深刻。
+基础应用 从知乎专栏上看到这样一个问题，据说是该专栏作者在谷歌的模拟面试题（笔者想起了自己的Google面试经历，说难不难说简单也不简单，还是很考察算法功力的，当然自己有待提升的地方还有很多）：给定一个数组，请返回在这个数组中，每一个数往右边走几步可以到达比它大的第一个数，以数组的形式返回。如果右边没有比它大的数，则认为走-1步。
+暴力的做法时间上是$O(n^2)$的，空间上除了保存输入数据以外的额外开销是$O(1)$。每次以第$i$个元素为起点，向右边找第一个大于它的数字，返回下标差。
+但很明显我们在这个过程中做了重复计算。以第0个元素为起点时，其实我们遍历到了之后所有的元素（后面其实在不断做重复的遍历），怎么样把一次遍历得到的信息保存下来呢？“存”当然是用数据结构，但是怎么表达元素之间那种“相邻”的大小关系呢？（就比如说这题的，找到下一个比nums[i]大的数在哪里？）
+单调栈可以为我们所用。我们需要找到每一个数右边第一个比它大的数字，联系一下单调栈的入栈方式：如果比栈顶小，直接入栈（这时入栈的nums[i]一定不是栈顶元素右边第一个比它大的数）；如果比栈顶大，则先将栈顶的元素pop出来，关键点就在这里，所有元素在出栈的那一刻不就找到了自己右边第一个比自己大的数了吗？
+一个细节问题：是不是所有的元素都有出栈的时刻？显然不是。我记得上课时邓公提过一个问题，问我们算法执行完毕后单调栈中的内容是什么含义。当时想不明白，现在明白了：实际上就是在数组中，右边没有比它大的数的那些数的下标（很有点绕口啊）。因此对于无法从栈中弹出的元素，它们的答案就是-1。由于能弹出就可以更新而不能弹出则不能更新，在初始化时将所有元素的答案初始化为-1即可。
+每一个位置只会入栈一次（在枚举到它时），并且最多出栈一次，因此时间复杂度为$O(n)$，另外开了一个栈，空间复杂度$O(n)$。
+代码如下：
+vector&amp;lt;int&amp;gt; getBiggerRight(vector&amp;lt;int&amp;gt;&amp;amp; nums) { vector&amp;lt;int&amp;gt; res(nums.size(), -1); stack&amp;lt;int&amp;gt; stk; for(int i = 0; i &amp;lt; nums.size(); i++) { while(!stk.empty() &amp;amp;&amp;amp; nums[stk.top()] &amp;lt; nums[i]) {	// 单调递减的栈 res[stk.top()] = i - stk.top(); stk.pop(); } stk.push(i); } return res; } 进阶1：LC84. 直方图最大矩形 先来说说一个trivial的思路（不是官方解答）。既然上面的方法可以求出右侧第一个比自己大的数，那么同样可以求出左、右侧第一个比自己小的数。</description>
+    </item>
+    
+  </channel>
+</rss>

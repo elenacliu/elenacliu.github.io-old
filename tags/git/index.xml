@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>git on cliu&#39;s Blog</title>
+    <link>http://elenacliu.github.io/tags/git/</link>
+    <description>Recent content in git on cliu&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 23 Sep 2020 00:00:00 +0000</lastBuildDate><atom:link href="http://elenacliu.github.io/tags/git/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>git学习笔记(2)</title>
+      <link>http://elenacliu.github.io/post/2020-09-23-git%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B02/</link>
+      <pubDate>Wed, 23 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2020-09-23-git%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B02/</guid>
+      <description>git学习笔记(2) 在上周一直说要学习git的另外三个比较常见的操作，可是因为各种原因一直拖着没学。明日复明日，明日何其多！
+于是下定决心趁着今天做软工小作业，就把这三个git操作学习一番。
+声明：本博客并非作者的原创内容！因为是git新手，所以本系列文章主要提炼了参考网站上的内容，而几乎没有自己的实操经验，只是为了便于未来查阅。如要详细了解对应内容，请点击进入原网站查看。
+1. git rebase（奇妙与危险相伴） 参考1
+参考2
+在Git中整合来自不同分支的修改主要有两种方法：merge和rebase（变基）。变基顾名思义就是在commit history上看，在某一分支上做的修改“好像”是直接在另一分支上进行的一样。
+基本操作 以下图为例：
+如果想要将experiment分支上的修改整合到master分支上，那么最简单的方法是合并。
+但也可以提取C4中引入的修改，再在C3的基础上应用一次。这种操作就叫做rebase。
+$ git checkout experiment	# 检出experiment分支 $ git rebase master	# 变基到master分支上 变基后的结果为： 查看一个经过变基的分支的历史记录时会发现，尽管实际的开发工作是并行的， 但它们看上去就像是串行的一样，提交历史是一条直线没有分叉。
+使用场景(!!!) 首先我们来看上述参考网站中的一段原文：
+变基的风险 呃，奇妙的变基也并非完美无缺，要用它得遵守一条准则： 如果提交存在于你的仓库之外，而别人可能基于这些提交进行开发，那么不要执行变基。 如果你遵循这条金科玉律，就不会出差错。 否则，人民群众会仇恨你，你的朋友和家人也会嘲笑你，唾弃你。
+正确用法：一般我们这样做的目的是为了确保在向远程分支推送时能保持提交历史的整洁——例如向某个其他人维护的项目贡献代码时。 在这种情况下，你首先在自己的分支里进行开发，当开发完成时你需要先将你的代码变基到 origin/master 上，然后再向主项目提交修改。 这样的话，该项目的维护者就不再需要进行整合工作，只需要快进合并便可。
+错误用法：变基操作的实质是丢弃一些现有的提交，然后相应地新建一些内容一样但实际上不同的提交。 如果你已经将提交推送至某个仓库，而其他人也已经从该仓库拉取提交并进行了后续工作，此时，如果你用 git rebase 命令重新整理了提交并再次推送，你的同伴因此将不得不再次将他们手头的工作与你的提交进行整合，如果接下来你还要拉取并整合他们修改过的提交，事情就会变得一团糟。
+trade-off 那么在项目中究竟是使用合并还是变基？首先需要考虑commit history的意义。
+一种观点是，仓库的提交历史是对事实的记录。它是针对历史的文档，本身就有价值，不能乱改。 从这个角度看来，改变提交历史是一种亵渎，你使用 谎言 掩盖了实际发生过的事情。 如果由合并产生的提交历史是一团糟怎么办？ 既然事实就是如此，那么这些痕迹就应该被保留下来，让后人能够查阅。
+另一种观点则正好相反，他们认为提交历史是 项目过程中发生的事。 没人会出版一本书的第一版草稿，软件维护手册也是需要反复修订才能方便使用。 持这一观点的人会使用 rebase 及 filter-branch 等工具来编写故事，怎么方便后来的读者就怎么写。
+总的原则是，只对尚未推送或分享给别人的本地修改执行变基操作清理历史， 从不对已推送至别处的提交执行变基操作，这样，你才能享受到两种方式带来的便利。
+2. git cherry-pick git cherry-pick 教程</description>
+    </item>
+    
+    <item>
+      <title>git学习笔记(1)</title>
+      <link>http://elenacliu.github.io/post/2020-09-15-git%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</link>
+      <pubDate>Tue, 15 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2020-09-15-git%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</guid>
+      <description>git学习笔记(1) 声明：本博客并非作者的原创内容！因为是git新手，所以本系列文章主要提炼了参考网站上的内容，而几乎没有自己的实操经验，只是为了便于未来查阅。
+1. fast forward &amp;amp; no fast forward 在当前分支合并到另一分支时，如果没有冲突需要解决，就会直接移动文件指针。这个过程叫做fast forward。
+举个例子：
+开发一直在master分支进行，但忽然有了新想法于是新建了一个dev分支并进行了一系列提交，完成后想要回到master分支，此时master分支在创建dev分支后并未产生新的commit。此时的合并就叫做fast forward。
+如下图：
+全过程的树状图为：
+合并之前：
+合并之后：
+可以看到并没有创建一个新的merge commit，而是直接将master指针移动到了dev的最新commit上。
+2. git merge &amp;amp; git revert &amp;amp; git reset 合并&amp;amp;撤销合并&amp;amp;版本回滚 2.1 合并分支 如果想要将dev分支合并到master分支上，应该先git checkout master抵达master分支，再git merge &amp;ndash;no-ff dev将dev分支合并过来 如果遇到冲突且想取消合并，git merge &amp;ndash;abort 如果遇到冲突且想解决冲突，则在编辑器中（Q: 怎么找到所有有冲突的地方？）修改后在master分支中git add -u, 再git commit -m &amp;ldquo;Merge dev into master&amp;rdquo;。 合并时遇到冲突想要取消操作，恢复index，git merge --abort
+git show &amp;lt;commit&amp;gt;操作会显示所处的Parent的版本线索。(index)
+在合并之前要保证没有未commit的文件。如果有未commit的文件但是现在又不想提交，应该使用stash命令暂存。
+问题：git merge后如何检查是否还存在冲突没有解决？（背景：在工作中，遇到一个问题，在git merge后，发生冲突，而当冲突较多的时候，逐个检查冲突，有的时候会遗漏一些文件，导致带有冲突标记的文件上传到了 Git 服务器上，如何解决这个问题呢？）
+使用以下命令可以快速检查是否还存在有带有冲突标记的文件。 git diff --check
+2.2 撤销合并（合并回滚） merge后没有别的操作和改动时：</description>
+    </item>
+    
+  </channel>
+</rss>
