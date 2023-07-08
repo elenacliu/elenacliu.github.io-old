@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Maven 使用小记 # 本文主要内容整理自菜鸟教程：https://www.runoob.com/maven/maven-tutorial.html，此处作为备忘录进行记录。感谢前人的知识总结和分享！
+Maven 官方 tutorial：https://maven.apache.org/guides/getting-started/index.html
+什么是 Maven # Maven 是 Apache 下的一个项目管理工具，可以对 Java 项目进行构建和依赖管理。同时，Maven 也可被用于构建和管理各种项目，例如 C#，Ruby，Scala 和其他语言编写的项目。Maven 曾是 Jakarta 项目的子项目，现为由 Apache 软件基金会主持的独立 Apache 项目。
+Maven 约定配置 # Maven 提倡使用一个共同的标准目录结构，Maven 使用约定优于配置的原则，要尽可能遵守这样的目录结构：
+目录 目的 ${basedir} 存放pom.xml和所有的子目录 ${basedir}/src/main/java 项目的java源代码 ${basedir}/src/main/resources 项目的资源，比如说property文件，springmvc.xml ${basedir}/src/test/java 项目的测试类，比如说Junit代码 ${basedir}/src/test/resources 测试用的资源 ${basedir}/src/main/webapp/WEB-INF web应用文件目录，web项目的信息，比如存放web.xml、本地图片、jsp视图页面 ${basedir}/target 打包输出目录 ${basedir}/target/classes 编译输出目录 ${basedir}/target/test-classes 测试编译输出目录 Test.java Maven只会自动运行符合该命名规则的测试类 ~/.m2/repository Maven默认的本地仓库目录位置；mvn install 时会将打包文件部署到本地 Maven 仓库，如果没有设置仓库路径，就在这个路径下 Maven POM # POM（project object model）是 Maven 的基本工作单元，命名为 pom.xml，包含了项目的基本信息，用于描述项目如何构建、声明项目依赖等。">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="Maven 使用小记" />
+<meta property="og:description" content="Maven 使用小记 # 本文主要内容整理自菜鸟教程：https://www.runoob.com/maven/maven-tutorial.html，此处作为备忘录进行记录。感谢前人的知识总结和分享！
+Maven 官方 tutorial：https://maven.apache.org/guides/getting-started/index.html
+什么是 Maven # Maven 是 Apache 下的一个项目管理工具，可以对 Java 项目进行构建和依赖管理。同时，Maven 也可被用于构建和管理各种项目，例如 C#，Ruby，Scala 和其他语言编写的项目。Maven 曾是 Jakarta 项目的子项目，现为由 Apache 软件基金会主持的独立 Apache 项目。
+Maven 约定配置 # Maven 提倡使用一个共同的标准目录结构，Maven 使用约定优于配置的原则，要尽可能遵守这样的目录结构：
+目录 目的 ${basedir} 存放pom.xml和所有的子目录 ${basedir}/src/main/java 项目的java源代码 ${basedir}/src/main/resources 项目的资源，比如说property文件，springmvc.xml ${basedir}/src/test/java 项目的测试类，比如说Junit代码 ${basedir}/src/test/resources 测试用的资源 ${basedir}/src/main/webapp/WEB-INF web应用文件目录，web项目的信息，比如存放web.xml、本地图片、jsp视图页面 ${basedir}/target 打包输出目录 ${basedir}/target/classes 编译输出目录 ${basedir}/target/test-classes 测试编译输出目录 Test.java Maven只会自动运行符合该命名规则的测试类 ~/.m2/repository Maven默认的本地仓库目录位置；mvn install 时会将打包文件部署到本地 Maven 仓库，如果没有设置仓库路径，就在这个路径下 Maven POM # POM（project object model）是 Maven 的基本工作单元，命名为 pom.xml，包含了项目的基本信息，用于描述项目如何构建、声明项目依赖等。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://elenacliu.github.io/post/2023-07-08-Maven_%E4%BD%BF%E7%94%A8%E5%B0%8F%E8%AE%B0/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2023-07-08T00:00:00+00:00" />
+<meta property="article:modified_time" content="2023-07-08T00:00:00+00:00" />
+<title>Maven 使用小记 | cliu&#39;s Blog</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
+  <script defer src="/flexsearch.min.js"></script>
+  <script defer src="/en.search.min.7e810a06dff91e30ac94f68c31a2f11e914fdd76fe4fe67215eb84b67c4594e6.js" integrity="sha256-foEKBt/5HjCslPaMMaLxHpFP3Xb&#43;T&#43;ZyFeuEtnxFlOY=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>cliu&#39;s Blog</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>Maven 使用小记</strong>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#什么是-maven">什么是 Maven</a></li>
+    <li><a href="#maven-约定配置">Maven 约定配置</a></li>
+    <li><a href="#maven-pom">Maven POM</a>
+      <ul>
+        <li><a href="#pom-标签大全"><strong>POM 标签大全</strong></a></li>
+      </ul>
+    </li>
+    <li><a href="#maven-构建">Maven 构建</a>
+      <ul>
+        <li><a href="#maven-构建生命周期">Maven 构建生命周期</a></li>
+        <li><a href="#maven-依赖搜索顺序">Maven 依赖搜索顺序</a></li>
+        <li><a href="#maven-打包命令">Maven 打包命令</a></li>
+      </ul>
+    </li>
+    <li><a href="#maven-snapshot">Maven SNAPSHOT</a></li>
+    <li><a href="#what-is-a-snapshot-version">What is a SNAPSHOT version?</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="maven-使用小记">
+  Maven 使用小记
+  <a class="anchor" href="#maven-%e4%bd%bf%e7%94%a8%e5%b0%8f%e8%ae%b0">#</a>
+</h1>
+<p>本文主要内容整理自菜鸟教程：<a href="https://www.runoob.com/maven/maven-tutorial.html">https://www.runoob.com/maven/maven-tutorial.html</a>，此处作为备忘录进行记录。感谢前人的知识总结和分享！</p>
+<p>Maven 官方 tutorial：<a href="https://maven.apache.org/guides/getting-started/index.html">https://maven.apache.org/guides/getting-started/index.html</a></p>
+<h2 id="什么是-maven">
+  什么是 Maven
+  <a class="anchor" href="#%e4%bb%80%e4%b9%88%e6%98%af-maven">#</a>
+</h2>
+<p>Maven 是 Apache 下的一个项目管理工具，可以对 Java 项目进行构建和依赖管理。同时，Maven 也可被用于构建和管理各种项目，例如 C#，Ruby，Scala 和其他语言编写的项目。Maven 曾是 Jakarta 项目的子项目，现为由 Apache 软件基金会主持的独立 Apache 项目。</p>
+<h2 id="maven-约定配置">
+  Maven 约定配置
+  <a class="anchor" href="#maven-%e7%ba%a6%e5%ae%9a%e9%85%8d%e7%bd%ae">#</a>
+</h2>
+<p>Maven 提倡使用一个共同的标准目录结构，Maven 使用约定优于配置的原则，要尽可能遵守这样的目录结构：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">目录</th>
+<th style="text-align:left">目的</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">${basedir}</td>
+<td style="text-align:left">存放pom.xml和所有的子目录</td>
+</tr>
+<tr>
+<td style="text-align:left">${basedir}/src/main/java</td>
+<td style="text-align:left">项目的java源代码</td>
+</tr>
+<tr>
+<td style="text-align:left">${basedir}/src/main/resources</td>
+<td style="text-align:left">项目的资源，比如说property文件，springmvc.xml</td>
+</tr>
+<tr>
+<td style="text-align:left">${basedir}/src/test/java</td>
+<td style="text-align:left">项目的测试类，比如说Junit代码</td>
+</tr>
+<tr>
+<td style="text-align:left">${basedir}/src/test/resources</td>
+<td style="text-align:left">测试用的资源</td>
+</tr>
+<tr>
+<td style="text-align:left">${basedir}/src/main/webapp/WEB-INF</td>
+<td style="text-align:left">web应用文件目录，web项目的信息，比如存放web.xml、本地图片、jsp视图页面</td>
+</tr>
+<tr>
+<td style="text-align:left">${basedir}/target</td>
+<td style="text-align:left">打包输出目录</td>
+</tr>
+<tr>
+<td style="text-align:left">${basedir}/target/classes</td>
+<td style="text-align:left">编译输出目录</td>
+</tr>
+<tr>
+<td style="text-align:left">${basedir}/target/test-classes</td>
+<td style="text-align:left">测试编译输出目录</td>
+</tr>
+<tr>
+<td style="text-align:left">Test.java</td>
+<td style="text-align:left">Maven只会自动运行符合该命名规则的测试类</td>
+</tr>
+<tr>
+<td style="text-align:left">~/.m2/repository</td>
+<td style="text-align:left">Maven默认的本地仓库目录位置；mvn install 时会将打包文件部署到本地 Maven 仓库，如果没有设置仓库路径，就在这个路径下</td>
+</tr>
+</tbody>
+</table>
+<h2 id="maven-pom">
+  Maven POM
+  <a class="anchor" href="#maven-pom">#</a>
+</h2>
+<p>POM（project object model）是 Maven 的基本工作单元，命名为 <code>pom.xml</code>，包含了项目的基本信息，用于描述项目如何构建、声明项目依赖等。</p>
+<p>在创建 POM 之前，我们首先需要描述项目组 (groupId), 项目的唯一ID。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#f92672">&lt;project</span> <span style="color:#a6e22e">xmlns =</span> <span style="color:#e6db74">&#34;http://maven.apache.org/POM/4.0.0&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">xmlns:xsi =</span> <span style="color:#e6db74">&#34;http://www.w3.org/2001/XMLSchema-instance&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">xsi:schemaLocation =</span> <span style="color:#e6db74">&#34;http://maven.apache.org/POM/4.0.0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    http://maven.apache.org/xsd/maven-4.0.0.xsd&#34;</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!-- 模型版本 --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;modelVersion&gt;</span>4.0.0<span style="color:#f92672">&lt;/modelVersion&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!-- 公司或者组织的唯一标志，并且配置时生成的路径也是由此生成， 如com.companyname.project-group，maven会将该项目打成的jar包放本地路径：/com/companyname/project-group --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;groupId&gt;</span>com.companyname.project-group<span style="color:#f92672">&lt;/groupId&gt;</span>
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!-- 项目的唯一ID，一个groupId下面可能多个项目，就是靠artifactId来区分的 --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;artifactId&gt;</span>project<span style="color:#f92672">&lt;/artifactId&gt;</span>
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!-- 版本号 --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;version&gt;</span>1.0<span style="color:#f92672">&lt;/version&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/project&gt;</span>
+</span></span></code></pre></div><p>所有 POM 文件都需要 project 元素和三个必需字段：groupId，artifactId，version。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">节点</th>
+<th style="text-align:left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">project</td>
+<td style="text-align:left">工程的根标签。</td>
+</tr>
+<tr>
+<td style="text-align:left">modelVersion</td>
+<td style="text-align:left">模型版本需要设置为 4.0。</td>
+</tr>
+<tr>
+<td style="text-align:left">groupId</td>
+<td style="text-align:left">这是工程组的标识。它在一个组织或者项目中通常是唯一的。例如，一个银行组织 <code>com.company.bank</code> 拥有所有的和银行相关的项目。</td>
+</tr>
+<tr>
+<td style="text-align:left">artifactId</td>
+<td style="text-align:left">这是工程的标识。它通常是工程的名称。例如：<code>consumer-banking</code>。groupId 和 artifactId 一起定义了 artifact 在仓库中的位置。</td>
+</tr>
+<tr>
+<td style="text-align:left">version</td>
+<td style="text-align:left">这是工程的版本号。在 artifact 的仓库中，它用来区分不同的版本。例如：<code>com.company.bank:consumer-banking:1.0 com.company.bank:consumer-banking:1.1</code></td>
+</tr>
+</tbody>
+</table>
+<p>父（Super）POM是 Maven 默认的 POM。所有的 POM 都继承自一个父 POM（无论是否显式定义了这个父 POM）。父 POM 包含了一些可以被继承的默认设置。因此，当 Maven 发现需要下载 POM 中的 依赖时，它会到 Super POM 中配置的默认仓库 <a href="http://repo1.maven.org/maven2">http://repo1.maven.org/maven2</a> 去下载。</p>
+<p>Maven 使用 effective pom（Super pom 加上工程自己的配置）来执行相关的目标，它帮助开发者在 pom.xml 中做尽可能少的配置，当然这些配置可以被重写。</p>
+<p>使用以下命令来查看 Super POM 默认配置：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>mvn help:effective-pom
+</span></span></code></pre></div><p>Maven 的 pom.xml 文件也不需要手工编写。</p>
+<p>Maven 提供了大量的原型插件来创建工程，包括工程结构和 pom.xml。</p>
+<h3 id="pom-标签大全">
+  <strong>POM 标签大全</strong>
+  <a class="anchor" href="#pom-%e6%a0%87%e7%ad%be%e5%a4%a7%e5%85%a8">#</a>
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#f92672">&lt;project</span> <span style="color:#a6e22e">xmlns=</span><span style="color:#e6db74">&#34;http://maven.apache.org/POM/4.0.0&#34;</span> <span style="color:#a6e22e">xmlns:xsi=</span><span style="color:#e6db74">&#34;http://www.w3.org/2001/XMLSchema-instance&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">xsi:schemaLocation=</span><span style="color:#e6db74">&#34;http://maven.apache.org/POM/4.0.0http://maven.apache.org/maven-v4_0_0.xsd&#34;</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!--父项目的坐标。如果项目中没有规定某个元素的值，那么父项目中的对应值即为项目的默认值。 坐标包括group ID，artifact ID和 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">        version。 --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;parent&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--被继承的父项目的构件标识符 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;artifactId</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--被继承的父项目的全球唯一标识符 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;groupId</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--被继承的父项目的版本 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;version</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!-- 父项目的pom.xml文件的相对路径。相对路径允许你选择一个不同的路径。默认值是../pom.xml。Maven首先在构建当前项目的地方寻找父项 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">            目的pom，其次在文件系统的这个位置（relativePath位置），然后在本地仓库，最后在远程仓库寻找父项目的pom。 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;relativePath</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;/parent&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!--声明项目描述符遵循哪一个POM模型版本。模型本身的版本很少改变，虽然如此，但它仍然是必不可少的，这是为了当Maven引入了新的特性或者其他模型变更的时候，确保稳定性。 --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;modelVersion&gt;</span>4.0.0<span style="color:#f92672">&lt;/modelVersion&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!--项目的全球唯一标识符，通常使用全限定的包名区分该项目和其他项目。并且构建时生成的路径也是由此生成， 如com.mycompany.app生成的相对路径为：/com/mycompany/app --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;groupId&gt;</span>asia.banseon<span style="color:#f92672">&lt;/groupId&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!-- 构件的标识符，它和group ID一起唯一标识一个构件。换句话说，你不能有两个不同的项目拥有同样的artifact ID和groupID；在某个 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">        特定的group ID下，artifact ID也必须是唯一的。构件是项目产生的或使用的一个东西，Maven为项目产生的构件包括：JARs，源 码，二进制发布和WARs等。 --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;artifactId&gt;</span>banseon-maven2<span style="color:#f92672">&lt;/artifactId&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!--项目产生的构件类型，例如jar、war、ear、pom。插件可以创建他们自己的构件类型，所以前面列的不是全部构件类型 --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;packaging&gt;</span>jar<span style="color:#f92672">&lt;/packaging&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!--项目当前版本，格式为:主版本.次版本.增量版本-限定版本号 --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;version&gt;</span>1.0-SNAPSHOT<span style="color:#f92672">&lt;/version&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!--项目的名称, Maven产生的文档用 --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;name&gt;</span>banseon-maven<span style="color:#f92672">&lt;/name&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!--项目主页的URL, Maven产生的文档用 --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;url&gt;</span>http://www.baidu.com/banseon<span style="color:#f92672">&lt;/url&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!-- 项目的详细描述, Maven 产生的文档用。 当这个元素能够用HTML格式描述时（例如，CDATA中的文本会被解析器忽略，就可以包含HTML标 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">        签）， 不鼓励使用纯文本描述。如果你需要修改产生的web站点的索引页面，你应该修改你自己的索引页文件，而不是调整这里的文档。 --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;description&gt;</span>A maven project to study maven.<span style="color:#f92672">&lt;/description&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!--描述了这个项目构建环境中的前提条件。 --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;prerequisites&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--构建该项目或使用该插件所需要的Maven的最低版本 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;maven</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;/prerequisites&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!--项目的问题管理系统(Bugzilla, Jira, Scarab,或任何你喜欢的问题管理系统)的名称和URL，本例为 jira --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;issueManagement&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--问题管理系统（例如jira）的名字， --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;system&gt;</span>jira<span style="color:#f92672">&lt;/system&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--该项目使用的问题管理系统的URL --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;url&gt;</span>http://jira.baidu.com/banseon<span style="color:#f92672">&lt;/url&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;/issueManagement&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!--项目持续集成信息 --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;ciManagement&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--持续集成系统的名字，例如continuum --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;system</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--该项目使用的持续集成系统的URL（如果持续集成系统有web接口的话）。 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;url</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--构建完成时，需要通知的开发者/用户的配置项。包括被通知者信息和通知条件（错误，失败，成功，警告） --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;notifiers&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--配置一种方式，当构建中断时，以该方式通知用户/开发者 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;notifier&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">&lt;!--传送通知的途径 --&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;type</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">&lt;!--发生错误时是否通知 --&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;sendOnError</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">&lt;!--构建失败时是否通知 --&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;sendOnFailure</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">&lt;!--构建成功时是否通知 --&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;sendOnSuccess</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">&lt;!--发生警告时是否通知 --&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;sendOnWarning</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">&lt;!--不赞成使用。通知发送到哪里 --&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;address</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">&lt;!--扩展配置项 --&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;configuration</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;/notifier&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;/notifiers&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;/ciManagement&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!--项目创建年份，4位数字。当产生版权信息时需要使用这个值。 --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;inceptionYear</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!--项目相关邮件列表信息 --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;mailingLists&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--该元素描述了项目相关的所有邮件列表。自动产生的网站引用这些信息。 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;mailingList&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--邮件的名称 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;name&gt;</span>Demo<span style="color:#f92672">&lt;/name&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--发送邮件的地址或链接，如果是邮件地址，创建文档时，mailto: 链接会被自动创建 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;post&gt;</span>banseon@126.com<span style="color:#f92672">&lt;/post&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--订阅邮件的地址或链接，如果是邮件地址，创建文档时，mailto: 链接会被自动创建 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;subscribe&gt;</span>banseon@126.com<span style="color:#f92672">&lt;/subscribe&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--取消订阅邮件的地址或链接，如果是邮件地址，创建文档时，mailto: 链接会被自动创建 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;unsubscribe&gt;</span>banseon@126.com<span style="color:#f92672">&lt;/unsubscribe&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--你可以浏览邮件信息的URL --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;archive&gt;</span>http:/hi.baidu.com/banseon/demo/dev/<span style="color:#f92672">&lt;/archive&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;/mailingList&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;/mailingLists&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!--项目开发者列表 --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;developers&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--某个项目开发者的信息 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;developer&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--SCM里项目开发者的唯一标识符 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;id&gt;</span>HELLO WORLD<span style="color:#f92672">&lt;/id&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--项目开发者的全名 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;name&gt;</span>banseon<span style="color:#f92672">&lt;/name&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--项目开发者的email --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;email&gt;</span>banseon@126.com<span style="color:#f92672">&lt;/email&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--项目开发者的主页的URL --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;url</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--项目开发者在项目中扮演的角色，角色元素描述了各种角色 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;roles&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;role&gt;</span>Project Manager<span style="color:#f92672">&lt;/role&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;role&gt;</span>Architect<span style="color:#f92672">&lt;/role&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;/roles&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--项目开发者所属组织 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;organization&gt;</span>demo<span style="color:#f92672">&lt;/organization&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--项目开发者所属组织的URL --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;organizationUrl&gt;</span>http://hi.baidu.com/banseon<span style="color:#f92672">&lt;/organizationUrl&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--项目开发者属性，如即时消息如何处理等 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;properties&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;dept&gt;</span>No<span style="color:#f92672">&lt;/dept&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;/properties&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--项目开发者所在时区， -11到12范围内的整数。 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;timezone&gt;</span>-5<span style="color:#f92672">&lt;/timezone&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;/developer&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;/developers&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!--项目的其他贡献者列表 --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;contributors&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--项目的其他贡献者。参见developers/developer元素 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;contributor&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;name</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;email</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;url</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;organization</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;organizationUrl</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;roles</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;timezone</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;properties</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;/contributor&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;/contributors&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!--该元素描述了项目所有License列表。 应该只列出该项目的license列表，不要列出依赖项目的 license列表。如果列出多个license，用户可以选择它们中的一个而不是接受所有license。 --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;licenses&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--描述了项目的license，用于生成项目的web站点的license页面，其他一些报表和validation也会用到该元素。 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;license&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--license用于法律上的名称 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;name&gt;</span>Apache 2<span style="color:#f92672">&lt;/name&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--官方的license正文页面的URL --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;url&gt;</span>http://www.baidu.com/banseon/LICENSE-2.0.txt<span style="color:#f92672">&lt;/url&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--项目分发的主要方式： repo，可以从Maven库下载 manual， 用户必须手动下载和安装依赖 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;distribution&gt;</span>repo<span style="color:#f92672">&lt;/distribution&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--关于license的补充信息 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;comments&gt;</span>A business-friendly OSS license<span style="color:#f92672">&lt;/comments&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;/license&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;/licenses&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!--SCM(Source Control Management)标签允许你配置你的代码库，供Maven web站点和其它插件使用。 --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;scm&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--SCM的URL,该URL描述了版本库和如何连接到版本库。欲知详情，请看SCMs提供的URL格式和列表。该连接只读。 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;connection&gt;</span>
+</span></span><span style="display:flex;"><span>            scm:svn:http://svn.baidu.com/banseon/maven/banseon/banseon-maven2-trunk(dao-trunk)
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;/connection&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--给开发者使用的，类似connection元素。即该连接不仅仅只读 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;developerConnection&gt;</span>
+</span></span><span style="display:flex;"><span>            scm:svn:http://svn.baidu.com/banseon/maven/banseon/dao-trunk
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;/developerConnection&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--当前代码的标签，在开发阶段默认为HEAD --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;tag</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--指向项目的可浏览SCM库（例如ViewVC或者Fisheye）的URL。 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;url&gt;</span>http://svn.baidu.com/banseon<span style="color:#f92672">&lt;/url&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;/scm&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!--描述项目所属组织的各种属性。Maven产生的文档用 --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;organization&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--组织的全名 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;name&gt;</span>demo<span style="color:#f92672">&lt;/name&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--组织主页的URL --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;url&gt;</span>http://www.baidu.com/banseon<span style="color:#f92672">&lt;/url&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;/organization&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!--构建项目需要的信息 --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;build&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--该元素设置了项目源码目录，当构建项目的时候，构建系统会编译目录里的源码。该路径是相对于pom.xml的相对路径。 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;sourceDirectory</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--该元素设置了项目脚本源码目录，该目录和源码目录不同：绝大多数情况下，该目录下的内容 会被拷贝到输出目录(因为脚本是被解释的，而不是被编译的)。 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;scriptSourceDirectory</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--该元素设置了项目单元测试使用的源码目录，当测试项目的时候，构建系统会编译目录里的源码。该路径是相对于pom.xml的相对路径。 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;testSourceDirectory</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--被编译过的应用程序class文件存放的目录。 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;outputDirectory</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--被编译过的测试class文件存放的目录。 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;testOutputDirectory</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--使用来自该项目的一系列构建扩展 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;extensions&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--描述使用到的构建扩展。 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;extension&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">&lt;!--构建扩展的groupId --&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;groupId</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">&lt;!--构建扩展的artifactId --&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;artifactId</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">&lt;!--构建扩展的版本 --&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;version</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;/extension&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;/extensions&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--当项目没有规定目标（Maven2 叫做阶段）时的默认值 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;defaultGoal</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--这个元素描述了项目相关的所有资源路径列表，例如和项目相关的属性文件，这些资源被包含在最终的打包文件里。 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;resources&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--这个元素描述了项目相关或测试相关的所有资源路径 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;resource&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">&lt;!-- 描述了资源的目标路径。该路径相对target/classes目录（例如${project.build.outputDirectory}）。举个例 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">                    子，如果你想资源在特定的包里(org.apache.maven.messages)，你就必须该元素设置为org/apache/maven /messages。然而，如果你只是想把资源放到源码目录结构里，就不需要该配置。 --&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;targetPath</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">&lt;!--是否使用参数值代替参数名。参数值取自properties元素或者文件里配置的属性，文件在filters元素里列出。 --&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;filtering</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">&lt;!--描述存放资源的目录，该路径相对POM路径 --&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;directory</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">&lt;!--包含的模式列表，例如**/*.xml. --&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;includes</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">&lt;!--排除的模式列表，例如**/*.xml --&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;excludes</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;/resource&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;/resources&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--这个元素描述了单元测试相关的所有资源路径，例如和单元测试相关的属性文件。 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;testResources&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--这个元素描述了测试相关的所有资源路径，参见build/resources/resource元素的说明 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;testResource&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;targetPath</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;filtering</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;directory</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;includes</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;excludes</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;/testResource&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;/testResources&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--构建产生的所有文件存放的目录 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;directory</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--产生的构件的文件名，默认值是artifactId−
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">{version}。 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;finalName</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--当filtering开关打开时，使用到的过滤器属性文件列表 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;filters</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--子项目可以引用的默认插件信息。该插件配置项直到被引用时才会被解析或绑定到生命周期。给定插件的任何本地配置都会覆盖这里的配置 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;pluginManagement&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--使用的插件列表 。 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;plugins&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">&lt;!--plugin元素包含描述插件所需要的信息。 --&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;plugin&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">&lt;!--插件在仓库里的group ID --&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;groupId</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">&lt;!--插件在仓库里的artifact ID --&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;artifactId</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">&lt;!--被使用的插件的版本（或版本范围） --&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;version</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">&lt;!--是否从该插件下载Maven扩展（例如打包和类型处理器），由于性能原因，只有在真需要下载时，该元素才被设置成enabled。 --&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;extensions</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">&lt;!--在构建生命周期中执行一组目标的配置。每个目标可能有不同的配置。 --&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;executions&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#75715e">&lt;!--execution元素包含了插件执行需要的信息 --&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;execution&gt;</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#75715e">&lt;!--执行目标的标识符，用于标识构建过程中的目标，或者匹配继承过程中需要合并的执行目标 --&gt;</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#f92672">&lt;id</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#75715e">&lt;!--绑定了目标的构建生命周期阶段，如果省略，目标会被绑定到源数据里配置的默认阶段 --&gt;</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#f92672">&lt;phase</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#75715e">&lt;!--配置的执行目标 --&gt;</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#f92672">&lt;goals</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#75715e">&lt;!--配置是否被传播到子POM --&gt;</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#f92672">&lt;inherited</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#75715e">&lt;!--作为DOM对象的配置 --&gt;</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#f92672">&lt;configuration</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;/execution&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;/executions&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">&lt;!--项目引入插件所需要的额外依赖 --&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;dependencies&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#75715e">&lt;!--参见dependencies/dependency元素 --&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;dependency&gt;</span>
+</span></span><span style="display:flex;"><span>                            ......
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;/dependency&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;/dependencies&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">&lt;!--任何配置是否被传播到子项目 --&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;inherited</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">&lt;!--作为DOM对象的配置 --&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;configuration</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;/plugin&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;/plugins&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;/pluginManagement&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--使用的插件列表 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;plugins&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--参见build/pluginManagement/plugins/plugin元素 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;plugin&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;groupId</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;artifactId</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;version</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;extensions</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;executions&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;execution&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;id</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;phase</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;goals</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;inherited</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;configuration</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;/execution&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;/executions&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;dependencies&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">&lt;!--参见dependencies/dependency元素 --&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;dependency&gt;</span>
+</span></span><span style="display:flex;"><span>                        ......
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;/dependency&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;/dependencies&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;goals</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;inherited</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;configuration</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;/plugin&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;/plugins&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;/build&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!--在列的项目构建profile，如果被激活，会修改构建处理 --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;profiles&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--根据环境参数或命令行参数激活某个构建处理 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;profile&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--构建配置的唯一标识符。即用于命令行激活，也用于在继承时合并具有相同标识符的profile。 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;id</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--自动触发profile的条件逻辑。Activation是profile的开启钥匙。profile的力量来自于它 能够在某些特定的环境中自动使用某些特定的值；这些环境通过activation元素指定。activation元素并不是激活profile的唯一方式。 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;activation&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">&lt;!--profile默认是否激活的标志 --&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;activeByDefault</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">&lt;!--当匹配的jdk被检测到，profile被激活。例如，1.4激活JDK1.4，1.4.0_2，而!1.4激活所有版本不是以1.4开头的JDK。 --&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;jdk</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">&lt;!--当匹配的操作系统属性被检测到，profile被激活。os元素可以定义一些操作系统相关的属性。 --&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;os&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">&lt;!--激活profile的操作系统的名字 --&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;name&gt;</span>Windows XP<span style="color:#f92672">&lt;/name&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">&lt;!--激活profile的操作系统所属家族(如 &#39;windows&#39;) --&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;family&gt;</span>Windows<span style="color:#f92672">&lt;/family&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">&lt;!--激活profile的操作系统体系结构 --&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;arch&gt;</span>x86<span style="color:#f92672">&lt;/arch&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">&lt;!--激活profile的操作系统版本 --&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;version&gt;</span>5.1.2600<span style="color:#f92672">&lt;/version&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;/os&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">&lt;!--如果Maven检测到某一个属性（其值可以在POM中通过${名称}引用），其拥有对应的名称和值，Profile就会被激活。如果值 字段是空的，那么存在属性名称字段就会激活profile，否则按区分大小写方式匹配属性值字段 --&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;property&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">&lt;!--激活profile的属性的名称 --&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;name&gt;</span>mavenVersion<span style="color:#f92672">&lt;/name&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">&lt;!--激活profile的属性的值 --&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;value&gt;</span>2.0.3<span style="color:#f92672">&lt;/value&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;/property&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">&lt;!--提供一个文件名，通过检测该文件的存在或不存在来激活profile。missing检查文件是否存在，如果不存在则激活 profile。另一方面，exists则会检查文件是否存在，如果存在则激活profile。 --&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;file&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">&lt;!--如果指定的文件存在，则激活profile。 --&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;exists&gt;</span>/usr/local/hudson/hudson-home/jobs/maven-guide-zh-to-production/workspace/
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;/exists&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">&lt;!--如果指定的文件不存在，则激活profile。 --&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;missing&gt;</span>/usr/local/hudson/hudson-home/jobs/maven-guide-zh-to-production/workspace/
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;/missing&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;/file&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;/activation&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--构建项目所需要的信息。参见build元素 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;build&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;defaultGoal</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;resources&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;resource&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;targetPath</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;filtering</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;directory</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;includes</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;excludes</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;/resource&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;/resources&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;testResources&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;testResource&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;targetPath</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;filtering</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;directory</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;includes</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;excludes</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;/testResource&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;/testResources&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;directory</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;finalName</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;filters</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;pluginManagement&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;plugins&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#75715e">&lt;!--参见build/pluginManagement/plugins/plugin元素 --&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;plugin&gt;</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#f92672">&lt;groupId</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#f92672">&lt;artifactId</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#f92672">&lt;version</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#f92672">&lt;extensions</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#f92672">&lt;executions&gt;</span>
+</span></span><span style="display:flex;"><span>                                <span style="color:#f92672">&lt;execution&gt;</span>
+</span></span><span style="display:flex;"><span>                                    <span style="color:#f92672">&lt;id</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                                    <span style="color:#f92672">&lt;phase</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                                    <span style="color:#f92672">&lt;goals</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                                    <span style="color:#f92672">&lt;inherited</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                                    <span style="color:#f92672">&lt;configuration</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                                <span style="color:#f92672">&lt;/execution&gt;</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#f92672">&lt;/executions&gt;</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#f92672">&lt;dependencies&gt;</span>
+</span></span><span style="display:flex;"><span>                                <span style="color:#75715e">&lt;!--参见dependencies/dependency元素 --&gt;</span>
+</span></span><span style="display:flex;"><span>                                <span style="color:#f92672">&lt;dependency&gt;</span>
+</span></span><span style="display:flex;"><span>                                    ......
+</span></span><span style="display:flex;"><span>                                <span style="color:#f92672">&lt;/dependency&gt;</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#f92672">&lt;/dependencies&gt;</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#f92672">&lt;goals</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#f92672">&lt;inherited</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#f92672">&lt;configuration</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;/plugin&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;/plugins&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;/pluginManagement&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;plugins&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">&lt;!--参见build/pluginManagement/plugins/plugin元素 --&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;plugin&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;groupId</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;artifactId</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;version</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;extensions</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;executions&gt;</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#f92672">&lt;execution&gt;</span>
+</span></span><span style="display:flex;"><span>                                <span style="color:#f92672">&lt;id</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                                <span style="color:#f92672">&lt;phase</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                                <span style="color:#f92672">&lt;goals</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                                <span style="color:#f92672">&lt;inherited</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                                <span style="color:#f92672">&lt;configuration</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#f92672">&lt;/execution&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;/executions&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;dependencies&gt;</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#75715e">&lt;!--参见dependencies/dependency元素 --&gt;</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#f92672">&lt;dependency&gt;</span>
+</span></span><span style="display:flex;"><span>                                ......
+</span></span><span style="display:flex;"><span>                            <span style="color:#f92672">&lt;/dependency&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;/dependencies&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;goals</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;inherited</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;configuration</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;/plugin&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;/plugins&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;/build&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--模块（有时称作子项目） 被构建成项目的一部分。列出的每个模块元素是指向该模块的目录的相对路径 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;modules</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--发现依赖和扩展的远程仓库列表。 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;repositories&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">&lt;!--参见repositories/repository元素 --&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;repository&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;releases&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;enabled</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;updatePolicy</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;checksumPolicy</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;/releases&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;snapshots&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;enabled</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;updatePolicy</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;checksumPolicy</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;/snapshots&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;id</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;name</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;url</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;layout</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;/repository&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;/repositories&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--发现插件的远程仓库列表，这些插件用于构建和报表 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;pluginRepositories&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">&lt;!--包含需要连接到远程插件仓库的信息.参见repositories/repository元素 --&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;pluginRepository&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;releases&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;enabled</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;updatePolicy</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;checksumPolicy</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;/releases&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;snapshots&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;enabled</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;updatePolicy</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;checksumPolicy</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;/snapshots&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;id</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;name</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;url</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;layout</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;/pluginRepository&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;/pluginRepositories&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--该元素描述了项目相关的所有依赖。 这些依赖组成了项目构建过程中的一个个环节。它们自动从项目定义的仓库中下载。要获取更多信息，请看项目依赖机制。 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;dependencies&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">&lt;!--参见dependencies/dependency元素 --&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;dependency&gt;</span>
+</span></span><span style="display:flex;"><span>                    ......
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;/dependency&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;/dependencies&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--不赞成使用. 现在Maven忽略该元素. --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;reports</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--该元素包括使用报表插件产生报表的规范。当用户执行&#34;mvn site&#34;，这些报表就会运行。 在页面导航栏能看到所有报表的链接。参见reporting元素 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;reporting&gt;</span>
+</span></span><span style="display:flex;"><span>                ......
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;/reporting&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--参见dependencyManagement元素 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;dependencyManagement&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;dependencies&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">&lt;!--参见dependencies/dependency元素 --&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;dependency&gt;</span>
+</span></span><span style="display:flex;"><span>                        ......
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;/dependency&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;/dependencies&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;/dependencyManagement&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--参见distributionManagement元素 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;distributionManagement&gt;</span>
+</span></span><span style="display:flex;"><span>                ......
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;/distributionManagement&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--参见properties元素 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;properties</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;/profile&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;/profiles&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!--模块（有时称作子项目） 被构建成项目的一部分。列出的每个模块元素是指向该模块的目录的相对路径 --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;modules</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!--发现依赖和扩展的远程仓库列表。 --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;repositories&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--包含需要连接到远程仓库的信息 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;repository&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--如何处理远程仓库里发布版本的下载 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;releases&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">&lt;!--true或者false表示该仓库是否为下载某种类型构件（发布版，快照版）开启。 --&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;enabled</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">&lt;!--该元素指定更新发生的频率。Maven会比较本地POM和远程POM的时间戳。这里的选项是：always（一直），daily（默认，每日），interval：X（这里X是以分钟为单位的时间间隔），或者never（从不）。 --&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;updatePolicy</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">&lt;!--当Maven验证构件校验文件失败时该怎么做：ignore（忽略），fail（失败），或者warn（警告）。 --&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;checksumPolicy</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;/releases&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!-- 如何处理远程仓库里快照版本的下载。有了releases和snapshots这两组配置，POM就可以在每个单独的仓库中，为每种类型的构件采取不同的 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">                策略。例如，可能有人会决定只为开发目的开启对快照版本下载的支持。参见repositories/repository/releases元素 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;snapshots&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;enabled</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;updatePolicy</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;checksumPolicy</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;/snapshots&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--远程仓库唯一标识符。可以用来匹配在settings.xml文件里配置的远程仓库 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;id&gt;</span>banseon-repository-proxy<span style="color:#f92672">&lt;/id&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--远程仓库名称 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;name&gt;</span>banseon-repository-proxy<span style="color:#f92672">&lt;/name&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--远程仓库URL，按protocol://hostname/path形式 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;url&gt;</span>http://192.168.1.169:9999/repository/<span style="color:#f92672">&lt;/url&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!-- 用于定位和排序构件的仓库布局类型-可以是default（默认）或者legacy（遗留）。Maven 2为其仓库提供了一个默认的布局；然 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">                而，Maven 1.x有一种不同的布局。我们可以使用该元素指定布局是default（默认）还是legacy（遗留）。 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;layout&gt;</span>default<span style="color:#f92672">&lt;/layout&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;/repository&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;/repositories&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!--发现插件的远程仓库列表，这些插件用于构建和报表 --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;pluginRepositories&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--包含需要连接到远程插件仓库的信息.参见repositories/repository元素 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;pluginRepository&gt;</span>
+</span></span><span style="display:flex;"><span>            ......
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;/pluginRepository&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;/pluginRepositories&gt;</span>
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!--该元素描述了项目相关的所有依赖。 这些依赖组成了项目构建过程中的一个个环节。它们自动从项目定义的仓库中下载。要获取更多信息，请看项目依赖机制。 --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;dependencies&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;dependency&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--依赖的group ID --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;groupId&gt;</span>org.apache.maven<span style="color:#f92672">&lt;/groupId&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--依赖的artifact ID --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;artifactId&gt;</span>maven-artifact<span style="color:#f92672">&lt;/artifactId&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--依赖的版本号。 在Maven 2里, 也可以配置成版本号的范围。 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;version&gt;</span>3.8.1<span style="color:#f92672">&lt;/version&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!-- 依赖类型，默认类型是jar。它通常表示依赖的文件的扩展名，但也有例外。一个类型可以被映射成另外一个扩展名或分类器。类型经常和使用的打包方式对应， 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">                尽管这也有例外。一些类型的例子：jar，war，ejb-client和test-jar。如果设置extensions为 true，就可以在 plugin里定义新的类型。所以前面的类型的例子不完整。 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;type&gt;</span>jar<span style="color:#f92672">&lt;/type&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!-- 依赖的分类器。分类器可以区分属于同一个POM，但不同构建方式的构件。分类器名被附加到文件名的版本号后面。例如，如果你想要构建两个单独的构件成 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">                JAR，一个使用Java 1.4编译器，另一个使用Java 6编译器，你就可以使用分类器来生成两个单独的JAR构件。 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;classifier&gt;&lt;/classifier&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--依赖范围。在项目发布过程中，帮助决定哪些构件被包括进来。欲知详情请参考依赖机制。 - compile ：默认范围，用于编译 - provided：类似于编译，但支持你期待jdk或者容器提供，类似于classpath 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">                - runtime: 在执行时需要使用 - test: 用于test任务时使用 - system: 需要外在提供相应的元素。通过systemPath来取得 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">                - systemPath: 仅用于范围为system。提供相应的路径 - optional: 当项目自身被依赖时，标注依赖是否传递。用于连续依赖时使用 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;scope&gt;</span>test<span style="color:#f92672">&lt;/scope&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--仅供system范围使用。注意，不鼓励使用这个元素，并且在新的版本中该元素可能被覆盖掉。该元素为依赖规定了文件系统上的路径。需要绝对路径而不是相对路径。推荐使用属性匹配绝对路径，例如${java.home}。 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;systemPath&gt;&lt;/systemPath&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--当计算传递依赖时， 从依赖构件列表里，列出被排除的依赖构件集。即告诉maven你只依赖指定的项目，不依赖项目的依赖。此元素主要用于解决版本冲突问题 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;exclusions&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;exclusion&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;artifactId&gt;</span>spring-core<span style="color:#f92672">&lt;/artifactId&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;groupId&gt;</span>org.springframework<span style="color:#f92672">&lt;/groupId&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;/exclusion&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;/exclusions&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--可选依赖，如果你在项目B中把C依赖声明为可选，你就需要在依赖于B的项目（例如项目A）中显式的引用对C的依赖。可选依赖阻断依赖的传递性。 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;optional&gt;</span>true<span style="color:#f92672">&lt;/optional&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;/dependency&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;/dependencies&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!--不赞成使用. 现在Maven忽略该元素. --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;reports&gt;&lt;/reports&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!--该元素描述使用报表插件产生报表的规范。当用户执行&#34;mvn site&#34;，这些报表就会运行。 在页面导航栏能看到所有报表的链接。 --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;reporting&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--true，则，网站不包括默认的报表。这包括&#34;项目信息&#34;菜单中的报表。 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;excludeDefaults</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--所有产生的报表存放到哪里。默认值是${project.build.directory}/site。 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;outputDirectory</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--使用的报表插件和他们的配置。 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;plugins&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--plugin元素包含描述报表插件需要的信息 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;plugin&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">&lt;!--报表插件在仓库里的group ID --&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;groupId</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">&lt;!--报表插件在仓库里的artifact ID --&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;artifactId</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">&lt;!--被使用的报表插件的版本（或版本范围） --&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;version</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">&lt;!--任何配置是否被传播到子项目 --&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;inherited</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">&lt;!--报表插件的配置 --&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;configuration</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">&lt;!--一组报表的多重规范，每个规范可能有不同的配置。一个规范（报表集）对应一个执行目标 。例如，有1，2，3，4，5，6，7，8，9个报表。1，2，5构成A报表集，对应一个执行目标。2，5，8构成B报表集，对应另一个执行目标 --&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;reportSets&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">&lt;!--表示报表的一个集合，以及产生该集合的配置 --&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;reportSet&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#75715e">&lt;!--报表集合的唯一标识符，POM继承时用到 --&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;id</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#75715e">&lt;!--产生报表集合时，被使用的报表的配置 --&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;configuration</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#75715e">&lt;!--配置是否被继承到子POMs --&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;inherited</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#75715e">&lt;!--这个集合里使用到哪些报表 --&gt;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&lt;reports</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&lt;/reportSet&gt;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;/reportSets&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;/plugin&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;/plugins&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;/reporting&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!-- 继承自该项目的所有子项目的默认依赖信息。这部分的依赖信息不会被立即解析,而是当子项目声明一个依赖（必须描述group ID和 artifact 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">        ID信息），如果group ID和artifact ID以外的一些信息没有描述，则通过group ID和artifact ID 匹配到这里的依赖，并使用这里的依赖信息。 --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;dependencyManagement&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;dependencies&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--参见dependencies/dependency元素 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;dependency&gt;</span>
+</span></span><span style="display:flex;"><span>                ......
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;/dependency&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;/dependencies&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;/dependencyManagement&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!--项目分发信息，在执行mvn deploy后表示要发布的位置。有了这些信息就可以把网站部署到远程服务器或者把构件部署到远程仓库。 --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;distributionManagement&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--部署项目产生的构件到远程仓库需要的信息 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;repository&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--是分配给快照一个唯一的版本号（由时间戳和构建流水号）？还是每次都使用相同的版本号？参见repositories/repository元素 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;uniqueVersion</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;id&gt;</span>banseon-maven2<span style="color:#f92672">&lt;/id&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;name&gt;</span>banseon maven2<span style="color:#f92672">&lt;/name&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;url&gt;</span>file://${basedir}/target/deploy<span style="color:#f92672">&lt;/url&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;layout</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;/repository&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--构件的快照部署到哪里？如果没有配置该元素，默认部署到repository元素配置的仓库，参见distributionManagement/repository元素 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;snapshotRepository&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;uniqueVersion</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;id&gt;</span>banseon-maven2<span style="color:#f92672">&lt;/id&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;name&gt;</span>Banseon-maven2 Snapshot Repository<span style="color:#f92672">&lt;/name&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;url&gt;</span>scp://svn.baidu.com/banseon:/usr/local/maven-snapshot<span style="color:#f92672">&lt;/url&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;layout</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;/snapshotRepository&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--部署项目的网站需要的信息 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;site&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--部署位置的唯一标识符，用来匹配站点和settings.xml文件里的配置 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;id&gt;</span>banseon-site<span style="color:#f92672">&lt;/id&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--部署位置的名称 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;name&gt;</span>business api website<span style="color:#f92672">&lt;/name&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--部署位置的URL，按protocol://hostname/path形式 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;url&gt;</span>
+</span></span><span style="display:flex;"><span>                scp://svn.baidu.com/banseon:/var/www/localhost/banseon-web
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;/url&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;/site&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--项目下载页面的URL。如果没有该元素，用户应该参考主页。使用该元素的原因是：帮助定位那些不在仓库里的构件（由于license限制）。 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;downloadUrl</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!--如果构件有了新的group ID和artifact ID（构件移到了新的位置），这里列出构件的重定位信息。 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;relocation&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--构件新的group ID --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;groupId</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--构件新的artifact ID --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;artifactId</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--构件新的版本号 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;version</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">&lt;!--显示给用户的，关于移动的额外信息，例如原因。 --&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;message</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;/relocation&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">&lt;!-- 给出该构件在远程仓库的状态。不得在本地项目中设置该元素，因为这是工具自动更新的。有效的值有：none（默认），converted（仓库管理员从 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">            Maven 1 POM转换过来），partner（直接从伙伴Maven 2仓库同步过来），deployed（从Maven 2实例部 署），verified（被核实时正确的和最终的）。 --&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;status</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;/distributionManagement&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!--以值替代名称，Properties可以在整个POM中使用，也可以作为触发条件（见settings.xml配置文件里activation元素的说明）。格式是&lt;name&gt;value&lt;/name&gt;。 --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;properties</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/project&gt;</span>
+</span></span></code></pre></div><h2 id="maven-构建">
+  Maven 构建
+  <a class="anchor" href="#maven-%e6%9e%84%e5%bb%ba">#</a>
+</h2>
+<h3 id="maven-构建生命周期">
+  Maven 构建生命周期
+  <a class="anchor" href="#maven-%e6%9e%84%e5%bb%ba%e7%94%9f%e5%91%bd%e5%91%a8%e6%9c%9f">#</a>
+</h3>
+<p>Maven 构建生命周期定义了一个项目构建跟发布的过程。</p>
+<p>一个典型的 Maven 构建（build）生命周期是由以下几个阶段的序列组成的：</p>
+<p><img src="/img/maven-package-build-phase.png" alt="maven-package-build-phase" /></p>
+<table>
+<thead>
+<tr>
+<th>验证 validate</th>
+<th>验证项目</th>
+<th>验证项目是否正确且所有必须信息是可用的</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>编译 compile</td>
+<td>执行编译</td>
+<td>源代码编译在此阶段完成</td>
+</tr>
+<tr>
+<td>测试 Test</td>
+<td>测试</td>
+<td>使用适当的单元测试框架（例如JUnit）运行测试。</td>
+</tr>
+<tr>
+<td>包装 package</td>
+<td>打包</td>
+<td>创建JAR/WAR包，如在 pom.xml 中定义提及的包</td>
+</tr>
+<tr>
+<td>检查 verify</td>
+<td>检查</td>
+<td>对集成测试的结果进行检查，以保证质量达标</td>
+</tr>
+<tr>
+<td>安装 install</td>
+<td>安装</td>
+<td>安装打包的项目到本地仓库，以供其他项目使用</td>
+</tr>
+<tr>
+<td>部署 deploy</td>
+<td>部署</td>
+<td>拷贝最终的工程包到远程仓库中，以共享给其他开发人员和工程</td>
+</tr>
+</tbody>
+</table>
+<p>为了完成 default 生命周期，这些阶段（包括其他未在上面罗列的生命周期阶段）将被按顺序地执行。</p>
+<p>Maven 有以下三个标准的生命周期：</p>
+<ul>
+<li><strong>clean</strong>：项目清理的处理</li>
+<li><strong>default(或 build)</strong>：项目部署的处理</li>
+<li><strong>site</strong>：项目站点文档创建的处理</li>
+</ul>
+<p>每个生命周期中都包含着一系列的阶段(phase)。这些 phase 就相当于 Maven 提供的统一的接口，然后这些 phase 的实现由 Maven 的插件来完成。</p>
+<p>我们在输入 mvn 命令的时候，比如 <strong>mvn clean</strong>，clean 对应的就是 Clean 生命周期中的 clean 阶段。但是 clean 的具体操作是由 <strong>maven-clean-plugin</strong> 来实现的。所以说 Maven 生命周期的每一个阶段的具体实现都是由 Maven 插件实现的。</p>
+<p>插件通常提供了一个目标的集合，并且可以使用下面的语法执行：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>mvn <span style="color:#f92672">[</span>plugin-name<span style="color:#f92672">]</span>:<span style="color:#f92672">[</span>goal-name<span style="color:#f92672">]</span>
+</span></span></code></pre></div><p>例如，一个 Java 工程可以使用 maven-compiler-plugin 的 compile-goal 编译，使用以下命令：</p>
+<pre tabindex="0"><code>mvn compiler:compile
+</code></pre><p>在 Maven 中，有两种类型的插件，build 和 reporting：</p>
+<ul>
+<li><strong>Build plugins</strong> are executed during the build and configured in the <code>&lt;build/&gt;</code> element.</li>
+<li><strong>Reporting plugins</strong> are executed during the site generation and configured in the <code>&lt;reporting/&gt;</code> element.</li>
+</ul>
+<p>所有的插件都至少需要三个信息: <code>groupId</code>, <code>artifactId</code> and <code>version</code>.</p>
+<p>下面是一些常用插件的列表：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">插件</th>
+<th style="text-align:left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">clean</td>
+<td style="text-align:left">构建之后清理目标文件。删除目标目录。</td>
+</tr>
+<tr>
+<td style="text-align:left">compiler</td>
+<td style="text-align:left">编译 Java 源文件。</td>
+</tr>
+<tr>
+<td style="text-align:left">surefile</td>
+<td style="text-align:left">运行 JUnit 单元测试。创建测试报告。</td>
+</tr>
+<tr>
+<td style="text-align:left">jar</td>
+<td style="text-align:left">从当前工程中构建 JAR 文件。</td>
+</tr>
+<tr>
+<td style="text-align:left">war</td>
+<td style="text-align:left">从当前工程中构建 WAR 文件。</td>
+</tr>
+<tr>
+<td style="text-align:left">javadoc</td>
+<td style="text-align:left">为工程生成 Javadoc。</td>
+</tr>
+<tr>
+<td style="text-align:left">antrun</td>
+<td style="text-align:left">从构建过程的任意一个阶段中运行一个 ant 任务的集合。</td>
+</tr>
+</tbody>
+</table>
+<p>Maven 官方支持的所有插件参见：<a href="https://maven.apache.org/plugins/">https://maven.apache.org/plugins/</a> 和 <a href="https://repo.maven.apache.org/maven2/org/apache/maven/plugins/">https://repo.maven.apache.org/maven2/org/apache/maven/plugins/</a></p>
+<p>除了官方支持的插件外，还有一些第三方的插件库，如我在测试 RocketMQ-Streams 时经常使用的命令：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>mvn exec:java -Dexec.mainClass<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;org.apache.rocketmq.streams.examples.WordCount
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;</span> -pl example
+</span></span></code></pre></div><p>这里的 exec 插件的配置就是：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#f92672">&lt;plugin&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;groupId&gt;</span>org.codehaus.mojo<span style="color:#f92672">&lt;/groupId&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;artifactId&gt;</span>exec-maven-plugin<span style="color:#f92672">&lt;/artifactId&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;version&gt;</span>3.1.0<span style="color:#f92672">&lt;/version&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;executions&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;execution&gt;</span>
+</span></span><span style="display:flex;"><span>      ...
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&lt;goals&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;goal&gt;</span>exec<span style="color:#f92672">&lt;/goal&gt;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&lt;/goals&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;/execution&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;/executions&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;configuration&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;executable&gt;</span>maven<span style="color:#f92672">&lt;/executable&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!-- optional --&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;workingDirectory&gt;</span>/tmp<span style="color:#f92672">&lt;/workingDirectory&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;arguments&gt;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&lt;argument&gt;</span>-X<span style="color:#f92672">&lt;/argument&gt;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&lt;argument&gt;</span>myproject:dist<span style="color:#f92672">&lt;/argument&gt;</span>
+</span></span><span style="display:flex;"><span>      ...
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;/arguments&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;environmentVariables&gt;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&lt;LANG&gt;</span>en_US<span style="color:#f92672">&lt;/LANG&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;/environmentVariables&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;/configuration&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/plugin&gt;</span>
+</span></span></code></pre></div><p>但最近在开发过程中发现 RocketMQ-Streams 并没有配置这个插件，但却可以使用 <code>mvn exec:java</code> 命令，具体原因还在探索中。</p>
+<h3 id="maven-依赖搜索顺序">
+  Maven 依赖搜索顺序
+  <a class="anchor" href="#maven-%e4%be%9d%e8%b5%96%e6%90%9c%e7%b4%a2%e9%a1%ba%e5%ba%8f">#</a>
+</h3>
+<p>当我们执行 Maven 构建命令时，Maven 开始按照以下顺序查找依赖的库：</p>
+<ul>
+<li><strong>步骤 1</strong> － 在本地仓库中搜索，如果找不到，执行步骤 2，如果找到了则执行其他操作。</li>
+<li><strong>步骤 2</strong> － 在中央仓库中搜索，如果找不到，并且有一个或多个远程仓库已经设置，则执行步骤 4，如果找到了则下载到本地仓库中以备将来引用。</li>
+<li><strong>步骤 3</strong> － 如果远程仓库没有被设置，Maven 将简单的停滞处理并抛出错误（无法找到依赖的文件）。</li>
+<li><strong>步骤 4</strong> － 在一个或多个远程仓库中搜索依赖的文件，如果找到则下载到本地仓库以备将来引用，否则 Maven 将停止处理并抛出错误（无法找到依赖的文件）。</li>
+</ul>
+<h3 id="maven-打包命令">
+  Maven 打包命令
+  <a class="anchor" href="#maven-%e6%89%93%e5%8c%85%e5%91%bd%e4%bb%a4">#</a>
+</h3>
+<p><code>mvn package</code>: 打包到本项目，一般在项目 <code>target </code> 目录下。</p>
+<p><code>mvn install</code>: 打包到本地仓库，如果没设置 <code>Maven</code> 本地仓库，一般在 <code>$HOME/.m2</code> 目录下。</p>
+<p><code>mvn deploy</code>: 打包上传到远程仓库，具体设置可以参考：<a href="https://maven.apache.org/guides/getting-started/index.html#how-do-i-deploy-my-jar-in-my-remote-repository">https://maven.apache.org/guides/getting-started/index.html#how-do-i-deploy-my-jar-in-my-remote-repository</a></p>
+<blockquote>
+<p>For deploying jars to an external repository, you have to configure the repository url in the pom.xml and the authentication information for connecting to the repository in the settings.xml.</p>
+</blockquote>
+<h2 id="maven-snapshot">
+  Maven SNAPSHOT
+  <a class="anchor" href="#maven-snapshot">#</a>
+</h2>
+<blockquote>
+<h2 id="what-is-a-snapshot-version">
+  What is a SNAPSHOT version?
+  <a class="anchor" href="#what-is-a-snapshot-version">#</a>
+</h2>
+<p>Notice the value of the <strong>version</strong> tag in the <code>pom.xml</code> file shown below has the suffix: <code>-SNAPSHOT</code>.</p>
+<pre tabindex="0"><code>&lt;project xmlns=&#34;http://maven.apache.org/POM/4.0.0&#34;  ...  &lt;groupId&gt;...&lt;/groupId&gt;  &lt;artifactId&gt;my-app&lt;/artifactId&gt;  ...  &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;  &lt;name&gt;Maven Quick Start Archetype&lt;/name&gt;  ...
+</code></pre><p>The <code>SNAPSHOT</code> value refers to the &rsquo;latest&rsquo; code along a development branch, and provides no guarantee the code is stable or unchanging. Conversely, the code in a &lsquo;release&rsquo; version (any version value without the suffix <code>SNAPSHOT</code>) is unchanging.</p>
+<p>In other words, a SNAPSHOT version is the &lsquo;development&rsquo; version before the final &lsquo;release&rsquo; version. The SNAPSHOT is &ldquo;older&rdquo; than its release.</p>
+<p>During the <a href="https://maven.apache.org/plugins/maven-release-plugin/">release</a> process, a version of <strong>x.y-SNAPSHOT</strong> changes to <strong>x.y</strong>. The release process also increments the development version to <strong>x.(y+1)-SNAPSHOT</strong>. For example, version <strong>1.0-SNAPSHOT</strong> is released as version <strong>1.0</strong>, and the new development version is version <strong>1.1-SNAPSHOT</strong>.</p>
+</blockquote>
+<p>因此，如果要使用当前正在开发的代码进行构建，那么版本号应该使用 <code>未来版本号-SNAPSHOT</code> 的格式。</p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#什么是-maven">什么是 Maven</a></li>
+    <li><a href="#maven-约定配置">Maven 约定配置</a></li>
+    <li><a href="#maven-pom">Maven POM</a>
+      <ul>
+        <li><a href="#pom-标签大全"><strong>POM 标签大全</strong></a></li>
+      </ul>
+    </li>
+    <li><a href="#maven-构建">Maven 构建</a>
+      <ul>
+        <li><a href="#maven-构建生命周期">Maven 构建生命周期</a></li>
+        <li><a href="#maven-依赖搜索顺序">Maven 依赖搜索顺序</a></li>
+        <li><a href="#maven-打包命令">Maven 打包命令</a></li>
+      </ul>
+    </li>
+    <li><a href="#maven-snapshot">Maven SNAPSHOT</a></li>
+    <li><a href="#what-is-a-snapshot-version">What is a SNAPSHOT version?</a></li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
