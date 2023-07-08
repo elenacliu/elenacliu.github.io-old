@@ -21,6 +21,22 @@ Maven 约定配置 # Maven 提倡使用一个共同的标准目录结构，Maven
     </item>
     
     <item>
+      <title>Vim 常用快捷键</title>
+      <link>http://elenacliu.github.io/post/2023-07-08-Vim_%E5%B8%B8%E7%94%A8%E5%BF%AB%E6%8D%B7%E9%94%AE/</link>
+      <pubDate>Sat, 08 Jul 2023 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2023-07-08-Vim_%E5%B8%B8%E7%94%A8%E5%BF%AB%E6%8D%B7%E9%94%AE/</guid>
+      <description>Vim 常用快捷键 # Vim 有三种模式，分别为 normal mode, insert mode, visual mode。
+本文仅用于记录我在日常使用中接触到的快捷键，遇到就加入，持续更新，不保证完整性。（拖了好几年终于受不了在 vim 里只能在 insert mode 中使用⬆️⬇️⬅️➡️键进行光标移动，只能用 backspace 进行删除，正式拥抱生产力工具！）
+mode 切换 # 进入 Vim 默认为 normal mode，如果从别的 mode 进入 normal mode 需要按 esc 键。从 normal mode 进入 insert mode，按 i ；从 normal mode 进入 visual mode，按 v。
+这些 mode 的切换都通过 normal mode 作为中介。
+Normal mode # 显示位置信息 # :set number：显示行号
+:set nonumber：取消行号显示
+CTRL-G：将在屏幕底部显示当前所在位置的信息。我们还可以在CTRL-G 命令之前增加数字参数，数字越大得到的信息就越详细。命令 1CTRL-G 会显示文件的全路径。命令 2CTRL-G 会同时显示缓冲区的数字标号。
+gCTRL-G：显示当前文件中的字符统计信息。包括当前行数（Line）、列数（Col）、字数（Word）、字符数（Char）和字节数（Byte）等信息。（注意这个信息不会随着你光标的移动实时更新）</description>
+    </item>
+    
+    <item>
       <title>6D Pose Estimation</title>
       <link>http://elenacliu.github.io/post/2023-07-03-6D-Pose-Estimation/</link>
       <pubDate>Mon, 03 Jul 2023 00:00:00 +0000</pubDate>

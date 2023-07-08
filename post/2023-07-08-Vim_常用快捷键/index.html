@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Vim 常用快捷键 # Vim 有三种模式，分别为 normal mode, insert mode, visual mode。
+本文仅用于记录我在日常使用中接触到的快捷键，遇到就加入，持续更新，不保证完整性。（拖了好几年终于受不了在 vim 里只能在 insert mode 中使用⬆️⬇️⬅️➡️键进行光标移动，只能用 backspace 进行删除，正式拥抱生产力工具！）
+mode 切换 # 进入 Vim 默认为 normal mode，如果从别的 mode 进入 normal mode 需要按 esc 键。从 normal mode 进入 insert mode，按 i ；从 normal mode 进入 visual mode，按 v。
+这些 mode 的切换都通过 normal mode 作为中介。
+Normal mode # 显示位置信息 # :set number：显示行号
+:set nonumber：取消行号显示
+CTRL-G：将在屏幕底部显示当前所在位置的信息。我们还可以在CTRL-G 命令之前增加数字参数，数字越大得到的信息就越详细。命令 1CTRL-G 会显示文件的全路径。命令 2CTRL-G 会同时显示缓冲区的数字标号。
+gCTRL-G：显示当前文件中的字符统计信息。包括当前行数（Line）、列数（Col）、字数（Word）、字符数（Char）和字节数（Byte）等信息。（注意这个信息不会随着你光标的移动实时更新）">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="Vim 常用快捷键" />
+<meta property="og:description" content="Vim 常用快捷键 # Vim 有三种模式，分别为 normal mode, insert mode, visual mode。
+本文仅用于记录我在日常使用中接触到的快捷键，遇到就加入，持续更新，不保证完整性。（拖了好几年终于受不了在 vim 里只能在 insert mode 中使用⬆️⬇️⬅️➡️键进行光标移动，只能用 backspace 进行删除，正式拥抱生产力工具！）
+mode 切换 # 进入 Vim 默认为 normal mode，如果从别的 mode 进入 normal mode 需要按 esc 键。从 normal mode 进入 insert mode，按 i ；从 normal mode 进入 visual mode，按 v。
+这些 mode 的切换都通过 normal mode 作为中介。
+Normal mode # 显示位置信息 # :set number：显示行号
+:set nonumber：取消行号显示
+CTRL-G：将在屏幕底部显示当前所在位置的信息。我们还可以在CTRL-G 命令之前增加数字参数，数字越大得到的信息就越详细。命令 1CTRL-G 会显示文件的全路径。命令 2CTRL-G 会同时显示缓冲区的数字标号。
+gCTRL-G：显示当前文件中的字符统计信息。包括当前行数（Line）、列数（Col）、字数（Word）、字符数（Char）和字节数（Byte）等信息。（注意这个信息不会随着你光标的移动实时更新）" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://elenacliu.github.io/post/2023-07-08-Vim_%E5%B8%B8%E7%94%A8%E5%BF%AB%E6%8D%B7%E9%94%AE/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2023-07-08T00:00:00+00:00" />
+<meta property="article:modified_time" content="2023-07-08T00:00:00+00:00" />
+<title>Vim 常用快捷键 | cliu&#39;s Blog</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
+  <script defer src="/flexsearch.min.js"></script>
+  <script defer src="/en.search.min.976a82eb5f9045cba84c5060511dc7f64186f4cddea52947ff2d2b84696e8621.js" integrity="sha256-l2qC61&#43;QRcuoTFBgUR3H9kGG9M3epSlH/y0rhGluhiE=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>cliu&#39;s Blog</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>Vim 常用快捷键</strong>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#mode-切换">mode 切换</a></li>
+    <li><a href="#normal-mode">Normal mode</a>
+      <ul>
+        <li><a href="#显示位置信息">显示位置信息</a></li>
+        <li><a href="#光标移动">光标移动</a></li>
+        <li><a href="#复制和粘贴">复制和粘贴</a></li>
+        <li><a href="#删除">删除</a></li>
+        <li><a href="#查找">查找</a></li>
+      </ul>
+    </li>
+    <li><a href="#附录emacs-简单快捷键">附录：Emacs 简单快捷键</a></li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="vim-常用快捷键">
+  Vim 常用快捷键
+  <a class="anchor" href="#vim-%e5%b8%b8%e7%94%a8%e5%bf%ab%e6%8d%b7%e9%94%ae">#</a>
+</h1>
+<p>Vim 有三种模式，分别为 normal mode, insert mode, visual mode。</p>
+<p>本文仅用于记录我在日常使用中接触到的快捷键，遇到就加入，持续更新，不保证完整性。（拖了好几年终于受不了在 vim 里只能在 insert mode 中使用⬆️⬇️⬅️➡️键进行光标移动，只能用 backspace 进行删除，正式拥抱生产力工具！）</p>
+<h2 id="mode-切换">
+  mode 切换
+  <a class="anchor" href="#mode-%e5%88%87%e6%8d%a2">#</a>
+</h2>
+<p>进入 Vim 默认为 normal mode，如果从别的 mode 进入 normal mode 需要按 <code>esc</code> 键。从 normal mode 进入 insert mode，按 <code>i</code> ；从 normal mode 进入 visual mode，按 <code>v</code>。</p>
+<p>这些 mode 的切换都通过 normal mode 作为中介。</p>
+<h2 id="normal-mode">
+  Normal mode
+  <a class="anchor" href="#normal-mode">#</a>
+</h2>
+<h3 id="显示位置信息">
+  显示位置信息
+  <a class="anchor" href="#%e6%98%be%e7%a4%ba%e4%bd%8d%e7%bd%ae%e4%bf%a1%e6%81%af">#</a>
+</h3>
+<p><code>:set number</code>：显示行号</p>
+<p><code>:set nonumber</code>：取消行号显示</p>
+<p><code>CTRL-G</code>：将在屏幕底部显示当前所在位置的信息。我们还可以在<code>CTRL-G</code> 命令之前增加数字参数，数字越大得到的信息就越详细。命令 <code>1CTRL-G </code>会显示文件的全路径。命令 <code>2CTRL-G</code> 会同时显示缓冲区的数字标号。</p>
+<p><code>gCTRL-G</code>：显示当前文件中的字符统计信息。包括当前行数（Line）、列数（Col）、字数（Word）、字符数（Char）和字节数（Byte）等信息。（注意这个信息不会随着你光标的移动实时更新）</p>
+<p><code>:set ruler</code>：将在屏幕右下角显示当前所在的行和列，以及相对于整个文件的位置。</p>
+<h3 id="光标移动">
+  光标移动
+  <a class="anchor" href="#%e5%85%89%e6%a0%87%e7%a7%bb%e5%8a%a8">#</a>
+</h3>
+<h4 id="以字符为单位移动">
+  以字符为单位移动
+  <a class="anchor" href="#%e4%bb%a5%e5%ad%97%e7%ac%a6%e4%b8%ba%e5%8d%95%e4%bd%8d%e7%a7%bb%e5%8a%a8">#</a>
+</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>方法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>左</td>
+<td>h</td>
+</tr>
+<tr>
+<td>下</td>
+<td>j</td>
+</tr>
+<tr>
+<td>上</td>
+<td>k</td>
+</tr>
+<tr>
+<td>右</td>
+<td>l</td>
+</tr>
+</tbody>
+</table>
+<p>和其他快捷键一样，可以配合数字来移动多个字符，比如 <code>5l</code> 向左移动 5 个字符。</p>
+<h4 id="以单词为单位移动">
+  以单词为单位移动
+  <a class="anchor" href="#%e4%bb%a5%e5%8d%95%e8%af%8d%e4%b8%ba%e5%8d%95%e4%bd%8d%e7%a7%bb%e5%8a%a8">#</a>
+</h4>
+<p>这里的前指的是左边，后指的是右边。</p>
+<p>前一个单词开头：b</p>
+<p>后一个单词开头：w</p>
+<p>前一个单词结尾：ge</p>
+<p>后一个单词结尾：e</p>
+<p>如果是n个单词，在命令前加上数字即可。</p>
+<h4 id="以行为单位移动">
+  以行为单位移动
+  <a class="anchor" href="#%e4%bb%a5%e8%a1%8c%e4%b8%ba%e5%8d%95%e4%bd%8d%e7%a7%bb%e5%8a%a8">#</a>
+</h4>
+<h5 id="移动到文件头尾">
+  移动到文件头/尾
+  <a class="anchor" href="#%e7%a7%bb%e5%8a%a8%e5%88%b0%e6%96%87%e4%bb%b6%e5%a4%b4%e5%b0%be">#</a>
+</h5>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>方法1</th>
+<th>方法2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>到文件头</td>
+<td>gg</td>
+<td>:0 或者 :1</td>
+</tr>
+<tr>
+<td>到文件尾</td>
+<td>shift+g（也即是 G）</td>
+<td>:$</td>
+</tr>
+</tbody>
+</table>
+<h5 id="移动到正数倒数第n行">
+  移动到正数/倒数第n行
+  <a class="anchor" href="#%e7%a7%bb%e5%8a%a8%e5%88%b0%e6%ad%a3%e6%95%b0%e5%80%92%e6%95%b0%e7%ac%acn%e8%a1%8c">#</a>
+</h5>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>方法1</th>
+<th>方法2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>到正数第n行</td>
+<td>{n}gg，如5gg是到第5行；或者{n}G，注意 0G 是最后一行</td>
+<td>:{n}</td>
+</tr>
+<tr>
+<td>到倒数第n行</td>
+<td></td>
+<td>:$-{n}</td>
+</tr>
+</tbody>
+</table>
+<h5 id="移动到当前位置起上下n行">
+  移动到当前位置起上/下n行
+  <a class="anchor" href="#%e7%a7%bb%e5%8a%a8%e5%88%b0%e5%bd%93%e5%89%8d%e4%bd%8d%e7%bd%ae%e8%b5%b7%e4%b8%8a%e4%b8%8bn%e8%a1%8c">#</a>
+</h5>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>方法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>上n行</td>
+<td>{n}j</td>
+</tr>
+<tr>
+<td>下n行</td>
+<td>{n}k</td>
+</tr>
+<tr>
+<td>上n行的第一个非空字符</td>
+<td>{n}-</td>
+</tr>
+<tr>
+<td>下n行的第一个非空字符</td>
+<td>{n}+</td>
+</tr>
+<tr>
+<td>前n个段落</td>
+<td>{n}{</td>
+</tr>
+<tr>
+<td>后n个段落</td>
+<td>{n}}</td>
+</tr>
+<tr>
+<td>前n个句子</td>
+<td>{n}(</td>
+</tr>
+<tr>
+<td>后n个句子</td>
+<td>{n})</td>
+</tr>
+</tbody>
+</table>
+<p>实际使用中句子的定义由于过于复杂，使用较少。</p>
+<h4 id="行内移动">
+  行内移动
+  <a class="anchor" href="#%e8%a1%8c%e5%86%85%e7%a7%bb%e5%8a%a8">#</a>
+</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>方法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>行首</td>
+<td>0</td>
+</tr>
+<tr>
+<td>行尾</td>
+<td>$</td>
+</tr>
+<tr>
+<td>行首非空格</td>
+<td>^ 或 _ 或 g^</td>
+</tr>
+<tr>
+<td>行尾非空格</td>
+<td>g_</td>
+</tr>
+</tbody>
+</table>
+<h4 id="以屏幕为单位移动">
+  以屏幕为单位移动
+  <a class="anchor" href="#%e4%bb%a5%e5%b1%8f%e5%b9%95%e4%b8%ba%e5%8d%95%e4%bd%8d%e7%a7%bb%e5%8a%a8">#</a>
+</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>方法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>当前屏的首行</td>
+<td>H</td>
+</tr>
+<tr>
+<td>当前屏的尾行</td>
+<td>L</td>
+</tr>
+<tr>
+<td>当前屏的中间行</td>
+<td>M</td>
+</tr>
+<tr>
+<td>光标所在字符不动，将当前行移动到屏幕顶部，通常用来查看完整的下文，比如函数、类的定义</td>
+<td>zt</td>
+</tr>
+<tr>
+<td>光标所在字符不动，将当前行移到屏幕中间</td>
+<td>zz</td>
+</tr>
+<tr>
+<td>光标所在字符不动，将当前行移到屏幕底部</td>
+<td>zb</td>
+</tr>
+<tr>
+<td>向下翻页，移动一整个屏幕</td>
+<td>Ctrl-f</td>
+</tr>
+<tr>
+<td>向上翻页，移动一整个屏幕</td>
+<td>Ctrl-b</td>
+</tr>
+<tr>
+<td>屏幕向下滚动一行</td>
+<td>Ctrl-e</td>
+</tr>
+<tr>
+<td>屏幕向上滚动一行</td>
+<td>Ctrl-y</td>
+</tr>
+</tbody>
+</table>
+<h4 id="列移动">
+  列移动
+  <a class="anchor" href="#%e5%88%97%e7%a7%bb%e5%8a%a8">#</a>
+</h4>
+<p>移动到第 n 列：{n}|</p>
+<h4 id="历史移动">
+  历史移动
+  <a class="anchor" href="#%e5%8e%86%e5%8f%b2%e7%a7%bb%e5%8a%a8">#</a>
+</h4>
+<p><code>:jumps</code>：查看历史</p>
+<p><code>Ctrl-o</code>：移动到上一个（较旧的）位置</p>
+<p><code>Ctrl-i</code>：移动到下一个（较新的）位置</p>
+<h3 id="复制和粘贴">
+  复制和粘贴
+  <a class="anchor" href="#%e5%a4%8d%e5%88%b6%e5%92%8c%e7%b2%98%e8%b4%b4">#</a>
+</h3>
+<h4 id="复制当前行">
+  复制当前行
+  <a class="anchor" href="#%e5%a4%8d%e5%88%b6%e5%bd%93%e5%89%8d%e8%a1%8c">#</a>
+</h4>
+<h3 id="删除">
+  删除
+  <a class="anchor" href="#%e5%88%a0%e9%99%a4">#</a>
+</h3>
+<h4 id="删除当前行">
+  删除当前行
+  <a class="anchor" href="#%e5%88%a0%e9%99%a4%e5%bd%93%e5%89%8d%e8%a1%8c">#</a>
+</h4>
+<h4 id="删除光标前后n个字符">
+  删除光标前/后n个字符
+  <a class="anchor" href="#%e5%88%a0%e9%99%a4%e5%85%89%e6%a0%87%e5%89%8d%e5%90%8en%e4%b8%aa%e5%ad%97%e7%ac%a6">#</a>
+</h4>
+<h3 id="查找">
+  查找
+  <a class="anchor" href="#%e6%9f%a5%e6%89%be">#</a>
+</h3>
+<h2 id="附录emacs-简单快捷键">
+  附录：Emacs 简单快捷键
+  <a class="anchor" href="#%e9%99%84%e5%bd%95emacs-%e7%ae%80%e5%8d%95%e5%bf%ab%e6%8d%b7%e9%94%ae">#</a>
+</h2>
+<h2 id="参考">
+  参考
+  <a class="anchor" href="#%e5%8f%82%e8%80%83">#</a>
+</h2>
+<p>[1] <a href="https://harttle.land/2015/11/07/vim-cursor.html#header-2">https://harttle.land/2015/11/07/vim-cursor.html#header-2</a></p>
+<p>[2] <a href="http://yyq123.github.io/learn-vim/">http://yyq123.github.io/learn-vim/</a></p>
+<p>[3] <a href="https://learnbyexample.github.io/vim_reference/Normal-mode.html">https://learnbyexample.github.io/vim_reference/Normal-mode.html</a></p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#mode-切换">mode 切换</a></li>
+    <li><a href="#normal-mode">Normal mode</a>
+      <ul>
+        <li><a href="#显示位置信息">显示位置信息</a></li>
+        <li><a href="#光标移动">光标移动</a></li>
+        <li><a href="#复制和粘贴">复制和粘贴</a></li>
+        <li><a href="#删除">删除</a></li>
+        <li><a href="#查找">查找</a></li>
+      </ul>
+    </li>
+    <li><a href="#附录emacs-简单快捷键">附录：Emacs 简单快捷键</a></li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
