@@ -110,6 +110,18 @@ The syntax of shaders
     </item>
     
     <item>
+      <title>NeRF 和 MVSNeRF 源码阅读</title>
+      <link>http://elenacliu.github.io/post/2023-07-09-NeRF%E5%92%8CMVSNeRF%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/</link>
+      <pubDate>Sun, 09 Jul 2023 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2023-07-09-NeRF%E5%92%8CMVSNeRF%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/</guid>
+      <description>camera_angle_x 是相机的水平视场 (horizontal field of view)
+camera_angle_x 和 focal 的关系：
+\[ f \cdot \tan(camera\_angle\_x/2)=w/2 \] transform_matrix: 相机外参（extrinsics），也叫做相机位姿（camera pose）
+\(\begin{bmatrix}x_C, y_C, z_C\end{bmatrix}^T\) 是相机坐标系中的坐标，\(\begin{bmatrix}x,y,z\end{bmatrix}^T\) 是三维世界的坐标： \[ \begin{bmatrix} x_C \\ y_C \\ z_C \\ 1 \\ \end{bmatrix}= \begin{bmatrix} r_{11} &amp;amp; r_{12} &amp;amp; r_{13} &amp;amp; t_x \\ r_{21} &amp;amp; r_{22} &amp;amp; r_{23} &amp;amp; t_y \\ r_{31} &amp;amp; r_{32} &amp;amp; r_{33} &amp;amp; t_z \\ 0 &amp;amp; 0 &amp;amp; 0 &amp;amp; 1 \\ \end{bmatrix} \begin{bmatrix} x \\ y \\ z \\ 1 \end{bmatrix} \] \(C_{ex}=\begin{bmatrix} r_{11} &amp;amp; r_{12} &amp;amp; r_{13} &amp;amp; t_x \\ r_{21} &amp;amp; r_{22} &amp;amp; r_{23} &amp;amp; t_y \\ r_{31} &amp;amp; r_{32} &amp;amp; r_{33} &amp;amp; t_z \\ 0 &amp;amp; 0 &amp;amp; 0 &amp;amp; 1 \\ \end{bmatrix}=\begin{bmatrix}R&amp;amp;T\\0&amp;amp;1\end{bmatrix}\) 是一个仿射变换矩阵，也叫做相机外参。\(R=\begin{bmatrix} r_{11} &amp;amp; r_{12} &amp;amp; r_{13} \\ r_{21} &amp;amp; r_{22} &amp;amp; r_{23}\\ r_{31} &amp;amp; r_{32} &amp;amp; r_{33}\end{bmatrix}\)包含旋转信息，\(T=\begin{bmatrix} t_x\\ t_y \\ t_z \end{bmatrix}\) 包含平移信息。</description>
+    </item>
+    
+    <item>
       <title>Maven 使用小记</title>
       <link>http://elenacliu.github.io/post/2023-07-08-Maven_%E4%BD%BF%E7%94%A8%E5%B0%8F%E8%AE%B0/</link>
       <pubDate>Sat, 08 Jul 2023 00:00:00 +0000</pubDate>
@@ -511,18 +523,6 @@ stack&amp;lt;int&amp;gt; monotonestk; // insert the ith number of vector &amp;#3
 每一个位置只会入栈一次（在枚举到它时），并且最多出栈一次，因此时间复杂度为$O(n)$，另外开了一个栈，空间复杂度$O(n)$。
 代码如下：
 vector&amp;lt;int&amp;gt; getBiggerRight(vector&amp;lt;int&amp;gt;&amp;amp; nums) { vector&amp;lt;int&amp;gt; res(nums.size(), -1); stack&amp;lt;int&amp;gt; stk; for(int i = 0; i &amp;lt; nums.size(); i++) { while(!stk.empty() &amp;amp;&amp;amp; nums[stk.top()] &amp;lt; nums[i]) {	// 单调递减的栈 res[stk.top()] = i - stk.top(); stk.pop(); } stk.push(i); } return res; } 进阶1：LC84.</description>
-    </item>
-    
-    <item>
-      <title></title>
-      <link>http://elenacliu.github.io/post/2023-07-09-NeRF%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>http://elenacliu.github.io/post/2023-07-09-NeRF%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/</guid>
-      <description>camera_angle_x 是相机的水平视场 (horizontal field of view)
-camera_angle_x 和 focal 的关系：
-$$ f \cdot \tan(camera_angle_x/2)=w/2 $$ transform_matrix: 相机外参（extrinsics），也叫做相机位姿（camera pose）
-$\begin{bmatrix}x_C, y_C, z_C\end{bmatrix}^T$ 是相机坐标系中的坐标，$\begin{bmatrix}x,y,z\end{bmatrix}^T$ 是三维世界的坐标： $$ \begin{bmatrix} x_C \ y_C \ z_C \ 1 \ \end{bmatrix}= \begin{bmatrix} r_{11} &amp;amp; r_{12} &amp;amp; r_{13} &amp;amp; t_x \ r_{21} &amp;amp; r_{22} &amp;amp; r_{23} &amp;amp; t_y \ r_{31} &amp;amp; r_{32} &amp;amp; r_{33} &amp;amp; t_z \ 0 &amp;amp; 0 &amp;amp; 0 &amp;amp; 1 \ \end{bmatrix} \begin{bmatrix} x \ y \ z \ 1 \end{bmatrix} $$ $C_{ex}=\begin{bmatrix} r_{11} &amp;amp; r_{12} &amp;amp; r_{13} &amp;amp; t_x \ r_{21} &amp;amp; r_{22} &amp;amp; r_{23} &amp;amp; t_y \ r_{31} &amp;amp; r_{32} &amp;amp; r_{33} &amp;amp; t_z \ 0 &amp;amp; 0 &amp;amp; 0 &amp;amp; 1 \ \end{bmatrix}=\begin{bmatrix}R&amp;amp;T\0&amp;amp;1\end{bmatrix}$ 是一个仿射变换矩阵，也叫做相机外参。$R=\begin{bmatrix} r_{11} &amp;amp; r_{12} &amp;amp; r_{13} \ r_{21} &amp;amp; r_{22} &amp;amp; r_{23}\ r_{31} &amp;amp; r_{32} &amp;amp; r_{33}\end{bmatrix}$包含旋转信息，$T=\begin{bmatrix} t_x\ t_y \ t_z \end{bmatrix}$ 包含平移信息。</description>
     </item>
     
   </channel>

@@ -14,7 +14,7 @@
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.ec590097bd4847831e820a7c2cd140675b5708c9b6967bb22176f61e5ae319bc.js" integrity="sha256-7FkAl71IR4Meggp8LNFAZ1tXCMm2lnuyIXb2HlrjGbw=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.e4b175720dfaffd79075661c42f8b6a35bede3fedddf6c04b5ed0330c2c3b7eb.js" integrity="sha256-5LF1cg36/9eQdWYcQvi2o1vt4/7d32wEte0DMMLDt&#43;s=" crossorigin="anonymous"></script>
 <link rel="alternate" type="application/rss+xml" href="http://elenacliu.github.io/tags/research/index.xml" title="cliu's Blog" />
 <!--
 Made with Book Theme
@@ -122,7 +122,7 @@ https://github.com/alex-shpak/hugo-book
       
         <li class="flex justify-between">
           <a href="/tags/research/">research</a>
-          <span>1</span>
+          <span>2</span>
         </li>
       
         <li class="flex justify-between">
@@ -258,6 +258,36 @@ https://github.com/alex-shpak/hugo-book
     </p>
   </article>
   
+  <article class="markdown book-post">
+    <h2>
+      <a href="/post/2023-07-09-NeRF%E5%92%8CMVSNeRF%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/">NeRF 和 MVSNeRF 源码阅读</a>
+    </h2>
+    
+  <h5>July 9, 2023</h5>
+
+
+
+  
+
+  
+  <div>
+    
+      <a href="/tags/research/">research</a>
+  </div>
+  
+
+
+
+
+    <p>camera_angle_x 是相机的水平视场 (horizontal field of view)
+camera_angle_x 和 focal 的关系：
+\[ f \cdot \tan(camera\_angle\_x/2)=w/2 \] transform_matrix: 相机外参（extrinsics），也叫做相机位姿（camera pose）
+\(\begin{bmatrix}x_C, y_C, z_C\end{bmatrix}^T\) 是相机坐标系中的坐标，\(\begin{bmatrix}x,y,z\end{bmatrix}^T\) 是三维世界的坐标： \[ \begin{bmatrix} x_C \\ y_C \\ z_C \\ 1 \\ \end{bmatrix}= \begin{bmatrix} r_{11} &amp; r_{12} &amp; r_{13} &amp; t_x \\ r_{21} &amp; r_{22} &amp; r_{23} &amp; t_y \\ r_{31} &amp; r_{32} &amp; r_{33} &amp; t_z \\ 0 &amp; 0 &amp; 0 &amp; 1 \\ \end{bmatrix} \begin{bmatrix} x \\ y \\ z \\ 1 \end{bmatrix} \] \(C_{ex}=\begin{bmatrix} r_{11} &amp; r_{12} &amp; r_{13} &amp; t_x \\ r_{21} &amp; r_{22} &amp; r_{23} &amp; t_y \\ r_{31} &amp; r_{32} &amp; r_{33} &amp; t_z \\ 0 &amp; 0 &amp; 0 &amp; 1 \\ \end{bmatrix}=\begin{bmatrix}R&amp;T\\0&amp;1\end{bmatrix}\) 是一个仿射变换矩阵，也叫做相机外参。\(R=\begin{bmatrix} r_{11} &amp; r_{12} &amp; r_{13} \\ r_{21} &amp; r_{22} &amp; r_{23}\\ r_{31} &amp; r_{32} &amp; r_{33}\end{bmatrix}\)包含旋转信息，\(T=\begin{bmatrix} t_x\\ t_y \\ t_z \end{bmatrix}\) 包含平移信息。
+        <a href="/post/2023-07-09-NeRF%E5%92%8CMVSNeRF%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/">...</a>
+      
+    </p>
+  </article>
+  
 
   
  
@@ -315,7 +345,7 @@ https://github.com/alex-shpak/hugo-book
       
         <li class="flex justify-between">
           <a href="/tags/research/">research</a>
-          <span>1</span>
+          <span>2</span>
         </li>
       
         <li class="flex justify-between">

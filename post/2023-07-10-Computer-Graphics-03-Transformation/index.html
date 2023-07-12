@@ -42,7 +42,7 @@ Affine transformation Affine map = linear map &#43; translation \[ \begin{pmatri
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.ec590097bd4847831e820a7c2cd140675b5708c9b6967bb22176f61e5ae319bc.js" integrity="sha256-7FkAl71IR4Meggp8LNFAZ1tXCMm2lnuyIXb2HlrjGbw=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.e4b175720dfaffd79075661c42f8b6a35bede3fedddf6c04b5ed0330c2c3b7eb.js" integrity="sha256-5LF1cg36/9eQdWYcQvi2o1vt4/7d32wEte0DMMLDt&#43;s=" crossorigin="anonymous"></script>
 <!--
 Made with Book Theme
 https://github.com/alex-shpak/hugo-book
@@ -384,6 +384,7 @@ alt="image-20230711上午104444349" />
 </figure>
 <h3 id="orthographic-transformation">Orthographic transformation</h3>
 <p>正交投影，3D 的平行线在 2D 上还是平行的。</p>
+<p>这里的 a cuboid [l, r] x [b ,t] x [f, n] 就是 clip space.</p>
 <p><img src="https://cdn.jsdelivr.net/gh/elenacliu/PicGoPics/img/202307111048018.png" alt="image-20230711上午104812676" style="zoom:50%;" /></p>
 <p>b: bottom</p>
 <p>t: top</p>
@@ -440,7 +441,7 @@ alt="image-20230711下午121849936" />
 </figure>
 <p>这个 frustum 只需要给定 <span class="math inline">\(fov_y\)</span>
 和宽高比就能完全确定。</p>
-<h2 id="canonial-cube-to-screen">Canonial cube to screen</h2>
+<h2 id="canonial-cube-ndc-to-screen">Canonial cube (NDC) to screen</h2>
 <p>本质上是视口变换。</p>
 <p>What is a screen?</p>
 <ul>

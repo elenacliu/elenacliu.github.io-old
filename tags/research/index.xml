@@ -23,5 +23,17 @@
 此外，要把阅读文献当作阅读报纸一样的事情，不能总是带着“学习”和敬畏的心态去读文献，这样速度一定不会快，而要以获取信息为主要目的。这样往往能达到通过花少量时间阅读大量文献的目的。</description>
     </item>
     
+    <item>
+      <title>NeRF 和 MVSNeRF 源码阅读</title>
+      <link>http://elenacliu.github.io/post/2023-07-09-NeRF%E5%92%8CMVSNeRF%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/</link>
+      <pubDate>Sun, 09 Jul 2023 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2023-07-09-NeRF%E5%92%8CMVSNeRF%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/</guid>
+      <description>camera_angle_x 是相机的水平视场 (horizontal field of view)
+camera_angle_x 和 focal 的关系：
+\[ f \cdot \tan(camera\_angle\_x/2)=w/2 \] transform_matrix: 相机外参（extrinsics），也叫做相机位姿（camera pose）
+\(\begin{bmatrix}x_C, y_C, z_C\end{bmatrix}^T\) 是相机坐标系中的坐标，\(\begin{bmatrix}x,y,z\end{bmatrix}^T\) 是三维世界的坐标： \[ \begin{bmatrix} x_C \\ y_C \\ z_C \\ 1 \\ \end{bmatrix}= \begin{bmatrix} r_{11} &amp;amp; r_{12} &amp;amp; r_{13} &amp;amp; t_x \\ r_{21} &amp;amp; r_{22} &amp;amp; r_{23} &amp;amp; t_y \\ r_{31} &amp;amp; r_{32} &amp;amp; r_{33} &amp;amp; t_z \\ 0 &amp;amp; 0 &amp;amp; 0 &amp;amp; 1 \\ \end{bmatrix} \begin{bmatrix} x \\ y \\ z \\ 1 \end{bmatrix} \] \(C_{ex}=\begin{bmatrix} r_{11} &amp;amp; r_{12} &amp;amp; r_{13} &amp;amp; t_x \\ r_{21} &amp;amp; r_{22} &amp;amp; r_{23} &amp;amp; t_y \\ r_{31} &amp;amp; r_{32} &amp;amp; r_{33} &amp;amp; t_z \\ 0 &amp;amp; 0 &amp;amp; 0 &amp;amp; 1 \\ \end{bmatrix}=\begin{bmatrix}R&amp;amp;T\\0&amp;amp;1\end{bmatrix}\) 是一个仿射变换矩阵，也叫做相机外参。\(R=\begin{bmatrix} r_{11} &amp;amp; r_{12} &amp;amp; r_{13} \\ r_{21} &amp;amp; r_{22} &amp;amp; r_{23}\\ r_{31} &amp;amp; r_{32} &amp;amp; r_{33}\end{bmatrix}\)包含旋转信息，\(T=\begin{bmatrix} t_x\\ t_y \\ t_z \end{bmatrix}\) 包含平移信息。</description>
+    </item>
+    
   </channel>
 </rss>
