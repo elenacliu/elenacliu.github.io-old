@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>CG on cliu&#39;s Blog</title>
+    <link>http://elenacliu.github.io/tags/CG/</link>
+    <description>Recent content in CG on cliu&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 11 Jul 2023 00:00:00 +0000</lastBuildDate><atom:link href="http://elenacliu.github.io/tags/CG/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Computer Graphics 05 Rasterization</title>
+      <link>http://elenacliu.github.io/post/2023-07-11-Computer-Graphics-05-Rasterization/</link>
+      <pubDate>Tue, 11 Jul 2023 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2023-07-11-Computer-Graphics-05-Rasterization/</guid>
+      <description>Rasterization A simple approach: sampling Evaluating a function at a point is sampling.
+We can discretize a function by sampling.
+Sampling is a core idea in graphics.
+We sample time (1D), area (2D), direction (3D), volume (3D).
+Define binary funcition: inside(tri, x, y)
+没必要遍历 screen 上所有的点：遍历 bounding box 内的像素。
+axis aligned bounding box：aabb
+Rasterization on real display 像素有内部的结构。
+Bayer pattern: Galaxy 手机像素中红绿蓝排列成的图案。绿点的密度比红和蓝高，这是因为人眼对绿色最敏感。
+Antialiasing Aliase：走样。本质上是因为采样的频率低于信号的频率。
+本节课前置课程：信号处理原理。
+抗锯齿/反走样
+Sampling theory sampling artifacts: errors/mistakes/inaccuracies in computer graphics</description>
+    </item>
+    
+    <item>
+      <title>Computer Graphics 02 Linear Algebra</title>
+      <link>http://elenacliu.github.io/post/2023-07-10-ComputerGraphics-02-Linear-Algebra/</link>
+      <pubDate>Mon, 10 Jul 2023 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2023-07-10-ComputerGraphics-02-Linear-Algebra/</guid>
+      <description>本文内容总结自闫令琪老师的《GAMES101-现代计算机图形学入门》。
+课程主页：https://sites.cs.ucsb.edu/~lingqi/teaching/games101.html
+网课链接：https://www.bilibili.com/video/BV1X7411F744
+Linear Algebra Vector 缺省的点的坐标是列向量： \[ A=\begin{pmatrix}x\\y\\\end{pmatrix}, A^T=(x,y) \] 这样矩阵可以左乘。
+Dot product \[ \cos\theta=\frac{\boldsymbol{a}\cdot\boldsymbol{b}}{\Vert\boldsymbol{a}\Vert\cdot\Vert\boldsymbol{b}\Vert} \]
+\[ \vec a\cdot\vec b=\begin{pmatrix}x_a\\y_a\end{pmatrix}\cdot\begin{pmatrix}x_b\\y_b\end{pmatrix}=x_ax_b+y_ay_b \]
+Find angle between two vectors
+Find projection of one vector on another
+计算投影的作用有：
+measure how close two directions are;
+比如判断反射光线方向和视线方向的差距，如果差的很多，则可能看不到光线 decompose a vector;
+determine forward or backward
+如图所示，当 dot product 是正数时，forward；当 dot product 是负数时，backward。
+Cross product \[ \vec a \times\vec b=-\vec b\times\vec a \]
+\[ \Vert\vec a\times\vec b\Vert=\Vert\vec a\Vert\Vert\vec b\Vert\sin\theta \]</description>
+    </item>
+    
+    <item>
+      <title>Computer Graphics 03 Transformation</title>
+      <link>http://elenacliu.github.io/post/2023-07-10-Computer-Graphics-03-Transformation/</link>
+      <pubDate>Mon, 10 Jul 2023 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2023-07-10-Computer-Graphics-03-Transformation/</guid>
+      <description>本文内容总结自闫令琪老师的《GAMES101-现代计算机图形学入门》。
+课程主页：https://sites.cs.ucsb.edu/~lingqi/teaching/games101.html
+网课链接：https://www.bilibili.com/video/BV1X7411F744
+Transformation Scale matrix \[ \begin{pmatrix}x&amp;#39;\\y&amp;#39;\end{pmatrix}= \begin{pmatrix}s_x &amp;amp; 0\\0 &amp;amp; s_y\end{pmatrix}\begin{pmatrix}x\\y\end{pmatrix} \]
+Reflection matrix \[ \begin{pmatrix}-x\\y\end{pmatrix}= \begin{pmatrix}-1 &amp;amp; 0\\0 &amp;amp; 1\end{pmatrix}\begin{pmatrix}x\\y\end{pmatrix} \]
+Shear matrix \[ \begin{pmatrix}x&amp;#39;\\y&amp;#39;\end{pmatrix}=\begin{pmatrix}1&amp;amp;a\\0&amp;amp;1\end{pmatrix} \begin{pmatrix}x\\y\end{pmatrix} \]
+Rotation matrix 默认绕着原点、逆时针方向旋转。
+Homogenous coordinates 为什么要引入齐次坐标？因为平移变换不是一种线性变换。
+平移变换无法直接表示成矩阵乘的形式。 \[ \begin{pmatrix}x&amp;#39;\\y&amp;#39;\end{pmatrix}=\begin{pmatrix}a&amp;amp;b\\c&amp;amp;d\end{pmatrix}\begin{pmatrix}x\\y\end{pmatrix}+\begin{pmatrix}t_x\\t_y\end{pmatrix} \] 解决方案：增加一个维度（w-coordinate）
+2d point: \((x,y,1)^T\)
+2d vector：\((x,y,0)^T\)
+\(\begin{pmatrix}x\\y\\w\end{pmatrix}\) Is the 2D point \(\begin{pmatrix}x/w\\y/w\\1\end{pmatrix}\), \(w\neq0\)
+一个点加上另一个点，在齐次坐标下表示的是两个点的中点。
+Affine transformation Affine map = linear map + translation \[ \begin{pmatrix}x&amp;#39;\\y&amp;#39;\end{pmatrix}= \begin{pmatrix}a &amp;amp; b\\c &amp;amp; d\end{pmatrix}\cdot \begin{pmatrix}x \\ y\end{pmatrix} + \begin{pmatrix}t_x\\t_y\end{pmatrix} \] using homogenous coordinates: \[ \begin{pmatrix}x&amp;#39;\\y&amp;#39;\\1\end{pmatrix}= \begin{pmatrix}a &amp;amp; b &amp;amp; t_x \\ c &amp;amp; d &amp;amp; t_y \\ 0 &amp;amp; 0 &amp;amp; 1\end{pmatrix}\cdot \begin{pmatrix}x\\y\\1\end{pmatrix} \] 表示 2D 场景下的仿射变换时，最后一行才是 0 0 1（比如投影变换就不是）。</description>
+    </item>
+    
+    <item>
+      <title>Computer Graphics 01 Introduction</title>
+      <link>http://elenacliu.github.io/post/2023-07-09-Computer-Graphics-01-introduction/</link>
+      <pubDate>Sun, 09 Jul 2023 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2023-07-09-Computer-Graphics-01-introduction/</guid>
+      <description>本文内容总结自闫令琪老师的《GAMES101-现代计算机图形学入门》。
+课程主页：https://sites.cs.ucsb.edu/~lingqi/teaching/games101.html
+网课链接：https://www.bilibili.com/video/BV1X7411F744
+Introduction # rasterization # 把三维空间的几何形体显示在屏幕上，游戏等实时渲染场景里应用较多。（实时：30 fps；否则就是离线）
+curves and meshes # 如何表示几何形状：如光滑的曲线、曲面
+ray tracing / path tracing # shoot rays from the camera through each pixel
+calculate intersection and shading continue to bounce the rays till they hit light sources Gold standard in animations/movies
+animation / simulation # Key frame animation
+Mass-spring system
+Not about # OpenGL/DirectX/Vulkan
+The syntax of shaders
+3d modeling using Maya/3DS Max/Blender, or VR/game development using Unity/Unreal Engine</description>
+    </item>
+    
+  </channel>
+</rss>

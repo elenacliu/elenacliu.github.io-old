@@ -42,7 +42,7 @@ ADB # 简介 # 相信曾经使用过 Android Studio 开发安卓应用的人都�
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.976a82eb5f9045cba84c5060511dc7f64186f4cddea52947ff2d2b84696e8621.js" integrity="sha256-l2qC61&#43;QRcuoTFBgUR3H9kGG9M3epSlH/y0rhGluhiE=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.ec590097bd4847831e820a7c2cd140675b5708c9b6967bb22176f61e5ae319bc.js" integrity="sha256-7FkAl71IR4Meggp8LNFAZ1tXCMm2lnuyIXb2HlrjGbw=" crossorigin="anonymous"></script>
 <!--
 Made with Book Theme
 https://github.com/alex-shpak/hugo-book
@@ -133,35 +133,45 @@ https://github.com/alex-shpak/hugo-book
   
 <nav id="TableOfContents">
   <ul>
-    <li><a href="#简介">简介</a></li>
-    <li><a href="#安装和使用">安装和使用</a></li>
-  </ul>
-
-  <ul>
-    <li><a href="#简介-1">简介</a></li>
-    <li><a href="#使用">使用</a>
+    <li><a href="#tasker">Tasker</a>
       <ul>
-        <li><a href="#input">input</a></li>
+        <li><a href="#简介">简介</a></li>
+        <li><a href="#安装和使用">安装和使用</a></li>
       </ul>
     </li>
-    <li><a href="#遇到的问题">遇到的问题</a></li>
-  </ul>
-
-  <ul>
-    <li><a href="#securesettings">SecureSettings</a></li>
-    <li><a href="#相关链接">相关链接</a></li>
-  </ul>
-
-  <ul>
-    <li><a href="#adb-shell-command">adb shell command</a></li>
-    <li><a href="#java-代码">Java 代码</a></li>
-    <li><a href="#javascript-代码">Javascript 代码</a></li>
-  </ul>
-
-  <ul>
-    <li><a href="#插件录制">插件录制</a></li>
-    <li><a href="#adb-shell">adb shell</a></li>
-    <li><a href="#java-代码-1">Java 代码</a></li>
+    <li><a href="#adb">ADB</a>
+      <ul>
+        <li><a href="#简介-1">简介</a></li>
+        <li><a href="#使用">使用</a>
+          <ul>
+            <li><a href="#input">input</a></li>
+          </ul>
+        </li>
+        <li><a href="#遇到的问题">遇到的问题</a></li>
+      </ul>
+    </li>
+    <li><a href="#tasker-常用插件">Tasker 常用插件</a>
+      <ul>
+        <li><a href="#securesettings">SecureSettings</a></li>
+        <li><a href="#相关链接">相关链接</a></li>
+      </ul>
+    </li>
+    <li><a href="#tasker-插入代码">Tasker 插入代码</a>
+      <ul>
+        <li><a href="#adb-shell-command">adb shell command</a></li>
+        <li><a href="#java-代码">Java 代码</a></li>
+        <li><a href="#javascript-代码">Javascript 代码</a></li>
+      </ul>
+    </li>
+    <li><a href="#如何实现多点连续滑动用于滑动图案解锁">如何实现多点连续滑动（用于滑动图案解锁）</a>
+      <ul>
+        <li><a href="#插件录制">插件录制</a></li>
+        <li><a href="#adb-shell">adb shell</a></li>
+        <li><a href="#java-代码-1">Java 代码</a></li>
+      </ul>
+    </li>
+    <li><a href="#使用-tasker-的一些注意事项">使用 Tasker 的一些注意事项</a></li>
+    <li><a href="#参考教程">参考教程</a></li>
   </ul>
 </nav>
 
@@ -650,35 +660,45 @@ KEYCODE_MUTE=91;
   
 <nav id="TableOfContents">
   <ul>
-    <li><a href="#简介">简介</a></li>
-    <li><a href="#安装和使用">安装和使用</a></li>
-  </ul>
-
-  <ul>
-    <li><a href="#简介-1">简介</a></li>
-    <li><a href="#使用">使用</a>
+    <li><a href="#tasker">Tasker</a>
       <ul>
-        <li><a href="#input">input</a></li>
+        <li><a href="#简介">简介</a></li>
+        <li><a href="#安装和使用">安装和使用</a></li>
       </ul>
     </li>
-    <li><a href="#遇到的问题">遇到的问题</a></li>
-  </ul>
-
-  <ul>
-    <li><a href="#securesettings">SecureSettings</a></li>
-    <li><a href="#相关链接">相关链接</a></li>
-  </ul>
-
-  <ul>
-    <li><a href="#adb-shell-command">adb shell command</a></li>
-    <li><a href="#java-代码">Java 代码</a></li>
-    <li><a href="#javascript-代码">Javascript 代码</a></li>
-  </ul>
-
-  <ul>
-    <li><a href="#插件录制">插件录制</a></li>
-    <li><a href="#adb-shell">adb shell</a></li>
-    <li><a href="#java-代码-1">Java 代码</a></li>
+    <li><a href="#adb">ADB</a>
+      <ul>
+        <li><a href="#简介-1">简介</a></li>
+        <li><a href="#使用">使用</a>
+          <ul>
+            <li><a href="#input">input</a></li>
+          </ul>
+        </li>
+        <li><a href="#遇到的问题">遇到的问题</a></li>
+      </ul>
+    </li>
+    <li><a href="#tasker-常用插件">Tasker 常用插件</a>
+      <ul>
+        <li><a href="#securesettings">SecureSettings</a></li>
+        <li><a href="#相关链接">相关链接</a></li>
+      </ul>
+    </li>
+    <li><a href="#tasker-插入代码">Tasker 插入代码</a>
+      <ul>
+        <li><a href="#adb-shell-command">adb shell command</a></li>
+        <li><a href="#java-代码">Java 代码</a></li>
+        <li><a href="#javascript-代码">Javascript 代码</a></li>
+      </ul>
+    </li>
+    <li><a href="#如何实现多点连续滑动用于滑动图案解锁">如何实现多点连续滑动（用于滑动图案解锁）</a>
+      <ul>
+        <li><a href="#插件录制">插件录制</a></li>
+        <li><a href="#adb-shell">adb shell</a></li>
+        <li><a href="#java-代码-1">Java 代码</a></li>
+      </ul>
+    </li>
+    <li><a href="#使用-tasker-的一些注意事项">使用 Tasker 的一些注意事项</a></li>
+    <li><a href="#参考教程">参考教程</a></li>
   </ul>
 </nav>
 

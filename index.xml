@@ -6,7 +6,109 @@
     <description>Recent content on cliu&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 08 Jul 2023 00:00:00 +0000</lastBuildDate><atom:link href="http://elenacliu.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 12 Jul 2023 00:00:00 +0000</lastBuildDate><atom:link href="http://elenacliu.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>如何阅读学术论文</title>
+      <link>http://elenacliu.github.io/post/2023-07-12-%E5%A6%82%E4%BD%95%E9%98%85%E8%AF%BB%E5%AD%A6%E6%9C%AF%E8%AE%BA%E6%96%87/</link>
+      <pubDate>Wed, 12 Jul 2023 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2023-07-12-%E5%A6%82%E4%BD%95%E9%98%85%E8%AF%BB%E5%AD%A6%E6%9C%AF%E8%AE%BA%E6%96%87/</guid>
+      <description>如何阅读学术论文 下面转自：https://www.zhihu.com/answer/847199832
+国立清华大学动机所教授彭明辉教授曾在其《研究生手册》中提到过，“我读论文远比学生快，分析远比学生深入，主要的是我敢想象与猜测。”该手册对于如何提高文献阅读速度提出了一些可行的方法，值得参考学习，以下是部分相关原文。
+硕士生开始学读期刊论文时，就容易犯的毛病就是戒除不掉大学部的习惯：（1）老是想逐行读懂，有一行读不懂就受不了。（2）不敢发挥自己的想象，读论文像在读教科书，论文没写的就不会，瘫痪在那里；被我逼着去自己猜测或想象时，老怕弄错作者的意思，神经绷紧，脑筋根本动不了。
+大学毕业后（不管是念硕、博士或工作），可以参考的资料都没有秩序地交错成一团，而且永远都读不完。用大学生的心态读书，结果一定时间永远不够用。因此，每次读论文都一定要带着问题去读，每次读的时候都只是图回答你要回答的问题。因此，一定是选择性地阅读，一定要逐渐由粗而细地一层一层去了解。上面所规划的读论文的次序，就是由粗而细，每读完一轮，你对这问题的知识就增加一层。根据这一层知识就可以问出下一层更细致的问题，再根据这些更细致的问题去重读，就可以理解到更多的内容。因此，一定是一整批一起读懂到某个层次，而不是逐篇逐篇地整篇一次读懂。
+另外，阅读论文分为粗读和精读，粗读的论文只需要弄明白解决的问题、解决的思路、带来的成效、以及为什么能 work。精读的论文（尤其是与你的工作紧密相关的文章）则还需要研究工作中尚未解决的部分、学习对方设计实验的方法，并且加以复现，思考如何改进。
+如何快速阅读大量文献、解决看到英文就头疼的问题呢？
+看到英文就头疼主要是接触太少了，当然训练是一个非常费力的事情。知乎上一个在国外留学的答主的导师让他每天看 45 分钟的华盛顿邮报，坚持一段时间后效果奇佳。
+此外，要把阅读文献当作阅读报纸一样的事情，不能总是带着“学习”和敬畏的心态去读文献，这样速度一定不会快，而要以获取信息为主要目的。这样往往能达到通过花少量时间阅读大量文献的目的。</description>
+    </item>
+    
+    <item>
+      <title>Computer Graphics 05 Rasterization</title>
+      <link>http://elenacliu.github.io/post/2023-07-11-Computer-Graphics-05-Rasterization/</link>
+      <pubDate>Tue, 11 Jul 2023 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2023-07-11-Computer-Graphics-05-Rasterization/</guid>
+      <description>Rasterization A simple approach: sampling Evaluating a function at a point is sampling.
+We can discretize a function by sampling.
+Sampling is a core idea in graphics.
+We sample time (1D), area (2D), direction (3D), volume (3D).
+Define binary funcition: inside(tri, x, y)
+没必要遍历 screen 上所有的点：遍历 bounding box 内的像素。
+axis aligned bounding box：aabb
+Rasterization on real display 像素有内部的结构。
+Bayer pattern: Galaxy 手机像素中红绿蓝排列成的图案。绿点的密度比红和蓝高，这是因为人眼对绿色最敏感。
+Antialiasing Aliase：走样。本质上是因为采样的频率低于信号的频率。
+本节课前置课程：信号处理原理。
+抗锯齿/反走样
+Sampling theory sampling artifacts: errors/mistakes/inaccuracies in computer graphics</description>
+    </item>
+    
+    <item>
+      <title>Computer Graphics 02 Linear Algebra</title>
+      <link>http://elenacliu.github.io/post/2023-07-10-ComputerGraphics-02-Linear-Algebra/</link>
+      <pubDate>Mon, 10 Jul 2023 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2023-07-10-ComputerGraphics-02-Linear-Algebra/</guid>
+      <description>本文内容总结自闫令琪老师的《GAMES101-现代计算机图形学入门》。
+课程主页：https://sites.cs.ucsb.edu/~lingqi/teaching/games101.html
+网课链接：https://www.bilibili.com/video/BV1X7411F744
+Linear Algebra Vector 缺省的点的坐标是列向量： \[ A=\begin{pmatrix}x\\y\\\end{pmatrix}, A^T=(x,y) \] 这样矩阵可以左乘。
+Dot product \[ \cos\theta=\frac{\boldsymbol{a}\cdot\boldsymbol{b}}{\Vert\boldsymbol{a}\Vert\cdot\Vert\boldsymbol{b}\Vert} \]
+\[ \vec a\cdot\vec b=\begin{pmatrix}x_a\\y_a\end{pmatrix}\cdot\begin{pmatrix}x_b\\y_b\end{pmatrix}=x_ax_b+y_ay_b \]
+Find angle between two vectors
+Find projection of one vector on another
+计算投影的作用有：
+measure how close two directions are;
+比如判断反射光线方向和视线方向的差距，如果差的很多，则可能看不到光线 decompose a vector;
+determine forward or backward
+如图所示，当 dot product 是正数时，forward；当 dot product 是负数时，backward。
+Cross product \[ \vec a \times\vec b=-\vec b\times\vec a \]
+\[ \Vert\vec a\times\vec b\Vert=\Vert\vec a\Vert\Vert\vec b\Vert\sin\theta \]</description>
+    </item>
+    
+    <item>
+      <title>Computer Graphics 03 Transformation</title>
+      <link>http://elenacliu.github.io/post/2023-07-10-Computer-Graphics-03-Transformation/</link>
+      <pubDate>Mon, 10 Jul 2023 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2023-07-10-Computer-Graphics-03-Transformation/</guid>
+      <description>本文内容总结自闫令琪老师的《GAMES101-现代计算机图形学入门》。
+课程主页：https://sites.cs.ucsb.edu/~lingqi/teaching/games101.html
+网课链接：https://www.bilibili.com/video/BV1X7411F744
+Transformation Scale matrix \[ \begin{pmatrix}x&amp;#39;\\y&amp;#39;\end{pmatrix}= \begin{pmatrix}s_x &amp;amp; 0\\0 &amp;amp; s_y\end{pmatrix}\begin{pmatrix}x\\y\end{pmatrix} \]
+Reflection matrix \[ \begin{pmatrix}-x\\y\end{pmatrix}= \begin{pmatrix}-1 &amp;amp; 0\\0 &amp;amp; 1\end{pmatrix}\begin{pmatrix}x\\y\end{pmatrix} \]
+Shear matrix \[ \begin{pmatrix}x&amp;#39;\\y&amp;#39;\end{pmatrix}=\begin{pmatrix}1&amp;amp;a\\0&amp;amp;1\end{pmatrix} \begin{pmatrix}x\\y\end{pmatrix} \]
+Rotation matrix 默认绕着原点、逆时针方向旋转。
+Homogenous coordinates 为什么要引入齐次坐标？因为平移变换不是一种线性变换。
+平移变换无法直接表示成矩阵乘的形式。 \[ \begin{pmatrix}x&amp;#39;\\y&amp;#39;\end{pmatrix}=\begin{pmatrix}a&amp;amp;b\\c&amp;amp;d\end{pmatrix}\begin{pmatrix}x\\y\end{pmatrix}+\begin{pmatrix}t_x\\t_y\end{pmatrix} \] 解决方案：增加一个维度（w-coordinate）
+2d point: \((x,y,1)^T\)
+2d vector：\((x,y,0)^T\)
+\(\begin{pmatrix}x\\y\\w\end{pmatrix}\) Is the 2D point \(\begin{pmatrix}x/w\\y/w\\1\end{pmatrix}\), \(w\neq0\)
+一个点加上另一个点，在齐次坐标下表示的是两个点的中点。
+Affine transformation Affine map = linear map + translation \[ \begin{pmatrix}x&amp;#39;\\y&amp;#39;\end{pmatrix}= \begin{pmatrix}a &amp;amp; b\\c &amp;amp; d\end{pmatrix}\cdot \begin{pmatrix}x \\ y\end{pmatrix} + \begin{pmatrix}t_x\\t_y\end{pmatrix} \] using homogenous coordinates: \[ \begin{pmatrix}x&amp;#39;\\y&amp;#39;\\1\end{pmatrix}= \begin{pmatrix}a &amp;amp; b &amp;amp; t_x \\ c &amp;amp; d &amp;amp; t_y \\ 0 &amp;amp; 0 &amp;amp; 1\end{pmatrix}\cdot \begin{pmatrix}x\\y\\1\end{pmatrix} \] 表示 2D 场景下的仿射变换时，最后一行才是 0 0 1（比如投影变换就不是）。</description>
+    </item>
+    
+    <item>
+      <title>Computer Graphics 01 Introduction</title>
+      <link>http://elenacliu.github.io/post/2023-07-09-Computer-Graphics-01-introduction/</link>
+      <pubDate>Sun, 09 Jul 2023 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2023-07-09-Computer-Graphics-01-introduction/</guid>
+      <description>本文内容总结自闫令琪老师的《GAMES101-现代计算机图形学入门》。
+课程主页：https://sites.cs.ucsb.edu/~lingqi/teaching/games101.html
+网课链接：https://www.bilibili.com/video/BV1X7411F744
+Introduction # rasterization # 把三维空间的几何形体显示在屏幕上，游戏等实时渲染场景里应用较多。（实时：30 fps；否则就是离线）
+curves and meshes # 如何表示几何形状：如光滑的曲线、曲面
+ray tracing / path tracing # shoot rays from the camera through each pixel
+calculate intersection and shading continue to bounce the rays till they hit light sources Gold standard in animations/movies
+animation / simulation # Key frame animation
+Mass-spring system
+Not about # OpenGL/DirectX/Vulkan
+The syntax of shaders
+3d modeling using Maya/3DS Max/Blender, or VR/game development using Unity/Unreal Engine</description>
+    </item>
+    
     <item>
       <title>Maven 使用小记</title>
       <link>http://elenacliu.github.io/post/2023-07-08-Maven_%E4%BD%BF%E7%94%A8%E5%B0%8F%E8%AE%B0/</link>
@@ -409,6 +511,18 @@ stack&amp;lt;int&amp;gt; monotonestk; // insert the ith number of vector &amp;#3
 每一个位置只会入栈一次（在枚举到它时），并且最多出栈一次，因此时间复杂度为$O(n)$，另外开了一个栈，空间复杂度$O(n)$。
 代码如下：
 vector&amp;lt;int&amp;gt; getBiggerRight(vector&amp;lt;int&amp;gt;&amp;amp; nums) { vector&amp;lt;int&amp;gt; res(nums.size(), -1); stack&amp;lt;int&amp;gt; stk; for(int i = 0; i &amp;lt; nums.size(); i++) { while(!stk.empty() &amp;amp;&amp;amp; nums[stk.top()] &amp;lt; nums[i]) {	// 单调递减的栈 res[stk.top()] = i - stk.top(); stk.pop(); } stk.push(i); } return res; } 进阶1：LC84.</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>http://elenacliu.github.io/post/2023-07-09-NeRF%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://elenacliu.github.io/post/2023-07-09-NeRF%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/</guid>
+      <description>camera_angle_x 是相机的水平视场 (horizontal field of view)
+camera_angle_x 和 focal 的关系：
+$$ f \cdot \tan(camera_angle_x/2)=w/2 $$ transform_matrix: 相机外参（extrinsics），也叫做相机位姿（camera pose）
+$\begin{bmatrix}x_C, y_C, z_C\end{bmatrix}^T$ 是相机坐标系中的坐标，$\begin{bmatrix}x,y,z\end{bmatrix}^T$ 是三维世界的坐标： $$ \begin{bmatrix} x_C \ y_C \ z_C \ 1 \ \end{bmatrix}= \begin{bmatrix} r_{11} &amp;amp; r_{12} &amp;amp; r_{13} &amp;amp; t_x \ r_{21} &amp;amp; r_{22} &amp;amp; r_{23} &amp;amp; t_y \ r_{31} &amp;amp; r_{32} &amp;amp; r_{33} &amp;amp; t_z \ 0 &amp;amp; 0 &amp;amp; 0 &amp;amp; 1 \ \end{bmatrix} \begin{bmatrix} x \ y \ z \ 1 \end{bmatrix} $$ $C_{ex}=\begin{bmatrix} r_{11} &amp;amp; r_{12} &amp;amp; r_{13} &amp;amp; t_x \ r_{21} &amp;amp; r_{22} &amp;amp; r_{23} &amp;amp; t_y \ r_{31} &amp;amp; r_{32} &amp;amp; r_{33} &amp;amp; t_z \ 0 &amp;amp; 0 &amp;amp; 0 &amp;amp; 1 \ \end{bmatrix}=\begin{bmatrix}R&amp;amp;T\0&amp;amp;1\end{bmatrix}$ 是一个仿射变换矩阵，也叫做相机外参。$R=\begin{bmatrix} r_{11} &amp;amp; r_{12} &amp;amp; r_{13} \ r_{21} &amp;amp; r_{22} &amp;amp; r_{23}\ r_{31} &amp;amp; r_{32} &amp;amp; r_{33}\end{bmatrix}$包含旋转信息，$T=\begin{bmatrix} t_x\ t_y \ t_z \end{bmatrix}$ 包含平移信息。</description>
     </item>
     
   </channel>

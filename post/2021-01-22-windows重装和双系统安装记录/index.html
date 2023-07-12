@@ -40,7 +40,7 @@ SSD: MBR, NTFS, 128G HDD: GPT, NTFS, 1T BIOS: Legacy BIOS Memory: 8G GPU: NVIDIA
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.976a82eb5f9045cba84c5060511dc7f64186f4cddea52947ff2d2b84696e8621.js" integrity="sha256-l2qC61&#43;QRcuoTFBgUR3H9kGG9M3epSlH/y0rhGluhiE=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.ec590097bd4847831e820a7c2cd140675b5708c9b6967bb22176f61e5ae319bc.js" integrity="sha256-7FkAl71IR4Meggp8LNFAZ1tXCMm2lnuyIXb2HlrjGbw=" crossorigin="anonymous"></script>
 <!--
 Made with Book Theme
 https://github.com/alex-shpak/hugo-book
@@ -131,21 +131,29 @@ https://github.com/alex-shpak/hugo-book
   
 <nav id="TableOfContents">
   <ul>
-    <li><a href="#制作启动盘">制作启动盘</a></li>
-    <li><a href="#开始重装">开始重装</a>
+    <li><a href="#tl-dr">TL; DR</a></li>
+    <li><a href="#前言">前言</a></li>
+    <li><a href="#第一部分重装windows">第一部分：重装windows</a>
       <ul>
-        <li><a href="#mbr-to-gpt">MBR to GPT</a></li>
-        <li><a href="#ntfs-to-fat32">NTFS to FAT32</a></li>
+        <li><a href="#制作启动盘">制作启动盘</a></li>
+        <li><a href="#开始重装">开始重装</a>
+          <ul>
+            <li><a href="#mbr-to-gpt">MBR to GPT</a></li>
+            <li><a href="#ntfs-to-fat32">NTFS to FAT32</a></li>
+          </ul>
+        </li>
       </ul>
     </li>
-  </ul>
-
-  <ul>
-    <li><a href="#制作启动盘-1">制作启动盘</a></li>
-    <li><a href="#开始重装-1">开始重装</a></li>
-    <li><a href="#安装显卡驱动">安装显卡驱动</a></li>
-    <li><a href="#安装输入法">安装输入法</a></li>
-    <li><a href="#设置启动顺序">设置启动顺序</a></li>
+    <li><a href="#第二部分安装-ubuntu">第二部分：安装 Ubuntu</a>
+      <ul>
+        <li><a href="#制作启动盘-1">制作启动盘</a></li>
+        <li><a href="#开始重装-1">开始重装</a></li>
+        <li><a href="#安装显卡驱动">安装显卡驱动</a></li>
+        <li><a href="#安装输入法">安装输入法</a></li>
+        <li><a href="#设置启动顺序">设置启动顺序</a></li>
+      </ul>
+    </li>
+    <li><a href="#后记">后记</a></li>
   </ul>
 </nav>
 
@@ -309,7 +317,7 @@ https://github.com/alex-shpak/hugo-book
 </li>
 <li>
 <p>通过 Software &amp; Updates 的 Additional Drivers 找到对应的驱动版本，需要改动的就改动。</p>
-<!-- raw HTML omitted -->
+<img src="https://i.loli.net/2021/01/23/YEKNdf3kP6AwLo8.png" alt="image.png" style="zoom:67%;" />
 </li>
 </ol>
 <h2 id="安装输入法">
@@ -320,13 +328,13 @@ https://github.com/alex-shpak/hugo-book
 <p>遂安装搜狗输入法。具体步骤参考<a href="https://pinyin.sogou.com/linux/help.php">官网</a></p>
 <p>安装 fcitx 后，还需要进行如下配置。</p>
 <p>点击进入输入法配置。</p>
-<!-- raw HTML omitted -->
+<img src="https://i.loli.net/2021/01/23/2idMHsNzDfGk5qA.png" alt="image.png" style="zoom:67%;" />
 <p>点击+号，添加sougoupinyin</p>
-<!-- raw HTML omitted -->
+<img src="https://i.loli.net/2021/01/23/cIdAfiXQeK236Ws.png" alt="image.png" style="zoom: 67%;" />
 <p>进入全局配置</p>
-<!-- raw HTML omitted -->
+<img src="https://i.loli.net/2021/01/23/MeDrJNoiG4PSyqU.png" alt="image-20210123173417155.png" style="zoom:67%;" />
 <p>默认切换输入法的快捷键是 Ctrl+Space，但和 windows 下的不同。为了保持一致性并防止热键冲突，将系统的 Super+Space 热键屏蔽掉，并改成 Super+Space</p>
-<!-- raw HTML omitted -->
+<img src="https://i.loli.net/2021/01/23/Ak3bRd5VBqeoZCw.png" alt="image.png" style="zoom:67%;" />
 <h2 id="设置启动顺序">
   设置启动顺序
   <a class="anchor" href="#%e8%ae%be%e7%bd%ae%e5%90%af%e5%8a%a8%e9%a1%ba%e5%ba%8f">#</a>
@@ -394,21 +402,29 @@ https://github.com/alex-shpak/hugo-book
   
 <nav id="TableOfContents">
   <ul>
-    <li><a href="#制作启动盘">制作启动盘</a></li>
-    <li><a href="#开始重装">开始重装</a>
+    <li><a href="#tl-dr">TL; DR</a></li>
+    <li><a href="#前言">前言</a></li>
+    <li><a href="#第一部分重装windows">第一部分：重装windows</a>
       <ul>
-        <li><a href="#mbr-to-gpt">MBR to GPT</a></li>
-        <li><a href="#ntfs-to-fat32">NTFS to FAT32</a></li>
+        <li><a href="#制作启动盘">制作启动盘</a></li>
+        <li><a href="#开始重装">开始重装</a>
+          <ul>
+            <li><a href="#mbr-to-gpt">MBR to GPT</a></li>
+            <li><a href="#ntfs-to-fat32">NTFS to FAT32</a></li>
+          </ul>
+        </li>
       </ul>
     </li>
-  </ul>
-
-  <ul>
-    <li><a href="#制作启动盘-1">制作启动盘</a></li>
-    <li><a href="#开始重装-1">开始重装</a></li>
-    <li><a href="#安装显卡驱动">安装显卡驱动</a></li>
-    <li><a href="#安装输入法">安装输入法</a></li>
-    <li><a href="#设置启动顺序">设置启动顺序</a></li>
+    <li><a href="#第二部分安装-ubuntu">第二部分：安装 Ubuntu</a>
+      <ul>
+        <li><a href="#制作启动盘-1">制作启动盘</a></li>
+        <li><a href="#开始重装-1">开始重装</a></li>
+        <li><a href="#安装显卡驱动">安装显卡驱动</a></li>
+        <li><a href="#安装输入法">安装输入法</a></li>
+        <li><a href="#设置启动顺序">设置启动顺序</a></li>
+      </ul>
+    </li>
+    <li><a href="#后记">后记</a></li>
   </ul>
 </nav>
 

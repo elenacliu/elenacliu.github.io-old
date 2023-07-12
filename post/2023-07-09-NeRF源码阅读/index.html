@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="camera_angle_x 是相机的水平视场 (horizontal field of view)
+camera_angle_x 和 focal 的关系：
+$$ f \cdot \tan(camera_angle_x/2)=w/2 $$ transform_matrix: 相机外参（extrinsics），也叫做相机位姿（camera pose）
+$\begin{bmatrix}x_C, y_C, z_C\end{bmatrix}^T$ 是相机坐标系中的坐标，$\begin{bmatrix}x,y,z\end{bmatrix}^T$ 是三维世界的坐标： $$ \begin{bmatrix} x_C \ y_C \ z_C \ 1 \ \end{bmatrix}= \begin{bmatrix} r_{11} &amp; r_{12} &amp; r_{13} &amp; t_x \ r_{21} &amp; r_{22} &amp; r_{23} &amp; t_y \ r_{31} &amp; r_{32} &amp; r_{33} &amp; t_z \ 0 &amp; 0 &amp; 0 &amp; 1 \ \end{bmatrix} \begin{bmatrix} x \ y \ z \ 1 \end{bmatrix} $$ $C_{ex}=\begin{bmatrix} r_{11} &amp; r_{12} &amp; r_{13} &amp; t_x \ r_{21} &amp; r_{22} &amp; r_{23} &amp; t_y \ r_{31} &amp; r_{32} &amp; r_{33} &amp; t_z \ 0 &amp; 0 &amp; 0 &amp; 1 \ \end{bmatrix}=\begin{bmatrix}R&amp;T\0&amp;1\end{bmatrix}$ 是一个仿射变换矩阵，也叫做相机外参。$R=\begin{bmatrix} r_{11} &amp; r_{12} &amp; r_{13} \ r_{21} &amp; r_{22} &amp; r_{23}\ r_{31} &amp; r_{32} &amp; r_{33}\end{bmatrix}$包含旋转信息，$T=\begin{bmatrix} t_x\ t_y \ t_z \end{bmatrix}$ 包含平移信息。">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="" />
+<meta property="og:description" content="camera_angle_x 是相机的水平视场 (horizontal field of view)
+camera_angle_x 和 focal 的关系：
+$$ f \cdot \tan(camera_angle_x/2)=w/2 $$ transform_matrix: 相机外参（extrinsics），也叫做相机位姿（camera pose）
+$\begin{bmatrix}x_C, y_C, z_C\end{bmatrix}^T$ 是相机坐标系中的坐标，$\begin{bmatrix}x,y,z\end{bmatrix}^T$ 是三维世界的坐标： $$ \begin{bmatrix} x_C \ y_C \ z_C \ 1 \ \end{bmatrix}= \begin{bmatrix} r_{11} &amp; r_{12} &amp; r_{13} &amp; t_x \ r_{21} &amp; r_{22} &amp; r_{23} &amp; t_y \ r_{31} &amp; r_{32} &amp; r_{33} &amp; t_z \ 0 &amp; 0 &amp; 0 &amp; 1 \ \end{bmatrix} \begin{bmatrix} x \ y \ z \ 1 \end{bmatrix} $$ $C_{ex}=\begin{bmatrix} r_{11} &amp; r_{12} &amp; r_{13} &amp; t_x \ r_{21} &amp; r_{22} &amp; r_{23} &amp; t_y \ r_{31} &amp; r_{32} &amp; r_{33} &amp; t_z \ 0 &amp; 0 &amp; 0 &amp; 1 \ \end{bmatrix}=\begin{bmatrix}R&amp;T\0&amp;1\end{bmatrix}$ 是一个仿射变换矩阵，也叫做相机外参。$R=\begin{bmatrix} r_{11} &amp; r_{12} &amp; r_{13} \ r_{21} &amp; r_{22} &amp; r_{23}\ r_{31} &amp; r_{32} &amp; r_{33}\end{bmatrix}$包含旋转信息，$T=\begin{bmatrix} t_x\ t_y \ t_z \end{bmatrix}$ 包含平移信息。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://elenacliu.github.io/post/2023-07-09-NeRF%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/" /><meta property="article:section" content="post" />
+
+
+<title>2023 07 09 Ne Rf源码阅读 | cliu&#39;s Blog</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
+  <script defer src="/flexsearch.min.js"></script>
+  <script defer src="/en.search.min.ec590097bd4847831e820a7c2cd140675b5708c9b6967bb22176f61e5ae319bc.js" integrity="sha256-7FkAl71IR4Meggp8LNFAZ1tXCMm2lnuyIXb2HlrjGbw=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>cliu&#39;s Blog</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>2023 07 09 Ne Rf源码阅读</strong>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents"></nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><p>camera_angle_x 是相机的水平视场 (horizontal field of view)</p>
+<p>camera_angle_x 和 focal 的关系：</p>
+<p><img src="https://cdn-7.nikon-cdn.com/Images/Learn-Explore/Photography-Techniques/2009/Focal-Length/Media/DX-Field-of-View-graphic.jpg" alt="graphic of DX field of view range for lenses" />
+$$
+f \cdot \tan(camera_angle_x/2)=w/2
+$$
+transform_matrix: 相机外参（extrinsics），也叫做相机位姿（camera pose）</p>
+<p>$\begin{bmatrix}x_C, y_C, z_C\end{bmatrix}^T$ 是相机坐标系中的坐标，$\begin{bmatrix}x,y,z\end{bmatrix}^T$ 是三维世界的坐标：
+$$
+\begin{bmatrix}
+x_C \
+y_C \
+z_C \
+1 \
+\end{bmatrix}=
+\begin{bmatrix}
+r_{11} &amp; r_{12} &amp; r_{13} &amp; t_x \
+r_{21} &amp; r_{22} &amp; r_{23} &amp; t_y \
+r_{31} &amp; r_{32} &amp; r_{33} &amp; t_z \
+0 &amp; 0 &amp; 0 &amp; 1 \
+\end{bmatrix}
+\begin{bmatrix}
+x \ y \ z \ 1
+\end{bmatrix}
+$$
+$C_{ex}=\begin{bmatrix}
+r_{11} &amp; r_{12} &amp; r_{13} &amp; t_x \
+r_{21} &amp; r_{22} &amp; r_{23} &amp; t_y \
+r_{31} &amp; r_{32} &amp; r_{33} &amp; t_z \
+0 &amp; 0 &amp; 0 &amp; 1 \
+\end{bmatrix}=\begin{bmatrix}R&amp;T\0&amp;1\end{bmatrix}$ 是一个仿射变换矩阵，也叫做相机外参。$R=\begin{bmatrix} r_{11} &amp; r_{12} &amp; r_{13} \
+r_{21} &amp; r_{22} &amp; r_{23}\
+r_{31} &amp; r_{32} &amp; r_{33}\end{bmatrix}$包含旋转信息，$T=\begin{bmatrix} t_x\ t_y \ t_z \end{bmatrix}$ 包含平移信息。</p>
+<p>$C_{ex}$ 是用于从世界坐标转到相机坐标，会提供 $C_{ex}$ 的逆矩阵 $C^{-1}_{ex}$，用于相机坐标转换到世界坐标，也就是源姿态（source pose）。</p>
+<p>而二维图片的坐标 $\begin{bmatrix} x, y\end{bmatrix}^T$ 和相机坐标系中的坐标 $\begin{bmatrix}x_C,y_C,z_C\end{bmatrix}^T$ 存在下面的转换关系：
+$$
+z_C\begin{bmatrix}
+x \
+y \
+1 \
+\end{bmatrix} =
+\begin{bmatrix}
+f_x &amp; 0 &amp; c_x \
+0 &amp; f_y &amp; c_y \
+0 &amp; 0 &amp; 1 \
+\end{bmatrix}
+\begin{bmatrix}
+x_C \
+y_C \
+z_C \
+\end{bmatrix}
+$$
+矩阵 $\begin{bmatrix}f_x &amp; 0 &amp; c_x \
+0 &amp; f_y &amp; c_y \
+0 &amp; 0 &amp; 1 \\end{bmatrix}$ 指的是相机的内参，包含焦距 $(f_x, f_y)$ 以及图像中心点 $(c_x, c_y)$。对于相同的数据集，相机的内参一般是固定的。相机内参一般用 $K$ 来表示。</p>
+<p>clip space:</p>
+<p>NDC（normalized device coordinates）space：</p>
+<p>Normalized device coordinate or NDC space is a screen independent display coordinate system; it encompasses a cube where the <em>x, y</em>, and <em>z</em> components range from −1 to 1.</p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents"></nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

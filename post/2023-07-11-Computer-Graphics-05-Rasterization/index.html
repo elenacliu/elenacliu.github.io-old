@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Rasterization A simple approach: sampling Evaluating a function at a point is sampling.
+We can discretize a function by sampling.
+Sampling is a core idea in graphics.
+We sample time (1D), area (2D), direction (3D), volume (3D).
+Define binary funcition: inside(tri, x, y)
+没必要遍历 screen 上所有的点：遍历 bounding box 内的像素。
+axis aligned bounding box：aabb
+Rasterization on real display 像素有内部的结构。
+Bayer pattern: Galaxy 手机像素中红绿蓝排列成的图案。绿点的密度比红和蓝高，这是因为人眼对绿色最敏感。
+Antialiasing Aliase：走样。本质上是因为采样的频率低于信号的频率。
+本节课前置课程：信号处理原理。
+抗锯齿/反走样
+Sampling theory sampling artifacts: errors/mistakes/inaccuracies in computer graphics">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="Computer Graphics 05 Rasterization" />
+<meta property="og:description" content="Rasterization A simple approach: sampling Evaluating a function at a point is sampling.
+We can discretize a function by sampling.
+Sampling is a core idea in graphics.
+We sample time (1D), area (2D), direction (3D), volume (3D).
+Define binary funcition: inside(tri, x, y)
+没必要遍历 screen 上所有的点：遍历 bounding box 内的像素。
+axis aligned bounding box：aabb
+Rasterization on real display 像素有内部的结构。
+Bayer pattern: Galaxy 手机像素中红绿蓝排列成的图案。绿点的密度比红和蓝高，这是因为人眼对绿色最敏感。
+Antialiasing Aliase：走样。本质上是因为采样的频率低于信号的频率。
+本节课前置课程：信号处理原理。
+抗锯齿/反走样
+Sampling theory sampling artifacts: errors/mistakes/inaccuracies in computer graphics" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://elenacliu.github.io/post/2023-07-11-Computer-Graphics-05-Rasterization/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2023-07-11T00:00:00+00:00" />
+<meta property="article:modified_time" content="2023-07-11T00:00:00+00:00" />
+<title>Computer Graphics 05 Rasterization | cliu&#39;s Blog</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
+  <script defer src="/flexsearch.min.js"></script>
+  <script defer src="/en.search.min.ec590097bd4847831e820a7c2cd140675b5708c9b6967bb22176f61e5ae319bc.js" integrity="sha256-7FkAl71IR4Meggp8LNFAZ1tXCMm2lnuyIXb2HlrjGbw=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>cliu&#39;s Blog</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>Computer Graphics 05 Rasterization</strong>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="rasterization">Rasterization</h1>
+<h2 id="a-simple-approach-sampling">A simple approach: sampling</h2>
+<p>Evaluating a function at a point is sampling.</p>
+<p>We can discretize a function by sampling.</p>
+<p>Sampling is a core idea in graphics.</p>
+<p>We sample time (1D), area (2D), direction (3D), volume (3D).</p>
+<p>Define binary funcition: <code>inside(tri, x, y)</code></p>
+<p><img src="https://cdn.jsdelivr.net/gh/elenacliu/PicGoPics/img/202307111402370.png" alt="image-20230711下午15521332" style="zoom:50%;" /></p>
+<p>没必要遍历 screen 上所有的点：遍历 bounding box 内的像素。</p>
+<p>axis aligned bounding box：aabb</p>
+<p><img src="https://cdn.jsdelivr.net/gh/elenacliu/PicGoPics/img/202307121215946.png" alt="image-20230711下午20038847" style="zoom:50%;" /></p>
+<p><img src="https://cdn.jsdelivr.net/gh/elenacliu/PicGoPics/img/202307111402702.png" alt="image-20230711下午20155869" style="zoom:50%;" /></p>
+<h2 id="rasterization-on-real-display">Rasterization on real
+display</h2>
+<p><img src="https://cdn.jsdelivr.net/gh/elenacliu/PicGoPics/img/202307111403453.png" alt="image-20230711下午20307700" style="zoom:50%;" /></p>
+<p>像素有内部的结构。</p>
+<p>Bayer pattern: Galaxy
+手机像素中红绿蓝排列成的图案。绿点的密度比红和蓝高，这是因为人眼对绿色最敏感。</p>
+<h2 id="antialiasing">Antialiasing</h2>
+<p>Aliase：走样。本质上是因为采样的频率低于信号的频率。</p>
+<p>本节课前置课程：信号处理原理。</p>
+<p>抗锯齿/反走样</p>
+<h3 id="sampling-theory">Sampling theory</h3>
+<p>sampling artifacts: errors/mistakes/inaccuracies in computer
+graphics</p>
+<p>Moiré patterns in imaging:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/elenacliu/PicGoPics/img/202307111432150.png" alt="image-20230711下午22857913" style="zoom:50%;" /></p>
+<p>拿手机拍电脑的屏幕也会出现摩尔纹。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/elenacliu/PicGoPics/img/202307111432004.png" alt="image-20230711下午23037106" style="zoom:50%;" /></p>
+<h3
+id="blurringpre-filteringbefore-sampling">Blurring（Pre-Filtering）Before
+Sampling</h3>
+<p>先做模糊（经过一个滤波器）：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/elenacliu/PicGoPics/img/202307111432974.png" alt="image-20230711下午23226042" style="zoom:50%;" /></p>
+<p><img src="https://cdn.jsdelivr.net/gh/elenacliu/PicGoPics/img/202307111611459.png" alt="image-20230711下午41142056" style="zoom:50%;" /></p>
+<p><img src="https://cdn.jsdelivr.net/gh/elenacliu/PicGoPics/img/202307111613410.png" alt="image-20230711下午41318595" style="zoom:50%;" /></p>
+<p>Aliase: two frequencies that are indistinguishable at a given
+sampling are called “aliases”</p>
+<h3 id="filtering-get-rid-of-certain-frequency-contents">Filtering = Get
+rid of certain frequency contents</h3>
+<p>滤波：去掉某些频率的内容。</p>
+<p>对图像做傅立叶变换，对二维的点，空间上不同的位置算时域</p>
+<p>图像的高频信号实际上是颜色变化剧烈的部分。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/elenacliu/PicGoPics/img/202307111620490.png" alt="image-20230711下午42039187" style="zoom:50%;" /></p>
+<p>右边是频率分布图，中心为低频信号，四周为高频信号，可以发现主要是低频信号（中心最亮）。高频信号较少。而之所以xy中心线是亮的，是因为傅立叶变换要求信号是周期性信号，所以这里隐含了将这幅图片无限延展。图片的交界处信号会突变，因此是高频信号。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/elenacliu/PicGoPics/img/202307121216660.png" alt="image-20230711下午42322035" style="zoom:50%;" /></p>
+<p>从左边往右边，FFT；从右边往左边，IFT</p>
+<p><img src="https://cdn.jsdelivr.net/gh/elenacliu/PicGoPics/img/202307121216547.png" alt="image-20230711下午42452111" style="zoom:50%;" /></p>
+<p><img src="https://cdn.jsdelivr.net/gh/elenacliu/PicGoPics/img/202307111625762.png" alt="image-20230711下午42557213" style="zoom:50%;" /></p>
+<h3 id="filtering-convolution-averaging">Filtering = Convolution =
+Averaging</h3>
+<p>Convolution in the spatial domain is equal to multiplication in the
+frequency domain, and vice versa (Multiplication in the spatial domain
+is equal to convolution in the frequency domain.)</p>
+<p>Option1:</p>
+<ul>
+<li>Filter by convolution in the spatial domain</li>
+</ul>
+<p>Option 2:</p>
+<ul>
+<li>Transform to frequency domain (FFT)</li>
+<li>Multiply by Fourier transform of convolution kernel</li>
+<li>Transform back to spatial domain (IFT)</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/elenacliu/PicGoPics/img/202307111632023.png" alt="image-20230711下午43251961" style="zoom:50%;" /></p>
+<p>Wider filter kernel = lower frequencies
+（就像马赛克一样，变得越发模糊了，高频信号更少了）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/elenacliu/PicGoPics/img/202307111638391.png" alt="image-20230711下午43810857" style="zoom:50%;" /></p>
+<p>采样的本质：重复一个原始信号的频谱</p>
+<p>采样的频率决定了重复原始信号的步长。如果采样率不足（采样得不够快），意味着在频谱的复制上，中间的间隔越少。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/elenacliu/PicGoPics/img/202307111640802.png" alt="image-20230711下午44048171" style="zoom:50%;" /></p>
+<h3 id="how-to-reduce-aliasing-error">How to reduce aliasing error</h3>
+<p>Option 1: Increase sampling rate</p>
+<p>Option 2: Antialiasing</p>
+<ul>
+<li>Making Fourier contents “narrower” before repeating
+(因为频率越高，那么 FFT 得到的频域越宽)</li>
+<li>i.e. Filtering out high frequencies before sampling</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/elenacliu/PicGoPics/img/202307111644918.png" alt="image-20230711下午44448403" style="zoom:50%;" /></p>
+<h4 id="how-to-blur">How to blur?</h4>
+<p>A 1 pixel-width box-blur:</p>
+<p>Convolve f(x, y) by a 1-pixel box-blur</p>
+<p><img src="https://cdn.jsdelivr.net/gh/elenacliu/PicGoPics/img/202307111648931.png" alt="image-20230711下午44821442" style="zoom:50%;" /></p>
+<p>计算三角形在每个像素内的覆盖面积比例。</p>
+<p>Antialiasing by supersampling (MSAA)</p>
+<p>任意一个像素被划分成若干个小像素。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/elenacliu/PicGoPics/img/202307111653032.png" alt="image-20230711下午45322538" style="zoom:50%;" /></p>
+<p><img src="https://cdn.jsdelivr.net/gh/elenacliu/PicGoPics/img/202307111655903.png" alt="image-20230711下午45439667" style="zoom:50%;" /></p>
+<p><img src="https://cdn.jsdelivr.net/gh/elenacliu/PicGoPics/img/202307111655498.png" alt="image-20230711下午45502647" style="zoom:50%;" /></p>
+<p><img src="https://cdn.jsdelivr.net/gh/elenacliu/PicGoPics/img/202307111655157.png" alt="image-20230711下午45537230" style="zoom:50%;" /></p>
+<p>并没有真正提高屏幕上的分辨率，通过更多的点仅仅只是为了估计覆盖率。</p>
+<h3 id="milestones">Milestones</h3>
+<ul>
+<li>FXAA（Fast Approximate
+AA）是图像的后期处理，先得到有锯齿的图，再处理（但不是blur，和采样无关）</li>
+<li>TAA（Temporal AA）</li>
+</ul>
+<p>Super resolution / super sampling</p>
+<ul>
+<li>From low resolution to high resolution</li>
+<li>Essentially still “not enough samples” problem</li>
+<li>DLSS (Deep Learning Super Sampling)</li>
+</ul>
+<h2 id="z-buffering">Z-buffering</h2>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

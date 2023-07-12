@@ -40,7 +40,7 @@ ID：The ID flag (bit 21) in the EFLAGS register indicates support for the CPUID
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.976a82eb5f9045cba84c5060511dc7f64186f4cddea52947ff2d2b84696e8621.js" integrity="sha256-l2qC61&#43;QRcuoTFBgUR3H9kGG9M3epSlH/y0rhGluhiE=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.ec590097bd4847831e820a7c2cd140675b5708c9b6967bb22176f61e5ae319bc.js" integrity="sha256-7FkAl71IR4Meggp8LNFAZ1tXCMm2lnuyIXb2HlrjGbw=" crossorigin="anonymous"></script>
 <!--
 Made with Book Theme
 https://github.com/alex-shpak/hugo-book
@@ -131,19 +131,23 @@ https://github.com/alex-shpak/hugo-book
   
 <nav id="TableOfContents">
   <ul>
-    <li><a href="#寄存器">寄存器</a></li>
-    <li><a href="#特权指令和非特权指令">特权指令和非特权指令</a></li>
-    <li><a href="#中断机制">中断机制</a></li>
-    <li><a href="#ia32-体系结构对中断的支持">IA32 体系结构对中断的支持</a>
+    <li><a href="#异常处理">异常处理</a>
       <ul>
-        <li><a href="#中断控制器">中断控制器</a></li>
-        <li><a href="#实模式real-address-mode中断向量表interrupt-vector-table-ivt">实模式（Real-Address Mode）：中断向量表（interrupt vector table, IVT）</a></li>
-        <li><a href="#保护模式protected-mode中断描述符表interrupt-descriptor-table">保护模式（Protected Mode）：中断描述符表（Interrupt Descriptor Table）</a></li>
-      </ul>
-    </li>
-    <li><a href="#系统调用">系统调用</a>
-      <ul>
-        <li><a href="#例linux-系统调用">例：Linux 系统调用</a></li>
+        <li><a href="#寄存器">寄存器</a></li>
+        <li><a href="#特权指令和非特权指令">特权指令和非特权指令</a></li>
+        <li><a href="#中断机制">中断机制</a></li>
+        <li><a href="#ia32-体系结构对中断的支持">IA32 体系结构对中断的支持</a>
+          <ul>
+            <li><a href="#中断控制器">中断控制器</a></li>
+            <li><a href="#实模式real-address-mode中断向量表interrupt-vector-table-ivt">实模式（Real-Address Mode）：中断向量表（interrupt vector table, IVT）</a></li>
+            <li><a href="#保护模式protected-mode中断描述符表interrupt-descriptor-table">保护模式（Protected Mode）：中断描述符表（Interrupt Descriptor Table）</a></li>
+          </ul>
+        </li>
+        <li><a href="#系统调用">系统调用</a>
+          <ul>
+            <li><a href="#例linux-系统调用">例：Linux 系统调用</a></li>
+          </ul>
+        </li>
       </ul>
     </li>
   </ul>
@@ -493,19 +497,23 @@ https://github.com/alex-shpak/hugo-book
   
 <nav id="TableOfContents">
   <ul>
-    <li><a href="#寄存器">寄存器</a></li>
-    <li><a href="#特权指令和非特权指令">特权指令和非特权指令</a></li>
-    <li><a href="#中断机制">中断机制</a></li>
-    <li><a href="#ia32-体系结构对中断的支持">IA32 体系结构对中断的支持</a>
+    <li><a href="#异常处理">异常处理</a>
       <ul>
-        <li><a href="#中断控制器">中断控制器</a></li>
-        <li><a href="#实模式real-address-mode中断向量表interrupt-vector-table-ivt">实模式（Real-Address Mode）：中断向量表（interrupt vector table, IVT）</a></li>
-        <li><a href="#保护模式protected-mode中断描述符表interrupt-descriptor-table">保护模式（Protected Mode）：中断描述符表（Interrupt Descriptor Table）</a></li>
-      </ul>
-    </li>
-    <li><a href="#系统调用">系统调用</a>
-      <ul>
-        <li><a href="#例linux-系统调用">例：Linux 系统调用</a></li>
+        <li><a href="#寄存器">寄存器</a></li>
+        <li><a href="#特权指令和非特权指令">特权指令和非特权指令</a></li>
+        <li><a href="#中断机制">中断机制</a></li>
+        <li><a href="#ia32-体系结构对中断的支持">IA32 体系结构对中断的支持</a>
+          <ul>
+            <li><a href="#中断控制器">中断控制器</a></li>
+            <li><a href="#实模式real-address-mode中断向量表interrupt-vector-table-ivt">实模式（Real-Address Mode）：中断向量表（interrupt vector table, IVT）</a></li>
+            <li><a href="#保护模式protected-mode中断描述符表interrupt-descriptor-table">保护模式（Protected Mode）：中断描述符表（Interrupt Descriptor Table）</a></li>
+          </ul>
+        </li>
+        <li><a href="#系统调用">系统调用</a>
+          <ul>
+            <li><a href="#例linux-系统调用">例：Linux 系统调用</a></li>
+          </ul>
+        </li>
       </ul>
     </li>
   </ul>

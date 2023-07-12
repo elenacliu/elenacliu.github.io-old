@@ -34,7 +34,7 @@ ssh agent 通过下面的方式确保用户私钥安全：
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.976a82eb5f9045cba84c5060511dc7f64186f4cddea52947ff2d2b84696e8621.js" integrity="sha256-l2qC61&#43;QRcuoTFBgUR3H9kGG9M3epSlH/y0rhGluhiE=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.ec590097bd4847831e820a7c2cd140675b5708c9b6967bb22176f61e5ae319bc.js" integrity="sha256-7FkAl71IR4Meggp8LNFAZ1tXCMm2lnuyIXb2HlrjGbw=" crossorigin="anonymous"></script>
 <!--
 Made with Book Theme
 https://github.com/alex-shpak/hugo-book
@@ -125,20 +125,24 @@ https://github.com/alex-shpak/hugo-book
   
 <nav id="TableOfContents">
   <ul>
-    <li><a href="#ssh-agent-原理">ssh agent 原理</a>
+    <li>
       <ul>
-        <li><a href="#什么是-ssh-agent">什么是 ssh agent</a></li>
-        <li><a href="#the-agent-protocol">The agent protocol</a></li>
+        <li><a href="#ssh-agent-原理">ssh agent 原理</a>
+          <ul>
+            <li><a href="#什么是-ssh-agent">什么是 ssh agent</a></li>
+            <li><a href="#the-agent-protocol">The agent protocol</a></li>
+          </ul>
+        </li>
+        <li><a href="#agent-forwarding-原理">agent forwarding 原理</a>
+          <ul>
+            <li><a href="#agent-forwarding-运行原理">agent forwarding 运行原理</a></li>
+            <li><a href="#agent-forward-的安全风险">agent forward 的安全风险</a></li>
+            <li><a href="#一些让-agent-forwarding-更安全的方法">一些让 agent forwarding 更安全的方法</a></li>
+          </ul>
+        </li>
+        <li><a href="#问题排除">问题排除</a></li>
       </ul>
     </li>
-    <li><a href="#agent-forwarding-原理">agent forwarding 原理</a>
-      <ul>
-        <li><a href="#agent-forwarding-运行原理">agent forwarding 运行原理</a></li>
-        <li><a href="#agent-forward-的安全风险">agent forward 的安全风险</a></li>
-        <li><a href="#一些让-agent-forwarding-更安全的方法">一些让 agent forwarding 更安全的方法</a></li>
-      </ul>
-    </li>
-    <li><a href="#问题排除">问题排除</a></li>
   </ul>
 </nav>
 
@@ -259,7 +263,7 @@ https://github.com/alex-shpak/hugo-book
 <li>
 <p>检查本地 ssh-agent 是否运行</p>
 <p>Windows 系统中，“我的电脑”右键选择“管理”，在管理界面中选择“服务和应用程序”-&gt;“服务”，在右侧的列表中选择 OpenSSH Authentication Agent，双击查看属性。</p>
-<!-- raw HTML omitted -->
+<img src="/img/opensshagentwindows.png" style="zoom:60%;" />
 </li>
 <li>
 <p>检查本地 ssh-agent 是否添加了正确的私钥</p>
@@ -273,7 +277,7 @@ https://github.com/alex-shpak/hugo-book
 </li>
 <li>
 <p>检查服务器的 sshd 配置文件是否允许 agent fowarding（默认开启）</p>
-<!-- raw HTML omitted -->
+<img src="/img/sshd_config.png" style="zoom:60%;" />
 <p>可以看到已经开启。</p>
 </li>
 <li>
@@ -351,20 +355,24 @@ https://github.com/alex-shpak/hugo-book
   
 <nav id="TableOfContents">
   <ul>
-    <li><a href="#ssh-agent-原理">ssh agent 原理</a>
+    <li>
       <ul>
-        <li><a href="#什么是-ssh-agent">什么是 ssh agent</a></li>
-        <li><a href="#the-agent-protocol">The agent protocol</a></li>
+        <li><a href="#ssh-agent-原理">ssh agent 原理</a>
+          <ul>
+            <li><a href="#什么是-ssh-agent">什么是 ssh agent</a></li>
+            <li><a href="#the-agent-protocol">The agent protocol</a></li>
+          </ul>
+        </li>
+        <li><a href="#agent-forwarding-原理">agent forwarding 原理</a>
+          <ul>
+            <li><a href="#agent-forwarding-运行原理">agent forwarding 运行原理</a></li>
+            <li><a href="#agent-forward-的安全风险">agent forward 的安全风险</a></li>
+            <li><a href="#一些让-agent-forwarding-更安全的方法">一些让 agent forwarding 更安全的方法</a></li>
+          </ul>
+        </li>
+        <li><a href="#问题排除">问题排除</a></li>
       </ul>
     </li>
-    <li><a href="#agent-forwarding-原理">agent forwarding 原理</a>
-      <ul>
-        <li><a href="#agent-forwarding-运行原理">agent forwarding 运行原理</a></li>
-        <li><a href="#agent-forward-的安全风险">agent forward 的安全风险</a></li>
-        <li><a href="#一些让-agent-forwarding-更安全的方法">一些让 agent forwarding 更安全的方法</a></li>
-      </ul>
-    </li>
-    <li><a href="#问题排除">问题排除</a></li>
   </ul>
 </nav>
 
