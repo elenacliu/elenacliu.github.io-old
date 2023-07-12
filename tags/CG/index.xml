@@ -60,17 +60,14 @@ Cross product \[ \vec a \times\vec b=-\vec b\times\vec a \]
       <description>本文内容总结自闫令琪老师的《GAMES101-现代计算机图形学入门》。
 课程主页：https://sites.cs.ucsb.edu/~lingqi/teaching/games101.html
 网课链接：https://www.bilibili.com/video/BV1X7411F744
-Transformation Scale matrix \[ \begin{pmatrix}x&amp;#39;\\y&amp;#39;\end{pmatrix}= \begin{pmatrix}s_x &amp;amp; 0\\0 &amp;amp; s_y\end{pmatrix}\begin{pmatrix}x\\y\end{pmatrix} \]
-Reflection matrix \[ \begin{pmatrix}-x\\y\end{pmatrix}= \begin{pmatrix}-1 &amp;amp; 0\\0 &amp;amp; 1\end{pmatrix}\begin{pmatrix}x\\y\end{pmatrix} \]
-Shear matrix \[ \begin{pmatrix}x&amp;#39;\\y&amp;#39;\end{pmatrix}=\begin{pmatrix}1&amp;amp;a\\0&amp;amp;1\end{pmatrix} \begin{pmatrix}x\\y\end{pmatrix} \]
-Rotation matrix 默认绕着原点、逆时针方向旋转。
-Homogenous coordinates 为什么要引入齐次坐标？因为平移变换不是一种线性变换。
-平移变换无法直接表示成矩阵乘的形式。 \[ \begin{pmatrix}x&amp;#39;\\y&amp;#39;\end{pmatrix}=\begin{pmatrix}a&amp;amp;b\\c&amp;amp;d\end{pmatrix}\begin{pmatrix}x\\y\end{pmatrix}+\begin{pmatrix}t_x\\t_y\end{pmatrix} \] 解决方案：增加一个维度（w-coordinate）
-2d point: \((x,y,1)^T\)
-2d vector：\((x,y,0)^T\)
-\(\begin{pmatrix}x\\y\\w\end{pmatrix}\) Is the 2D point \(\begin{pmatrix}x/w\\y/w\\1\end{pmatrix}\), \(w\neq0\)
+Transformation # Scale matrix # $$ \begin{pmatrix}x&#39;\\y&#39;\end{pmatrix}= \begin{pmatrix}s_x &amp; 0\\0 &amp; s_y\end{pmatrix}\begin{pmatrix}x\\y\end{pmatrix} $$ Reflection matrix # $$ \begin{pmatrix}-x\\y\end{pmatrix}= \begin{pmatrix}-1 &amp; 0\\0 &amp; 1\end{pmatrix}\begin{pmatrix}x\\y\end{pmatrix} $$ Shear matrix # $$ \begin{pmatrix}x&#39;\\y&#39;\end{pmatrix}=\begin{pmatrix}1&amp;a\\0&amp;1\end{pmatrix} \begin{pmatrix}x\\y\end{pmatrix} $$ Rotation matrix # 默认绕着原点、逆时针方向旋转。
+Homogenous coordinates # 为什么要引入齐次坐标？因为平移变换不是一种线性变换。
+平移变换无法直接表示成矩阵乘的形式。
+$$ \begin{pmatrix}x&#39;\\y&#39;\end{pmatrix}=\begin{pmatrix}a&amp;b\\c&amp;d\end{pmatrix}\begin{pmatrix}x\\y\end{pmatrix}+\begin{pmatrix}t_x\\t_y\end{pmatrix} $$ 解决方案：增加一个维度（w-coordinate） 2d point: $(x,y,1)^T$
+2d vector：$(x,y,0)^T$
+$\begin{pmatrix}x\\y\\w\end{pmatrix}$ Is the 2D point $\begin{pmatrix}x/w\\y/w\\1\end{pmatrix}$, $w\neq0$
 一个点加上另一个点，在齐次坐标下表示的是两个点的中点。
-Affine transformation Affine map = linear map + translation \[ \begin{pmatrix}x&amp;#39;\\y&amp;#39;\end{pmatrix}= \begin{pmatrix}a &amp;amp; b\\c &amp;amp; d\end{pmatrix}\cdot \begin{pmatrix}x \\ y\end{pmatrix} + \begin{pmatrix}t_x\\t_y\end{pmatrix} \] using homogenous coordinates: \[ \begin{pmatrix}x&amp;#39;\\y&amp;#39;\\1\end{pmatrix}= \begin{pmatrix}a &amp;amp; b &amp;amp; t_x \\ c &amp;amp; d &amp;amp; t_y \\ 0 &amp;amp; 0 &amp;amp; 1\end{pmatrix}\cdot \begin{pmatrix}x\\y\\1\end{pmatrix} \] 表示 2D 场景下的仿射变换时，最后一行才是 0 0 1（比如投影变换就不是）。</description>
+Affine transformation # Affine map = linear map + translation</description>
     </item>
     
     <item>
